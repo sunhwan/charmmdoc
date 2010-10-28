@@ -12,3 +12,5 @@ Menu:
    Crystal facility <crystl>
    Free energy perturbation simulations <pert>
    Use of the atom selection facility <select>
+   images
+   nbonds

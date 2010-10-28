@@ -1,24 +1,24 @@
 
-Select
+Images
 ====================================
 
 
-.. _syntax:
+.. _image_syntax:
 
 Syntax
 ******
 
-.. _function:
+.. _image_update:
 
 Function
 ********
 
-.. _examples:
+.. _image_example:
 
 Examples
 ********
 
-.. _implementation:
+.. _image_implementation:
 
 Implementation
 **************

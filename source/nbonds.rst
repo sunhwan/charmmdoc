@@ -1,9 +1,9 @@
 
-Select
+NBONDS
 ====================================
 
 
-.. _syntax:
+.. _nbonds_syntax:
 
 Syntax
 ******

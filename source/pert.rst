@@ -3,8 +3,6 @@ Free Energy Perturbation Calculation
 ====================================
 
 
-.. toctree::
-
 .. _syntax:
 
 Syntax
