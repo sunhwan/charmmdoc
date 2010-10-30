@@ -96,6 +96,8 @@ The syntax of the commmand is :
   CRYStal BUILd CUTOff <real> NOPErations <int>
   ! <int> lines defining the symmmetry operations.
 
+.. index:: crystal; cutoff, keyword; cutoff
+
 The ``CUTOff`` parameter is used to determine the images which are included in the 
 transformation list. All those images which are within the cutoff distance are included in the list.
 
