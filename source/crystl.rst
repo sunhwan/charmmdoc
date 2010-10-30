@@ -70,6 +70,9 @@ following :
 Function
 --------
 
+.. index::
+   single: crystal build
+
 .. _crystal_build:
 
 Crystal Build
@@ -138,6 +141,9 @@ internal symmetry or in which a molecule is sited upon a symmetry point within t
 cell not all symmetry transformations for the crystal need to be input. Some will be 
 redundant. It is up to the user to check for these cases and modify the input accordingly.
 
+.. index::
+   single: crystal define
+   
 .. _crystl_define:
 
 Crystal Define
@@ -223,6 +229,9 @@ the next CHARMM run, or transferred using the FILE option on coordinate
 writing and reading.  Lattice parameters are stored in binary coordinate,
 dynamic trajectory, and restart files only.
 
+.. index::
+   single: crystal phonon
+   
 .. _crystl_phonon:
 
 Crystal Phonon
@@ -265,6 +274,9 @@ be performed on crystals of P1 symmetry. No information about the
 symmetry operations is used when generating the dynamical matrix.
 
 
+.. index::
+   single: crystal print
+
 .. _crystl_print:
 
 Crystal Print
@@ -288,6 +300,9 @@ eigenvectors and the Factor command gives the scale factor to multiply
 each normal mode by.
 
 
+.. index::
+   single: crystal read
+   
 .. _crystl_read:
 
 Crystal Read
@@ -305,6 +320,9 @@ transformation file is formatted so the ``Card`` keyword needs to be
 specified and the unit number must be given after the ``Unit`` keyword.
 
 
+.. index::
+   single: crystal vibration
+   
 .. _crystl_vibration:
 
 Crystal Vibration
@@ -330,6 +348,9 @@ is zero, i.e. when the equations are real. The procedure is invoked by the
    Crystal Vibration
 
 
+.. index::
+  single: crystal write
+  
 .. _crystl_write:
 
 Crystal Write
@@ -361,6 +382,9 @@ will have to write their own if they want to perform phonon
 calculations.
 
 
+.. index::
+   single: crystal minimization
+
 .. _crystl_minimization:
 
 Crystal Minimization
@@ -377,6 +401,7 @@ by itself is an error.
 
 It should be noted that when the lattice is being optimised the
 crystal symmetry is maintained. A cubic crystal will remain cubic, etc.
+
 
 .. _examples:
 
@@ -637,7 +662,7 @@ for phonon calculations.
 
 Symmetry can also be used to block the dynamical matrix into several
 smaller matrices each corresponding to a different symmetry species,
-thereby greatly reducing the time needed for diagonalisation and
+thereby greatly reducing the time needed for diagonalization and
 automatically helping to identify the normal modes. Symmetry blocking
 is not coded at the moment.
 
