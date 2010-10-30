@@ -9,6 +9,7 @@ It is possible to build a crystal with any space group symmetry, to optimize its
 lattice parameters and molecular doordinates and to carry out a vibrational analysis 
 using the options.
 
+.. index:: crystal; syntax
 .. _crystl_syntax:
 
 Syntax
@@ -70,10 +71,8 @@ following :
 Function
 --------
 
-.. index::
-   single: crystal build
-
-.. _crystal_build:
+.. index:: crystal; build
+.. _crystl_build:
 
 Crystal Build
 ^^^^^^^^^^^^^
@@ -141,9 +140,7 @@ internal symmetry or in which a molecule is sited upon a symmetry point within t
 cell not all symmetry transformations for the crystal need to be input. Some will be 
 redundant. It is up to the user to check for these cases and modify the input accordingly.
 
-.. index::
-   single: crystal define
-   
+.. index:: crystal; define
 .. _crystl_define:
 
 Crystal Define
@@ -229,9 +226,7 @@ the next CHARMM run, or transferred using the FILE option on coordinate
 writing and reading.  Lattice parameters are stored in binary coordinate,
 dynamic trajectory, and restart files only.
 
-.. index::
-   single: crystal phonon
-   
+.. index:: crystal; phonon
 .. _crystl_phonon:
 
 Crystal Phonon
@@ -274,9 +269,7 @@ be performed on crystals of P1 symmetry. No information about the
 symmetry operations is used when generating the dynamical matrix.
 
 
-.. index::
-   single: crystal print
-
+.. index:: crystal; print
 .. _crystl_print:
 
 Crystal Print
@@ -300,9 +293,7 @@ eigenvectors and the Factor command gives the scale factor to multiply
 each normal mode by.
 
 
-.. index::
-   single: crystal read
-   
+.. index:: crystal; read
 .. _crystl_read:
 
 Crystal Read
@@ -320,9 +311,7 @@ transformation file is formatted so the ``Card`` keyword needs to be
 specified and the unit number must be given after the ``Unit`` keyword.
 
 
-.. index::
-   single: crystal vibration
-   
+.. index:: crystal; vibration
 .. _crystl_vibration:
 
 Crystal Vibration
@@ -348,9 +337,7 @@ is zero, i.e. when the equations are real. The procedure is invoked by the
    Crystal Vibration
 
 
-.. index::
-  single: crystal write
-  
+.. index:: crystal; write
 .. _crystl_write:
 
 Crystal Write
@@ -382,9 +369,7 @@ will have to write their own if they want to perform phonon
 calculations.
 
 
-.. index::
-   single: crystal minimization
-
+.. index:: crystal; minimization
 .. _crystl_minimization:
 
 Crystal Minimization
@@ -403,6 +388,8 @@ It should be noted that when the lattice is being optimised the
 crystal symmetry is maintained. A cubic crystal will remain cubic, etc.
 
 
+.. index::
+   pair: examples; crystal
 .. _examples:
 
 Examples
@@ -420,16 +407,16 @@ L-Alanine. Briefly the jobs are:
    the experimental values for the lattice parameters.
 
 2. :download:`XTL_ALA2.INP </_downloads/testcases/xtlala1.inp>`
-
+      
    A crystal image file is generated for the crystal
    using a value of 10.0 Angstroms for the crystal
    cutoff.
 
 3. :download:`XTL_ALA3.INP </_downloads/testcases/xtlala1.inp>`
-
+      
    A coordinate and lattice minimization are performed
    for the crystal. The crystal image file from the
-   previous job is used and the optimised coordinates
+   previous job is used and the optimized coordinates
    are saved. The main point to note is that before
    using the crystal package for energy calculations
    and other manipulations that involve the image
@@ -440,7 +427,7 @@ L-Alanine. Briefly the jobs are:
    the subsequent input files.
 
 4. :download:`XTL_ALA4.INP </_downloads/testcases/xtlala1.inp>`
-
+      
    For subsequent calculations a coordinate file that
    contains the coordinates of all atoms (four
    molecules of L-alanine) is generated. A crystal
