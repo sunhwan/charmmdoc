@@ -9,7 +9,7 @@ It is possible to build a crystal with any space group symmetry, to optimize its
 lattice parameters and molecular doordinates and to carry out a vibrational analysis 
 using the options.
 
-.. _syntax:
+.. _crystl_syntax:
 
 Syntax
 ------
@@ -65,7 +65,7 @@ following :
 * Vibration: calculates the harmonic crystal frequencies when the wave vector is the zero vector.
 * Write: writes out to file various crystal information.
 
-.. _function:
+.. _crystl_function:
 
 Function
 --------
@@ -106,7 +106,7 @@ transformation list. All those images which are within the cutoff distance are i
 To generate a crystal file from a box with a single atom at the center, the cutoff value 
 will nee to be larger than the box dimensions.  If the box is filled with water and only 
 nearest neighbor cells are desired, then the cutoff distance should be comparable to the 
-``CUTIm`` value (see :ref:`Image Updates <image_update>` ) or the ``CUTNB`` value (see 
+``CUTIm`` value (see :ref:`Image Updates <images_update>` ) or the ``CUTNB`` value (see 
 :ref:`NBONDS Syntax <nbonds_syntax>`). There is no limit to the number of transformations 
 included in the lists as they are allocated dynamically, but having too many will slow the 
 image update step.
@@ -458,7 +458,7 @@ L-Alanine. Briefly the jobs are:
    original asymmetric unit and the first three of the
    images. If the coordinates of the atoms in all the
    images are required then the keyword ``NOINV`` in the
-   ``UPDATE`` command must be used (check :doc:`IMAGE.DOC <image>`).
+   ``UPDATE`` command must be used (check :doc:`IMAGE.DOC <images>`).
 
 5. :download:`XTL_ALA5.INP </_downloads/testcases/xtlala2.inp>`
 
@@ -542,12 +542,12 @@ There are a number of advantages:
 Although the crystal data structure and the values of the lattice
 parameters define the crystal the individual transformations have to be
 worked out explicitly in order to determine energies, harmonic frequencies
-and so on. In the present version of the program the :doc:`IMAGE <image>` facility is
-used, so that a new set of :doc:`IMAGE <image>` transformations are calculated from the
+and so on. In the present version of the program the :doc:`IMAGE <images>` facility is
+used, so that a new set of :doc:`IMAGE <images>` transformations are calculated from the
 crystal data structure as soon as a crystal is built or every time the
-lattice parameters are changed. The use of the :doc:`IMAGE <image>` facility means that
+lattice parameters are changed. The use of the :doc:`IMAGE <images>` facility means that
 the number of transformations that can be used is determined by the
-dimension of the :doc:`IMAGE <image>` arrays (``MAXTRN`` in ``DIMENS.FCM``).
+dimension of the :doc:`IMAGES <images>` arrays (``MAXTRN`` in ``DIMENS.FCM``).
 
 
 Crystal and Image Patching
