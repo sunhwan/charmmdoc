@@ -14,21 +14,57 @@ using the options.
 Syntax
 ------
 
-.. py:class:: CRYStal
+::
 
-   .. py:method:: BUILd_crystal [CUTOff <real>] [NOPErations <int>]
-   .. py:method:: DEFIne xtltype a b c alpha beta gamma
-   .. py:method:: FREE
-   .. py:method:: PHONon [NKPOints int] [KVECtor real real real TO real real real]
-   .. py:method:: VIBRation
-   .. py:method:: READ [CARD UNIT int] [PHONons UNIT int]
-   .. py:method:: PRINt [PHONons] [FACT real] [MODE int THRU int] [KPTS int TO int]
-   .. py:method:: WRITe [CARD UNIT int] [PHONons UNIT int] [VIBRations] [MODE int THRU int] [UNIT int]
+   CRYStal  [BUILd_crystal] [CUTOff real] [NOPErations int]
    
-.. productionlist::
-   xtltype: CUBIc | TETRagonal | ORTHorhombic | MONOclinic | TRIClinic | HEXAgonal | RHOMohedral | OCTAhedral | RHDO
-   a b c alpha beta gamma: (six real numbers)
+            [DEFIne xtltype a b c alpha beta gamma]
    
+            [FREE]
+   
+            [PHONon] [NKPOints int] 
+                     [KVECtor real real real TO real real real]
+   
+            [VIBRation]
+   
+            [READ] [CARD UNIT int]
+                   [PHONons UNIT int]
+   
+            [PRINt]
+            [PRINt] [PHONons] [FACT real] [MODE int THRU int] 
+                                          [KPTS int TO int]
+   
+            [WRITe] [CARD UNIT int]
+                    [PHONons UNIT int]
+                    [VIBRations] [MODE int THRU int] [UNIT int]
+   
+   
+   xtltype ::=    { CUBIc          }
+                  { TETRagonal     }
+                  { ORTHorhombic   }
+                  { MONOclinic     }
+                  { TRIClinic      }
+                  { HEXAgonal      }
+                  { RHOMohedral    }
+                  { OCTAhedral/trnc}
+                  { RHDO           }
+
+   a b c alpha beta gamma ::= (six real numbers)
+   
+The crystal module is an extension of the image facility
+within the CHARMM program.  All crystal commands are invoked by the
+keyword CRYStal.  The next word on the command line can be one of the
+following :
+
+* Build: builds a crystal.
+* Define: defines the lattice type and constants of the crystal to be studied.
+* Free: clear the crystal and image facility.
+* Phonon: calculates the crystal frequencies for a single value or a range of values of the wave vector, KVEC.
+* Print: prints various crystal information.
+* Read: reads the crystal image file.
+* Vibration: calculates the harmonic crystal frequencies when the wave vector is the zero vector.
+* Write: writes out to file various crystal information.
+
 .. _function:
 
 Function
