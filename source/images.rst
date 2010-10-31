@@ -25,7 +25,6 @@ Charles L. Brooks, III at the Scripps Research Institute as of Spring
 1995.
 
 .. index:: image; read
-
 .. _images_read:
 
 Image Transformation File
@@ -114,7 +113,6 @@ can easily be increased.
 
 
 .. index:: image; write
-
 .. _images_write:
 
 Image Writing and Printing
@@ -145,6 +143,7 @@ estimate the pressure of a system, or to check if minimization is
 complete. At the end, the total force (vector sum) and torques are
 listed.
 
+.. index:: image; update
 .. _images_update:
 
 Image Updating
@@ -178,7 +177,7 @@ to use during dynamics or minimization. For setting up a single image
 update, any positive value may be used. When negative value was used,
 e.g., ``INBFRQ = -1``, all lists are updated when necessary (heuristic test).
 
-.. index:: keyword; cutim, keyworkd; imbrief, image; imall
+.. index:: keyword; cutim, keyword; imbrief, keyword; imall
 
 The :chm:`CUTIm` value gives the maximum
 allowable distance of any group to be included in the image atom lists.
@@ -207,7 +206,7 @@ The sequence of events in this update are;
 The INVErse and NOINverse options are internal and neither
 should be specified under normal circumstances.
 
-
+.. index:: image; patch
 .. _images_patching:
 
 Image Structure File Patching
@@ -240,6 +239,7 @@ the current IC table.
 
 The :chm:`WARN` makes all errors nonfatal and lists errors.
 
+.. index:: image; center
 .. _images_centering:
 
 Image Centering
@@ -295,6 +295,7 @@ The command;
    The IMAGE command will need to be reissued if image centering is desired.
 
 
+.. index:: image; operation
 .. _image_operation:
 
 Image Operation
@@ -303,6 +304,7 @@ Image Operation
 The IMAGE routines in CHARMM can be classified into five sections.
 
 These catagories are :
+
 * Set up images -IMREAD, REIMAG, INIMAG, IMPATC, IMATOM, IMSPEC
 * Update image arrays - UPIMAG, IMCENT, MKIMAT, IMMAP, MKIMNB
 * Set up energy lists - IMHBON, NEWHBL, IMHBFX, NBONDM
@@ -310,7 +312,7 @@ These catagories are :
 * Print out - IMWRIT, IMPSFW
 
 The first category involves reading the image file (IMREAD) and
-setting up the data structure (REIMAG,INIMAG). In the section are also
+setting up the data structure (REIMAG, INIMAG). In the section are also
 the routines involving image patching and setting up the centering options.
 
 The second category concerns itself with the selection of
@@ -324,7 +326,7 @@ and image atoms.
 
 The fourth category is concerned with the computation of energy
 terms. For the actual computation of energy, standard routines are used
-(ENBOND,EHBOND,ENST2) with a modified calling sequence. The procedure
+(ENBOND, EHBOND, ENST2) with a modified calling sequence. The procedure
 used is:
 
 1. Compute coordinates for all image atoms
@@ -344,7 +346,7 @@ Since there is no treatment of the second derivative of the
 energy for image atoms, The procedures involving Newton-Raphson
 minimizations and vibrational analysis should be avoided (see :doc:`energy`).).
 
-
+.. index:: image; bound
 .. _images_mipb:
 
 Simple periodic boundaries
