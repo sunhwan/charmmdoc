@@ -16,21 +16,22 @@ For infinite systems, an asymmetric unit may be studied because
 rotations and reflections are allowed transformations.
 
 The IMAGE facility is invoked by reading an image transformation
-file.  From this point, the images of the primary atoms will be included
+file. From this point, the images of the primary atoms will be included
 in any energy and force determinations for the remainder of the calculation.
-A null image file with the ``INIT`` keyword will disable this facility.
+A null image file with the :chm:`INIT` keyword will disable this facility.
 
 The simple periodic boundary code is underdevelopment by
 Charles L. Brooks, III at the Scripps Research Institute as of Spring
 1995.
 
 .. index:: image; read
+
 .. _images_read:
 
 Image Transformation File
 -------------------------
 
-The IMAGE file contains all of the information needed to define
+The image transformation file contains all of the information needed to define
 the position and orientation of all symmetric images of the primary atoms.
 The file is read in free field and may be passed parameters.
 
@@ -52,61 +53,47 @@ File Structure:
    NEGAte                                  ! invert through origin
    END                                     ! terminates transformation file
 
-.. index:: image; init, image; print
-
 When an image file is read, any existing image transformations
 are discarded, but not any information regarding image patching.
-The ``INIT`` keyword on reading will remove ALL existing image data first.
-Rereading an image transformation file without the ``INIT`` keyword is
+The :chm:`INIT` keyword on reading will remove ALL existing image data first.
+Rereading an image transformation file without the :chm:`INIT` keyword is
 useful when crystal parameters are to be modified, but the patching
-data is to be retained. The ``PRINT`` option, prints all data as it is read.
+data is to be retained. The :chm:`PRINT` option, prints all data as it is read.
 
 The image file starts with a standard CHARMM title. The remaining
 commands are processed sequentially.
 
-.. index:: image; scale
-
-The ``SCALE`` command gives three values which multiply all
+The :chm:`SCALE` command gives three values which multiply all
 subsequent transformation specifications. The default values are unity.
 
-.. index:: image; image
-
-The ``IMAGE`` command initiates a new image transformation. The
+The :chm:`IMAGE` command initiates a new image transformation. The
 transformation matrix is set to unity (no rotation, no translation).
 This transformation matrix is then modified by subsequent commands until
-another :command:`IMAGE` commmand or the :command:`END` command is found.
+another :chm:`IMAGE` commmand or the :chm:`END` command is found.
 
-The :command:`DEFIne` command multiplies the current transformation matrix
+The :chm:`DEFIne` command multiplies the current transformation matrix
 by any of the previously defined images. The :keyword:`INVErse` keyword proceeding
 the other transformation name, uses the inverse of this transformation.
 Any number of previous transformations may be listed with this command,
 but they are processed sequentially (just in case they don't commute).
 
-.. index:: image; rotate
-
-The ``ROTAte`` command causes the current transformation matrix
+The :chm:`ROTAte` command causes the current transformation matrix
 to be operated with a rotation. Four real numbers must follow which
 define a rotation axis and an angle about this axis (in degrees).
 
-.. index:: image; translation
-
-The ``TRANslation`` command will translate the current transformation
+The :chm:`TRANslation` command will translate the current transformation
 matrix. If three values are specified, then this is used as the translation
 vector. If four values are given, then the first three define a direction,
 and the fourth value defines a distance. Before operating on the
 transformation matrix, the elements of this vector are multiplied by
-the current scale factors (from last ``SCALe`` command).
+the current scale factors (from last :chm:`SCALe` command).
 
-.. index:: image; negate
-
-The ``NEGAte`` command projects the current transformation through
+The :chm:`NEGAte` command projects the current transformation through
 the origin. This operation changes the chirality of the system, and
 is not appropriate for macromolecules. This operation is required
 for simulations with glide planes.
 
-.. index:: image; end
-
-The ``END`` command is used to terminate the IMAGE file. This is
+The :chm:`END` command is used to terminate the IMAGE file. This is
 required if the file is read from the input stream.
 
 .. warning::
@@ -124,7 +111,9 @@ required if the file is read from the input stream.
 
 The maximum number of allowed transformations is 100. This limit
 can easily be increased.
-
+
+
+.. index:: image; write
 
 .. _images_write:
 
@@ -140,17 +129,17 @@ These are used for analysis and to check the operation of the program.
                  { PSF               }
                  { FORCes            }
 
-The ``TRANsformation`` option will list all image transformation
+The :chm:`TRANsformation` option will list all image transformation
 matricies as well as what the inverse transformations are.
 For each transformation, there is given a 3 X 3 rotation matrix followed
 by the translation vector. For the use in this program the translation
 is done **AFTER** the rotation has been made.
 
-The ``PSF`` option, lists information about the image atoms as
+The :chm:`PSF` option, lists information about the image atoms as
 well as list all primary-image internal coordinates (bonds, angles,
 dihedrals, and improper dihedrals).
 
-The ``FORCe`` option, lists the total force and torque each image
+The :chm:`FORCe` option, lists the total force and torque each image
 transformation applies on the primary atoms. This data may be used to
 estimate the pressure of a system, or to check if minimization is
 complete. At the end, the total force (vector sum) and torques are
@@ -161,8 +150,10 @@ listed.
 Image Updating
 --------------
 
+.. index:: keyword; ixtfrq, keyword; imgfrq
+
 The crystal build procedure has to be done prior to image, nonbond or
-hydrogen bond updating with ``IXTFrq`` frequency - it can be also done manually
+hydrogen bond updating with :chm:`IXTFrq` frequency - it can be also done manually
 by issuing :ref:`crystl_build` command. Actually first time is has to be done
 manually to read parameters associated with crystal build command.
 
@@ -178,17 +169,18 @@ results may affect those updates.
    { IMGFrq  0                                      } ! suppress image updating
 
 
-The absence of the :keyword:`IMGFrq` keyword, maintains the current status
-of image updating. Specifying an ``IMGFrq`` value of zero, suppresses all
+The absence of the :chm:`IMGFrq` keyword, maintains the current status
+of image updating. Specifying an :chm:`IMGFrq` value of zero, suppresses all
 image update functions, but does not modify the image lists in any way.
 
-The ``IMGFrq`` integer value gives the frequency of image updating
+The :chm:`IMGFrq` integer value gives the frequency of image updating
 to use during dynamics or minimization. For setting up a single image
-update, any positive value may be used;
-``INBFRQ = -1`` --> all lists are updated when necessary (heuristic test).
-the update frequence based on a heuristic algorithm.
+update, any positive value may be used. When negative value was used,
+e.g., ``INBFRQ = -1``, all lists are updated when necessary (heuristic test).
 
-The ``CUTIm`` value gives the maximum
+.. index:: keyword; cutim, keyworkd; imbrief, image; imall
+
+The :chm:`CUTIm` value gives the maximum
 allowable distance of any group to be included in the image atom lists.
 Normally, a group is included only if it belongs to a transformation
 whose inverse transformation is of a higher index than its own.
@@ -197,9 +189,9 @@ and any image interaction between primary atoms and image atoms of a
 higher inverse index will already be computed. This efficiency consideration
 greatly reduces the required number of image atoms and the size of the
 image nonbond lists. This reduction is activated by the use of the
-``IMBRief`` option (default). If on the other hand, one desires these groups for
+:chm:`IMBRief` option (default). If on the other hand, one desires these groups for
 the purpose of analysis or for displays, the IMALL keyword may be used
-to generate all image atoms within the ``CUTIM`` distance.
+to generate all image atoms within the :chm:`CUTIM` distance.
 
 The sequence of events in this update are;
 
@@ -232,21 +224,21 @@ atoms and image atoms. This allows the simulation of infinite
 The patch_residue must be present in the topology file and
 the syntax of this patch residue is identical to ordinary patching
 (see :ref:`struct_patch`), with the restrictions
-that the ATOM, DONOr, and ACCEptor specifications may not be used.
+that the :chm:`ATOM`, :chm:`DONOr`, and :chm:`ACCEptor` specifications may not be used.
 Atom characteristics may not be modified with this command. The donor
 and acceptor status of any image atom must match that of the
-corresponding primary atom. The patching spcifications that are
-recognised are; BOND, ANGLe, DIHEdral, IMPHi, and IC (internal
+corresponding primary atom. The patching specifications that are
+recognized are; :chm:`BOND`, :chm:`ANGLe`, :chm:`DIHEdral`, :chm:`IMPHi`, and :chm:`IC` (internal
 coordinates)
 
-A residue specification is required for each used in the PRES.
+A residue specification is required for each used in the :chm:`PRES`.
 These are specified by three names, (1) the image name (for primary
-atoms the name "PRIM" must be used), (2) the segid, and (3) the resid.
+atoms the name :chm:`PRIM` must be used), (2) the segid, and (3) the resid.
 
-The SETUp keyword causes all PRES IC table entries to be added to
+The :chm:`SETUp` keyword causes all :chm:`PRES IC` table entries to be added to
 the current IC table.
 
-The WARN makes all errors nonfatal and lists errors.
+The :chm:`WARN` makes all errors nonfatal and lists errors.
 
 .. _images_centering:
 
@@ -269,21 +261,21 @@ During dynamics, a particular water may become far from
 the rest of the primary structure. The centering features allows one of its
 image (the one closest to the primary space) to become the primary water.
 
-It is also useful when setting up a crystal calulation. With a single
+It is also useful when setting up a crystal calculation. With a single
 update, the "best" image choice of all solvent molecules may be made.
 One example of this is the netropsin crystal where one of the published
 sulfate groups is quite far from the primary netropsin. This command is
 required for a pure solvent simulation where solvent can freely diffuse.
 
 The execution of this command only sets up data used during the image
-update. There is only one value each for XCEN, YCEN, and ZCEN. If these
-values are not specified in any IMAGE command, then they are not modified
+update. There is only one value each for :chm:`XCEN`, :chm:`YCEN`, and :chm:`ZCEN`. If these
+values are not specified in any :chm:`IMAGE` command, then they are not modified
 (default 0.0).
 
 For each atom, there is a flag specifying the manner of image
 centering to be used. Each invocation of the IMAGE command may modify these
-flags. The default is FIXEd (don't center this atom). The BYSEgment option
-will center an entire segement as a group (providing it has no FIXED atoms).
+flags. The default is :chm:`FIXEd` (don't center this atom). The :chm:`BYSEgment` option
+will center an entire segment as a group (providing it has no FIXED atoms).
 The remaining commands will allow certain other groups of atoms to be
 centered as a group. It wouldn't work well if only one part of a molecule
 was centered (there is no checking for this!).
@@ -311,13 +303,13 @@ Image Operation
 The IMAGE routines in CHARMM can be classified into five sections.
 
 These catagories are :
-* Set up images -IMREAD,REIMAG,INIMAG,IMPATC,IMATOM,IMSPEC
-* Update image arrays - UPIMAG,IMCENT,MKIMAT,IMMAP,MKIMNB
-* Set up energy lists - IMHBON,NEWHBL,IMHBFX,NBONDM
-* Compute image energy - EIMAGE,TRANSO,TRANSI
-* Print out - IMWRIT,IMPSFW
+* Set up images -IMREAD, REIMAG, INIMAG, IMPATC, IMATOM, IMSPEC
+* Update image arrays - UPIMAG, IMCENT, MKIMAT, IMMAP, MKIMNB
+* Set up energy lists - IMHBON, NEWHBL, IMHBFX, NBONDM
+* Compute image energy - EIMAGE, TRANSO, TRANSI
+* Print out - IMWRIT, IMPSFW
 
-The first catagory involves reading the image file (IMREAD) and
+The first category involves reading the image file (IMREAD) and
 setting up the data structure (REIMAG,INIMAG). In the section are also
 the routines involving image patching and setting up the centering options.
 
@@ -326,11 +318,11 @@ image groups are to be kept. This selection process is repeated each
 image update. Also done, is the centering, PSF remapping (if the atom list
 has changed), and the generation of the image exclusion lists.
 
-The third catagory in addition to finding the energy terms codes,
+The third category in addition to finding the energy terms codes,
 also generates the nonbond and hydrogen bond lists between primary
 and image atoms.
 
-The fourth catagory is concerned with the computation of energy
+The fourth category is concerned with the computation of energy
 terms. For the actual computation of energy, standard routines are used
 (ENBOND,EHBOND,ENST2) with a modified calling sequence. The procedure
 used is:
@@ -383,30 +375,30 @@ M. P. Allen and D. J. Tildesley, Computer Simulation of Liquids, Ch. 1.
            RHBOUN = Two dimensional RHomboidalBOUNd
            CUBOUN =                      CUbicBOUNd
 
-and BOXL <real> (or XSIZe) and CUTNB <real> are required.
-XSIZe, YSIZe, and ZSIZe are the edgelengths in the x,y, and z-directions.
-If YSIZe is not specified it is assumed to equal XSIZe (or BOXL), and
-if ZSIZe is not specified it is assumed to equal YSIZe.
+and ``BOXL <real>`` (or :chm:`XSIZe`) and ``CUTNB <real>`` are required.
+:chm:``XSIZe``, :chm:``YSIZe``, and :chm:``ZSIZe`` are the edgelengths in the x, y, and z-directions.
+If :chm:`YSIZe` is not specified it is assumed to equal :chm:`XSIZe` (or :chm:`BOXL`), and
+if :chm:`ZSIZe` is not specified it is assumed to equal :chm:`YSIZe`.
 
 .. warning::
    Image centering and definition of the image transformations
    through the READ IMAGE and IMAGE centering must be used in conjunction
-   with this command.  Mmoving the commands to be available in other fast
+   with this command.  Moving the commands to be available in other fast
    implementations, i.e., in vector codes, will follow shortly.
 
 The basic code is implemented following the outline:
  
-1. Parse the control variables based upon the keyword BOUNd, which set
+1. Parse the control variables based upon the keyword :chm:`BOUNd`, which set
    the control flags to be set.  These flags turn off the existing
    image generation code during run time.  Control is passed back to
    the CHARMM level, and the program continues.
 
-2. Do not generate image atoms to add to the PSF.  When UPIMAGE 
-   is called, skip MKIMAT.  Set the completion flag in NBONDM.
+2. Do not generate image atoms to add to the PSF.  When :chm:`UPIMAGE` 
+   is called, skip :chm:`MKIMAT`.  Set the completion flag in :chm:`NBONDM`.
  
 3. During the generation of the nonbonded list use the MI
-   in NBONDG to get correct pairs onto the list.
+   in :chm:`NBONDG` to get correct pairs onto the list.
 
 4. During the calculation of the nonbonded energies in 
-   ENBFAST, adjust the distances suing MI to get the correct
+   :chm:`ENBFAST`, adjust the distances suing MI to get the correct
    VDW and Elec energies.
