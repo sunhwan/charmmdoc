@@ -57,14 +57,14 @@ within the CHARMM program.  All crystal commands are invoked by the
 keyword CRYStal.  The next word on the command line can be one of the
 following :
 
-* Build: builds a crystal.
-* Define: defines the lattice type and constants of the crystal to be studied.
-* Free: clear the crystal and image facility.
-* Phonon: calculates the crystal frequencies for a single value or a range of values of the wave vector, KVEC.
-* Print: prints various crystal information.
-* Read: reads the crystal image file.
-* Vibration: calculates the harmonic crystal frequencies when the wave vector is the zero vector.
-* Write: writes out to file various crystal information.
+* :ref:`Build <crystl_build>`        : builds a crystal.
+* :ref:`Define <crystl_define>`      : defines the lattice type and constants of the crystal to be studied.
+* :ref:`Free <crystl_free>`          : clear the crystal and image facility.
+* :ref:`Phonon <crystl_phonon>`      : calculates the crystal frequencies for a single value or a range of values of the wave vector, KVEC.
+* :ref:`Print <crystl_print>`        : prints various crystal information.
+* :ref:`Read <crystl_read>`          : reads the crystal image file.
+* :ref:`Vibration <crystl_vibration>`: calculates the harmonic crystal frequencies when the wave vector is the zero vector.
+* :ref:`Write <crystl_write>`        : writes out to file various crystal information.
 
 .. _crystl_function:
 
@@ -160,57 +160,57 @@ The input lattice parameters are checked against the lattice-type to
 ensure that they are compatible. Nine lattice types are permitted. They
 are listed below along with any restrictions on the lattice parameters:
 
-   CUBIc
+   :chm:`CUBIc`
       | a = b = c and alpha = beta = gamma = 90.0 degrees.
       | (example:  50.0 50.0 50.0 90.0 90.0 90.0 )
       | (volume = a**3)
       | (degrees of freedom = 1)
    
-   TETRagonal
+   :chm:`TETRagonal`
       | a = b and alpha = beta = gamma = 90.0 degrees.
       | (example:  50.0 50.0 40.0 90.0 90.0 90.0 )
       | (volume = c*a**2)
       | (degrees of freedom = 2)
 
-   ORTHorhombic
+   :chm:`ORTHorhombic`
       | alpha = beta = gamma = 90.0 degrees.
       | (example:  50.0 40.0 30.0 90.0 90.0 90.0 )
       | (volume = c*b*a)
       | (degrees of freedom = 3)
 
-   MONOclinic
+   :chm:`MONOclinic`
       | alpha = gamma = 90.0 degrees.
       | (example:  50.0 40.0 30.0 90.0 70.0 90.0 )
       | (volume = c*b*a*sin(beta) )
       | (degrees of freedom = 4)
 
-   TRIClinic
+   :chm:`TRIClinic`
       | no restrictions on a, b, c, alpha, beta or gamma.
       | (example:  50.0 40.0 30.0 60.0 70.0 80.0 )
       | (volume = c*b*a*sqrt(1.0 - cos(alpha)**2 - cos(beta)**2 -
       |     cos(gamma)**2 + 2.0*cos(alpha)*cos(beta)*cos(gamma)) )
       | (degrees of freedom = 6)
 
-   HEXAgonal
+   :chm:`HEXAgonal`
       | a = b,  alpha = beta = 90.0 degrees and gamma = 120.0
       | (example:  40.0 40.0 120.0 90.0 90.0 120.0 )
       | (volume = sqrt(0.75)*c*a**2 )
       | (degrees of freedom = 2)
 
-   RHOMbohedral
+   :chm:`RHOMbohedral`
       | a = b = c ; alpha=beta=gamma<120  (trigonal)
       | (example:  40.0 40.0 40.0 67.0 67.0 67.0 )
       | (volume = a**3*(1.0-cos(alpha))*sqrt(1.0+2.0*cos(alpha)) )
       | (degrees of freedom = 2)
 
-   OCTAhedral (a.k.a truncated octahedron)
+   :chm:`OCTAhedral` (a.k.a truncated octahedron)
       | a = b = c, alpha = beta = gamma = 109.4712206344907  
       | (example:  40.0 40.0 40.0 109.471220634 109.471220634 109.471220634 )
       | (volume = 4*sqrt(3))/9 * a**3 )
       | (truncated cube length = a * sqrt(4/3) )
       | (degrees of freedom = 1)
 
-   RHDO (Rhombic Dodecahedron)
+   :chm:`RHDO` (Rhombic Dodecahedron)
       | a = b = c, alpha = gamma = 60.0 and beta = 90.0
       | (example:  40.0 40.0 40.0 60.0 90.0 60.0 )
       | (volume = sqrt(0.5) * a**3 )

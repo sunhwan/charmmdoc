@@ -13,6 +13,7 @@ Menu:
 .. toctree::
    :maxdepth: 1
    
+   Documentation <contents>
    Discription and syntax of CHARMM commands <commands>
 
 Indices and tables
