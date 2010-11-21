@@ -1,0 +1,279 @@
+CHARMM Element doc/mscale.doc $Revision: 1.1 $
+
+File: Mscale, Node: Top, Up: (chmdoc/commands.doc), Next: Syntax
+
+                     Multi Scale Command: MSCALE
+
+         The multiscale command causes CHARMM to run several
+independent but connected calculations using subsystems. The
+calculations can use either CHARMM or other programs with a consistent
+interface.
+
+                 by Milan Hodoscek and Bernard Brooks
+
+
+* Menu:
+
+* Syntax::              Syntax of the mscale specification
+* Examples::            Examples to run the MSCAle command
+* Notes::               Notes abot the MSCAle command
+
+
+File: Mscale, Node: Syntax, Up: Top, Next: Examples, Previous: Top
+
+[SYNTAX MSCAle]
+
+Main script commands:
+
+MSCAle [ NSUBsystems integer ]
+
+SUBSystem keyname [ PROGram filename ]  [ CRYStal ]  [ATOM]  -
+                      [ NPROC integer ] [ FNPR integer ] atom-selection -
+                   [ COEFf   real ]  [ LAMBda ]  [ MLAMbda ] -
+                     [ INPUt filename ] [ OUTPut filename ]
+
+SYSDisplay
+
+END
+
+Subsystem commands:
+
+SERVer [ NCALls integer ] [ ATOM ] [ CRYStal ]
+
+Meaning of individual keywords:
+
+SUBSystem        - Create a new subsystem
+NSUBS     	 - the number of SUBSystems to be setup
+keyname          - Always read but currently not used for further usage in the
+                    code. Must follow immediately the SUBSystem keyword.
+                    This is the name of the subsystem.
+COEFf real       - coefficient with which to scale the energy/forces
+                    of this subsystem
+LAMBda           - Also scale by PERT's lambda value
+MLAMbda          - Also scale by PERT's 1-lambda value
+ATOM             - Flag to decide on communication of atom data:
+                    number of atoms in this subsystem and their atomic
+                    numbers in floating point format
+NPROC            - How many processes this subsystem will use. eg
+                    semipempirical methods 1, since they are not
+                    parallel, but ab initio and some MM methods can use
+                    parallel here.
+FNPRoc           - Forward this number to the program which is run
+                    through the interface in CALL SYSTEM(). Only works
+                    with ATOM flag!
+
+The folowing 3 keywords must be specified. There are no defaults for them!
+
+PROGram          - the filename of the program to execute for this subsystem
+
+INPUt            - the filename of the script to run on the subsystem
+
+OUTPut           - the filename of the output from the program
+
+CRYStal          - communicate also crystal data and the virial. Must
+                   be specified also on the server command
+
+SYSDisplay       - Display the info about the whole setup
+
+END              - Must be specified to end the MSCAle block.
+
+SERVer           - Put CHARMM in server mode.
+
+NCALLs integer   - Number of energy calls in server mode before going
+                    to next CHARMM command in the server script.
+                    If the number is not specified, the command will
+                    run until the client terminates.
+
+
+
+File: Mscale, Node: Examples, Up: Top, Next: Notes, Previous: Syntax
+
+EXAMPLE 1: Typical input for substraction method (ONIOM):
+
+Main script:
+
+READ/GENERATE PSF
+READ PARAM
+READ COOR
+
+MSCAle NSUBs 2
+
+SUBSystem high coef 1.0 program "charmm" input "sub1.inp" -
+          output "sub1.out"  sele resid 4 end
+
+SUBSystem low coef -1.0 program "charmm" input "sub2.inp" -
+          output "sub2.out"  sele resid 4 end
+
+END
+
+DYNA ....
+
+
+Subsystem 1 (sub1.inp)
+
+READ/GENERATE PSF for one residue
+READ PARAM (one kind of parameters)
+READ COOR
+NBONDS
+SERVER
+
+Subsystem 2 (sub2.inp)
+
+READ/GENERATE PSF for one residue
+READ PARAM (different kind of parameters than in one)
+READ COOR
+NBONDS
+SERVER
+
+
+
+File: Mscale, Node: Notes, Up: Top, Next: Interfaces, Previous: Examples
+
+Miscellaneous Notes:
+
+I.
+
+To dynamically start new processes in parallel MPI-2 standard is used,
+namely MPI_COMM_SPAWN routine. It is availalble in OpenMPI library
+(currently in use) and MPICH-2. MPICH-2 has some problems with
+standard I/O so it is not recommended for use as of June 2007.
+
+
+II.
+
+Matrices for coefficients in substraction methods:
+
+L=low level theory, H=high level theory
+B=big system, S=small system
+
+     B    S
+L    1   -1
+
+H    0    1
+
+If you have 3 levels:L, M, H, and 3 reagions B, M, S: B > M > S!
+
+     B    M    S
+L    1   -1    0
+
+M    0    1   -1
+
+H    0    0    1
+
+III.
+
+How to do the additive methods ?
+
+
+File: Mscale, Node: Interfaces, Up: Top, Next: Top, Previous: Notes
+
+MSCAle Interfaces contributed by: H. Lee Woodcock (hlwood-at-nih-dot-gov),
+Joseph D. Larkin (jlarkin-at-bloomu-dot-edu), and Milan Hodoscek
+(milan-at-cmm-dot-ki-dot-si).
+
+Currently four (4) external QM programs are interfaced to CHARMM via the
+MSCAle command. These programs are in addition to the currently supported
+QM packages that are interfaced with CHARMM (GAMESS, GAMESS-UK, Q-Chem,
+SCC-DFTB, ect.).
+
+1. NWChem         (http://www.emsl.pnl.gov/docs/nwchem/nwchem.html)
+2. MOLPRO         (http://www.molpro.net/)
+3. PSI 3          (http://www.psicode.org/) License:(GPL)
+4. GAUSSIAN 03    (http://www.gaussian.com/)
+
+Support for additional QM packages is underway and will be added in the 
+future. To request support for a particular package please contact 
+H. Lee Woodcock, Joseph D. Larkin, or Milan Hodoscek.
+
+Below are examples of how to run the various QM packages via MSCAle. All 
+packages require a control file that dictates the options to be passed 
+to the individual package. 
+
+-----------------------------------------------------------------------------
+
+1. NWChem: Here is an example of control file that is needed for a NWChem 
+calculation... 
+
+title "for interface"
+
+basis "ao basis"
+ * library "6-31g*"
+end
+
+geometry  noautosym
+
+end
+
+task dft gradient
+
+task shell "/bin/rm -f sys1.b sys1.b^-1 sys1.c sys1.db"
+task shell "/bin/rm -f sys1.gridpts.0 sys1.grinfo.0"
+task shell "/bin/rm -f sys1.movecs sys1.p sys1.zmat"
+
+-----------------------------------------------------------------------------
+
+2. MOLPRO: Here is an example of control file that is needed for a MOLPRO 
+calculation...
+
+***Title
+memory,1,m
+
+SET,CHARGE=0
+BASIS=sto-3g
+
+thresh,energy=1.d-10
+hf
+optg,maxit=0,coord=cart,startcmd=hf
+
+-----------------------------------------------------------------------------
+
+This file will perform a single SCF analytic gradient calculation. If a method 
+that does not support analytic gradients (i.e. CCSD(T)) is desired the "optg" 
+line must be changed to read like the following line:
+
+optg,numerical,maxit=0,coord=cart,displace=cart,startcmd=hf
+
+The correct geometry section will be written with the correct keywords immediately 
+following the line containing the "memory" specification.
+
+-----------------------------------------------------------------------------
+
+3. PSI 3: Here is an example of control file that is needed for a PSI 3 
+calculation...
+
+psi: (
+  label = "Title"
+  no_reorient=true
+  subgroup=c1
+  jobtype = sp
+  wfn = scf
+  reference = rhf
+  dertype = first
+  basis = "STO-3G"
+  geometry = (
+ )
+)
+
+In this case the "no_reorient" keyword must be used to keep all forces in the 
+correct reference frame. The current molecular geometry will be placed automatically 
+in the "geometry" section.
+
+-----------------------------------------------------------------------------
+
+4. Gaussian 03: Here is an example of control file that is needed for a G03 
+calculation...
+
+%mem=100MB
+%NProcShared=2
+%NProcLinda=4
+#HF/sto-3g FORCE NOSYMM
+
+***user specified title
+
+0 1
+-----------------------------------------------------------------------------
+
+Here it should be noted the last line in the control file should be the spin 
+and multiplicity specifications. i.e. there should be no blank line at the 
+end of this control file as there is in a typical gaussian input file as the 
+current geometry will be appended and the final blank line inserted afterwards.

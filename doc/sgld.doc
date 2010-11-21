@@ -1,0 +1,184 @@
+CHARMM Element doc/dynamc.doc $Revision: 1.3 $
+
+File: Sgld, Node: Top, Up: (chmdoc/commands.doc), Next: Syntax
+
+
+                 Self-Guided Langevin Dynamics (SGLD) simulation
+
+                      By Xiongwu Wu and Bernard R. Brooks
+
+
+     A SGLD simulation enhances conformational search efficiency through
+acceleration of systematic motions in a molecular system.  The systematic 
+motion represents the slow conformational change that contributes the most 
+in conformational search.  A guiding force in the direction of the systematic
+motion, which is calculated as a local average of velocities, is introduced 
+into the equation of motion to enhance the systematic motion.  It has been
+demonstrated that within the suggested parameter range, a SGLD simulation 
+has a dramatically enhanced conformational search efficiency while has little
+perturbation on conformational distribution.  More details are described in 
+the paper: 
+     "Self-guided Langevin dynamcs simulation method", Chem. Phys. Letter, 
+381, 512-518(2003).
+
+     The SGLD algorithm is developed based on a previously developed 
+self-guided molecular dynamics simulation method, which employs a local 
+average of nonbonded interaction forces as the guiding force.  The 
+force-based guiding force correlates with the energy surface that may 
+change the conformational distribution.  The SGLD method uses a local 
+average of velocities to calculate the guiding force, and overcomes the
+disadvantage of the old method.  When SGLD is used without friction, we 
+refer to this method as SGMD.  Please be not confused with the 
+force-based self-guided molecular dynamics method.
+
+     Two parameters, the guiding factor, SGFT, and the local average time,
+TSGAVG, define the guiding effect in a SGLD simulation. A larger TSGAVG will
+result in a slower motion to be enhanced.  A larger SGFT will introduce 
+stronger guiding forces and result in a larger energy barrier overcoming
+ability.  When SGFT=0, a SGMD/SGLD simulaiton reduces to a normal MD/LD
+simiulation.  SGFT should be limited to keep systematic motion very small 
+as compared with thermo-motions like vibration, so that all degrees of 
+freedom retain their kinetic energies.  
+
+     To avoid the difficulty in chosing the value of SGFT, a parameter 
+called guiding temperature (TEMPSG) is introduced. TEMPSG set the 
+perturbation limit that a guiding force may cause to a simulation system.  
+The guiding force will cause less perturbation than rising the temperature 
+by TEMPSG degrees.  Normally, TEMPSG=1 K can provide significant enhancement 
+in conformational search, while cause a perturbation less than rising the
+temperature by 1 degree. A larger TEMPSG results in more accelaration in 
+slow motion.  When TEMPSG=0, a constant guiding factor, SGFT, will apply.
+When TEMPSG>0, the guiding factors are calculated according to TEMPSG during
+a SGMD/SGLD simulation.  A user can monitor the instant SGFT and TEMPSG in
+CHARMM output by setting PRNLEV>4.  
+
+
+* Menu:
+
+* Syntax::              Syntax of the SGLD dynamics command
+* Examples::            SGLD usage examples
+
+
+File: Sgld, Node: Syntax, Up: Top, Previous: Top, Next: Examples
+
+[Syntax SGLD]
+
+DYNAmics {LEAP {[LANG SGLD]}           }  ! SGLD simulation
+         {     {[CPT  SGMD]}           }  ! SGMD simulation for a NPT ensemble
+         {     {[     SGMD]} sgld-spec]}  ! SGMD simulation for a NVE ensemble
+         {                             }  other-dynamic-spec 
+
+
+sgld-spec::=[TSGAVG real] [TSGAVP real] {[TEMPSG real]} [SGMV] [ISGSTA] [ISGEND]
+                                        {[SGFT real]  } 
+
+Keyword  Default  Purpose
+
+SGLD     false    Turn on SGLD simulation (for Langevin dynamics, LANG). 
+                  Friction constants, FBETA, must be set at first.
+
+SGMD     false    Turn on SGMD simulation (for MD simulations)
+
+TSGAVG   0.2 ps   Local average time. A larger TSGAVG will result in slower 
+                  motion to be enhanced. All motions with periods larger than
+		  TSGAVG will be enhanced.
+
+TSGAVP   10 ps    Guiding effect average time. This time is used to calculate
+                  averages to estimate SGFT from TEMPSG. A larger TSGAVP will
+		  result in a slower flucturation of SGFT.
+
+TEMPSG   1.0 K    Guiding temperature. TEMPSG>0 will override SGFT.  TEMPSG
+                  set the perturbation limit a guiding force may cause to a
+		  simulation system.  The guiding force will cause less
+		  perturbation than rising the temperature by TEMPSG degrees.
+		  Normally, TEMPSG=1 K can provide significant enhancement in
+		  conformational search, while cause a perturbation less than
+		  rising the temperature by 1 degree. A larger TEMPSG results 
+		  in more accelaration in slow motion.  When TEMPSG is set, 
+		  the guiding factors, SGFT, are calculated accordingly in a
+		  SGMD/SGLD simulation. 
+
+SGFT     0.0      Guiding factor. When TEMPSG=0,  SGFT will be 
+                  constant throughout a simulation. When TEMPSG>0, 
+                  SGFT fluctuates during the simulation to maintain a guiding
+                  temperature of TEMPSG. If a constant SGFT simulation is
+                  desired, one can read the approximate values of SGFT from
+                  the output of a SGLD simulation with TEMPSG=1K.
+
+SGMV     false    Allow guiding force on the center of mass
+
+ISGSTA   1        The index of the first atom of the region to apply the 
+                  guiding force
+
+ISGEND   natom    The index of the last atom of the region to apply the 
+                  guiding force
+
+
+File: Sgld, Node: Examples, Up: Top, Previous: Syntax, Next: Top
+
+                        Examples
+
+1) SGLD simulation with default seting.
+
+! Set friction forces
+SCAL FBETA SET 1.0 SELE ALL END
+
+! Perform SGLD simulation
+DYNA LANG LEAP  STRT  NSTE 1000000 TIME 0.002  -
+   IPRFRQ 10000 ISVFRQ 1000 IHTFRQ 0 IEQFRQ 0 INBFRQ 10 IHBFRQ 0 -
+   IUNREA -1 IUNWRI 31 IUNCRD 32 IUNVEL 33 KUNIT -1 -
+   NSAVC 1000 NSAVV 00 NPRINT 1000 ISEED 314159 -
+   SGLD   -
+   TBATH 300   FIRST 260 -
+   IASORS 0 IASVEL 1 ICHECW 0 -
+   NBXMOD 5  ATOM CDIEL SHIFT VATOM VDISTANCE VSWIT -
+   CUTNB 14.0  CTOFNB 13.0  CTONNB 10.0  EPS 1.0  E14FAC 1.0  WMIN 1.0
+
+2) SGLD simulation with a particle in external potential surface.
+Guiding force on the center of mass is needed.
+
+! Set friction forces
+SCAL FBETA SET 1.0 SELE ALL END
+
+! Perform SGLD simulation
+DYNA LANG LEAP  STRT  NSTE 1000000 TIME 0.002  -
+   IPRFRQ 10000 ISVFRQ 1000 IHTFRQ 0 IEQFRQ 0 INBFRQ 10 IHBFRQ 0 -
+   IUNREA -1 IUNWRI 31 IUNCRD 32 IUNVEL 33 KUNIT -1 -
+   NSAVC 1000 NSAVV 00 NPRINT 1000 ISEED 314159 -
+! Specify SGMV to allow guiding force on the center of mass
+   SGLD  TSGAVG 0.5 TEMPSG 1.0 SGMV -
+   TBATH 300   FIRST 260 -
+   IASORS 0 IASVEL 1 ICHECW 0 -
+   NBXMOD 5  ATOM CDIEL SHIFT VATOM VDISTANCE VSWIT -
+   CUTNB 14.0  CTOFNB 13.0  CTONNB 10.0  EPS 1.0  E14FAC 1.0  WMIN 1.0
+
+3) SGLD simulation with a constant guiding factor.
+
+! Set friction forces
+SCAL FBETA SET 1.0 SELE ALL END
+
+! Perform SGLD simulation
+DYNA LANG LEAP  STRT  NSTE 1000000 TIME 0.002  -
+   IPRFRQ 10000 ISVFRQ 1000 IHTFRQ 0 IEQFRQ 0 INBFRQ 10 IHBFRQ 0 -
+   IUNREA -1 IUNWRI 31 IUNCRD 32 IUNVEL 33 KUNIT -1 -
+   NSAVC 1000 NSAVV 00 NPRINT 1000 ISEED 314159 -
+   SGLD  TSGAVG 0.2 TEMPSG 0.0 SGFT 0.1 -
+   TBATH 300   FIRST 260 -
+   IASORS 0 IASVEL 1 ICHECW 0 -
+   NBXMOD 5  ATOM CDIEL SHIFT VATOM VDISTANCE VSWIT -
+   CUTNB 14.0  CTOFNB 13.0  CTONNB 10.0  EPS 1.0  E14FAC 1.0  WMIN 1.0
+
+4) SGMD simulation with default setting.
+
+! Perform SGMD simulation
+DYNA  LEAP  STRT  CPT NSTE 1000000 TIME 0.002  -
+   IPRFRQ 10000 ISVFRQ 1000 IHTFRQ 0 IEQFRQ 0 INBFRQ 10 IHBFRQ 0 -
+   IUNREA -1 IUNWRI 31 IUNCRD 32 IUNVEL 33 KUNIT -1 -
+   NSAVC 1000 NSAVV 00 NPRINT 1000 ISEED 314159 -
+   SGMD   -
+   TCON  TCOU  0.1  TREF  300 -
+   FIRST 260 -
+   IASORS 0 IASVEL 1 ICHECW 0 -
+   NBXMOD 5  ATOM CDIEL SHIFT VATOM VDISTANCE VSWIT -
+   CUTNB 14.0  CTOFNB 13.0  CTONNB 10.0  EPS 1.0  E14FAC 1.0  WMIN 1.0
+

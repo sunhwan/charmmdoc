@@ -1,0 +1,335 @@
+CHARMM Element doc/install.doc 1.1
+
+File: Install, Node: Top, Up: (chmdoc/charmm.doc), Previous: (chmdoc/commands.doc), Next: (chmdoc/usage.doc)
+
+
+                      CHARMM Release and Installation
+
+
+This document contains a formal definition of the current CHARMM release
+followed by a detailed installation procedure.  We concern here
+features and end-line-user-site installation.  Issues regarding
+developer sites are documented in *note Develop: (chmdoc/developer.doc). 
+
+
+* Menu:
+
+* Contents::      List of Contents of the current release
+* Machines::      Machines supported
+* Install::       Installation Procedure
+* Documentation:: CHARMM Documentation via emacs INFO program
+* TOPPAR::        Standard CHARMM Topology and Parameter Files
+* UserForm::      CHARMM User Group support
+
+
+File: Install, Node: Contents, Up: Top, Previous: Top, Next: Machines
+
+
+                          CHARMM Release Package
+
+
+The CHARMM release package for CHARMM developers and user sites includes
+
+    (1) complete source and include files,
+    (2) updated documentation files,
+    (3) some supporting data files,
+    (4) testcases,
+    (5) the PREFX preprocessor and tools needed to set up CHARMM
+        development environments and 
+    (6) standard topology and parameter files.
+
+    The files are organized in the followoing subdirectories.
+~/ denotes the directory where you have unpacked (read from a tape
+drive or issued the UNIX tar command) the CHARMM release package
+delivered to you.  In ~/cnnXm, nn is the version number, X is the
+version trunk designator (a for alpha or developmental, b for beta
+release and c for gamma or general release) and m is the revision
+number.  For example, c24b1 is CHARMM version 24 beta release revision 1.
+
+  ~/cnnXm/                 The main directory of CHARMM
+
+  ~/cnnXm/source/          Contains all CHARMM source files
+
+  ~/cnnXm/doc/             The most recent CHARMM documentation
+                           If GNU emacs is available on your host
+                           machine, you may 'soft' link this directory
+                           to the emacs info directory to access the
+                           documentation via the emacs info-program.
+
+  ~/cnnXm/support/         Supplementary programs and data files
+
+  ~/cnnXm/support/MMFF/    MMFF parameter files
+
+  ~/cnnXm/support/aspara/  Atom Solvation Parameter files and
+                           testcases
+
+  ~/cnnXm/support/bpot/    CHARMM support data files
+                           18 spherical deformable boundary potential
+                           files for the TIP3P water oxygen.
+
+  ~/cnnXm/support/form/    problem, bug, and development report forms
+
+  ~/cnnXm/support/htmldoc/ doc to HTML conversion utilities
+
+  ~/cnnXm/support/imtran/  CHARMM support data files
+                           4 image transformation files for periodic
+                           boundary simulations
+
+  ~/cnnXm/support/membrane lipid membrane construction protocol
+
+  ~/cnnXm/test/            CHARMM testcases
+
+  ~/cnnXm/tool/            Preprocessor, FLECS translator and
+                           other CHARMM installation utilities
+
+  ~/cnnXm/topar/           Standard topology/parameter files
+
+  ~/cnnXm/toppar/toppar_history/c22g2_g3_g4_c23a1__f1
+                           Standard RTF/PARAM files distributed with
+                           CHARMM 22g2, 22g3, 22g4, 23a1 and 23f1
+
+  ~/cnnXm/toppar/toppar_history/c22g5_c23a2_f2
+                           Standard RTF/PARAM files distributed with
+                           CHARMM 22g5, 23a2 and 23f2
+
+  ~/cnnXm/toppar/toppar_history/c23f3_f4_f5_c24a1_a2_a3
+                           Standard RTF/PARAM files distributed with
+                           CHARMM 23f3, 23f4, 23f5, 24a1 and 24a3
+
+  ~/cnnXm/exec/            The CHARMM executable charmm will be
+                           stored here when installation is completed. 
+
+  ~/cnnXm/build/           Contains Makefile, module makefiles and
+                           the log file of the install make command
+                           for each machine in the subdirectory named
+                           after the machine type. 
+
+  ~/cnnXm/lib/             Contains library files
+
+
+File: Install, Node: Machines, Up: Top, Previous: Contents, Next: Install
+
+
+                      Supported Machine Platforms
+
+The current release version is available on the following platforms.
+
+       Alliant
+       Apollo
+       Convex 
+       Cray X-MP, Cray Y-MP and Cray-2
+       DEC Stations running Ultrix
+       DEC Alpha Stations running OSF
+       Hewlett-Packard Apollo 700 Series
+       IBM-3090 running AIX
+       IBM-RS/6000
+       Intel iPSC Hypercube
+       Silicon Graphics
+       Sun
+
+See parallel.doc for details on parallel versions.
+
+
+File: Install, Node: Install, Up: Top, Previous: Machines, Next: Documentation
+
+
+                      User Site CHARMM Installation
+
+
+The installation is carried out by the shell script ~/cnnXm/install.com.
+Change your working directory to ~/cnnXm and run install.com.
+install.com expects one or more arguments.
+
+  install.com <host_machine_type> [ <CHARMM_size> <install switches> ]
+
+The default and possible arguments are 
+
+  <host_machine_type1> = { alpha, alphamp, cm5, convex, cray, cspp }
+                         { dec, gnu, gws, hal, hpux, ibmrs, ibmsp  }
+                         { intel, sgi, stardent, sun, t3d, terra   }
+
+  <CHARMM_size>        = { reduced, small, medium, large  | medium }
+
+  <install switches>   = { 1, 2, FULL, LITE, F77, G77, P, M, S, 64 }
+                         { Q, C, X, G                              }    
+
+where { | } is for { possible arguments | default }.  <CHARMM_size>
+depends on your machine memory configuration.  In general, 'medium' is
+recommended.  User site installation can be taylored with the install.com
+switches.
+
+      1  to halt after setting up installation directory.
+      2  to halt after making installation utilities.
+   FULL  For FULL featured version (default).
+   LITE  For a version with reduced functional features.
+    F77  Uses Absoft/Linux (default: f2c driven by fort77).
+    G77  Uses g77/Linux (default: f2c driven by fort77).
+      P  links to PVM
+      M  links to MPI
+      S  Uses TCP/IP SOCKET library for parallel.
+     64  to compile in the 64-bit mode on SGI platforms.
+      Q  replace QUANTUM with GAMESS.
+      C  replace QUANTUM with CADPAC.
+      X  for the X-lib graphics to be included.
+      G  for the GL-lib graphics to be included.
+
+When one or more install switches are used, <CHARMM_size> must be
+specified too.  Note that X and G are mutually exclusive and G
+requires the GL library.  P and M are also mutually exclusive.  The
+switch 2 can be used to stop installation and modify the pref.dat file
+to further customize CHARMM features.
+
+For example, 'install.com sgi'
+  1. installs the preprocessor PREFX in ~/cnnXm/tool (prefx_sgi),
+  2. generates the proper ~/cnnXm/build/sgi/pref.dat file (PREFX data file),
+  3. generates makefile suitable for SGI computers running under IRIX
+     (~/cnnXm/build/sgi/Makefile),
+  4. processes FORTRAN and C source files, compiles and builds module
+     libraries in ~/cnnXm/lib/sgi, and 
+  5. links them to produce the executable ~/cnnXm/exec/sgi/charmm.
+
+
+File: Install, Node: Documentation, Up: Top, Previous: Install, Next: TOPPAR
+
+
+                          CHARMM Documentation
+
+The CHARMM documentation set is being updated and improved.  The
+up-to-the-date documentation set is included in the current release.
+The documentation is an integral part of CHARMM.
+
+    The documentation files are accessible through the info program in
+GNU emacs.  If emacs is available on your system, you may incorporate
+the documentation into the info-tree structure.  The following is the
+info-building procedure.
+
+(1) Locate the info directory.  On tammy.harvard.edu, it is 
+    /usr/lib/gemacs/info.  It may differ on your machine.
+(2) Find the file, dir, in the info directory.  You should have a
+    write access of the directory.  If the info directory is protected,
+    contact your system manager and let him do the job.  Edit the dir file
+    and insert the following one line under "* Menu".
+
+* CHARMM: (chmdoc/charmm.doc). CHARMM Documentation
+
+    It should appear exactly as shown; asterisk (*) in the first
+column, etc.  The the part of dir file may look like this.
+
+File: dir       Node: Top       This is the top of the INFO tree
+
+        Quick Key Reference
+
+        d                  return here
+        q                  exit
+        ?                  list INFO commands
+        h                  help
+        mCHARMM<return>    go into CHARMM documentation
+        1                  go into CHARMM documentation (works for 1..5)
+        u                  go up
+
+===========================================================================
+* Menu:
+
+* CHARMM: (chmdoc/charmm.doc). CHARMM Documentation
+* Emacs: (emacs).              Yours truly
+* Info: (info).                This documentation browsing system.
+
+(3) Save the file and exit the editor.  You now have to link the
+    CHARMM documentation directory as in the following.
+
+    ln -s ~/cnnXm/doc chmdoc
+
+    Remember that ~/ is the parent directory that holds the charmm
+    directory. 
+
+
+
+File: Install, Node: TOPPAR, Up: Top, Previous: Documentation, Next: UserForm
+
+
+                Standard CHARMM Topology and Parameter Files
+
+
+(A) Topology files
+    (1) top_all22_lipid.inp      all hydrogen RTF for lipids
+    (2) top_all22_prot.inp       all hydrogen RTF for proteins
+    (3) top_all22_na.inp         all hydrogen RTF for nucleic acids
+    (4) top_all22_prot_na.inp    all hydrogen RTF for proteins and
+                                                      nucleic acids 
+    (5) top_all22_model.inp      all hydrogen RTF for protein model cmpds
+    (6) toph19.inp               extended atom RTF for proteins
+    (7) toprna10r_22.inp         extended atom RTF for nucleic acids
+
+(B) Parameter files
+    (1) par_all22_lipid.inp      all hydrogen parameters for lipids
+    (2) par_all22_prot.inp       all hydrogen parameters for proteins
+    (3) par_all22_na.inp         all hydrogen parameters for nucleic acids
+    (5) par_all22_prot_na.inp    all hydrogen parameters for proteins and
+                                                             nucleic acids 
+    (6) param19.inp              extended atom parameters for proteins
+    (7) pardna10_22.inp          extended atom parameters for nucleic acids
+
+    The CHARMM22 all-hydrogen topology and parameter sets may be
+considered to be stable, however, further changes cannot be excluded.
+The bulk of the changes are expected to be additions leading to an
+expanding set of parameters which are compatible across proteins,
+nucleic acids, lipids, and, ultimately, carbohydrates.  The
+carbohydrate parameter work is still in progress by John Brady and
+coworkers.  See the file toppar_all.history for a listing changes in
+the files over time.  top_all22_model.inp includes the majority of
+model compounds used in the protein parameterization and is to be used
+in conjunction with par_all22_prot.inp.  top_all22_prot_na.inp and
+par_all22_prot_na.inp contain both the protein and nucleic acid
+parameters allowing for calculations on protein-nucleic acid
+complexes.  The lipid parameters may be combined in a similar fashion,
+although it hasn't been performed at present.  The extended atom
+parameters for proteins are the same as those included with CHARMM20
+which are based on Wally Reiher's thesis.  For the extended atom
+nucleic acid parameters those of Nilsson and Karplus, J. Comp.  Chem.
+7:591-616, 1986 are used which were also included in the CHARMM20
+release and are the only set to include explicit hydrogen bonding
+terms.  Some alterations of the extended atom nucleic acid topology
+and parameter files have been made in order to maintain compatibility
+with the multiple dihedral scheme in CHARMM22.  Please send all
+remarks and suggestions to alex@mmiris.ab.umd.edu. ADM Jr., July, 1995
+
+
+File: Install, Node: UserForm, Up: Top, Previous: TOPPAR, Next: Top
+
+
+                      CHARMM User Group Support
+
+
+We maintain the CHARMM user group bulletin board on the network mail
+system.  Send your comments to charmm-users@tammy.harvard.edu.  If you
+wish to receive CHARMM user group messages, let the CHARMM manager
+know.  Your comments can include 
+     (1) suggestions for improvements,
+     (2) tricks you discovered,
+     (3) work around for bugs,
+     (4) remedy for somebody else's problem, and
+     (5) anything you want to say about CHARMM.
+
+    Problems and bugfixes should be reported to CHARMM developers.
+Send your reports to charmm-bugs@tammy.harvard.edu.
+
+    Your problem description should include
+     (1) exactly which command is malfunctioning,
+     (2) what options you are using,
+     (3) a sample input containing only a few lines to isolate the
+         problem, and
+     (4) your verbal description of the problem.
+
+    Your bugfix report should include
+     (1) the problem you had,
+     (2) cause of the problem,
+     (3) how you traced to the cause,
+     (4) how you corrected it,
+     (5) any side effects, and
+     (6) your comments.
+
+     You may find the forms, problem.form and bugfix.form in the support/form
+directory useful in reporting problems and bugfixes.
+
+    If you have questions/comments/suggestions about CHARMM
+management, send your remark to chmgr@tammy.harvard.edu.

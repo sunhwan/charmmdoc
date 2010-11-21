@@ -1,0 +1,250 @@
+CHARMM Element doc/pnm.doc $Revision: 1.1 $
+
+File: PNM,  Node: Top, Up: (chmdoc/commands.doc), Next: Description
+
+
+                  Plastic Network Model (PNM)
+
+            -------------------------------------------- 
+            Jingzhi Pu (pu@tammy.harvard.edu)
+            Paul Maragakis (Paul.Maragakis@deshaw.com)
+            Martin Karplus (marci@tammy.harvard.edu)
+
+The PNM module provides an implementation of the plastic network
+model (Maragakis and Karplus, 2005) for studying conformational
+changes at a coarse-grained level. 
+
+* Menu:
+
+* Description::      Description of the PNM method
+* Syntax::           Syntax of the PNM commands
+* Options::          PNM Command Options
+* Limitations::      Limitations of the current code
+* Examples::         Usage example 
+* Installation::     How to install PNM in CHARMM environment.
+* Status::           Status of the PNM code and future development
+* References::       References for the PNM method
+
+
+File: PNM, Node: Description, Up: Top, Previous: Top, Next:Syntax
+
+                  Description of the PNM method
+            
+For a system undergone conformational transitions that connect
+multiple free energy basins around metastable conformers, the 
+system can be represented by a plastic network, based on which 
+reaction pathways and dynamics between these stable states can 
+be conveniently studied.  In particular, for a system expressed
+as a PNM of two conformations (labeled 1 and 2), we can construct 
+a phenomenological energy Hamiltonian in a diabatic representation
+(a 2 x 2 matrix):
+
+              H  =  [ G11  G12 ]
+                    [ G21  G21 ]
+
+where G11 and G22 are the configurational free energy functionals
+for conformer 1 and 2, respectively. Following Tirion's elastic 
+newtork model (ENM), G11 and G22 can be calculated as a harmonic 
+deformation of each conformer with respect to its equlibrium 
+network configuration:
+                          
+ G11 = G_0(1) + 1/2 Sum { D_ab(1) C(1) [r_ab(1) - r_ab,0(1)]^2 }
+                    a,b 
+             
+ G22 = G_0(2) + 1/2 Sum { D_ab(2) C(2) [r_ab(1) - r_ab,0(2)]^2 }
+                    a,b
+
+where G_0(i) represents the equilibrium free energy of the 
+conformer i; D_a,b(i) is the network connectivity matrix for the
+conformer i, whose element is 1 for an atom pair (a,b) if their 
+distance is smaller than a cutoff distance, 0 otherwise; C(i) 
+is a uniform elastic constant for elastic i; r_ab(i) and 
+r_ab,0(i) denote the distance between atoms (a,b) in the 
+network i obtained from the instantaneous and equilibrium 
+positions, respectively.
+
+Given a constant coupling term (G12=G21=epsilon), the adiabatic 
+free energy (G) of the PNM is expressed as the lowest eigen-energy 
+of the eigen-states that diagonalize the above energy Hamiltonian:
+
+      (G11 + G22) - sqrt[(G11 - G22)^2 + 4 eplison^2] 
+  G = ------------------------------------------------
+                            2 
+
+Besides the use by itself to study conformational change, 
+the PNM method can also be added as a ridigification potential
+in conjunction to an all-atom force field. This is sometimes
+useful in an all-atom simulation with accelerated molecular 
+dynamics (for example, targeted molecular dynamics), where
+local unfolding occurs due to the use of a trajectory much 
+shorter than the timescale of the physical event. By using this 
+kind of combination, the simulation stability can be achieved 
+with a rigidifying potential that smoothly connects two 
+conformational states (PNM), while the full atomic details 
+of interactions that a coarse-grained representation lack, 
+can be obtained as well.
+
+
+File: PNM, Node: Syntax, Up: Top, Previous: Description, Next: Options
+
+                      Syntax of the PNM commands
+
+PNMInitialize { [ COEA real ]  }   [ atom-selection ] 
+              { [ COEB real ]  }
+              { [ CUTA real ]  }
+              { [ CUTB real ]  }
+              { [ ZERA real ]  }
+              { [ ZERB real ]  }
+              { [ PMIX real ]  }
+              { [ REMO] [atom-selection] [atom-selection]}
+
+Note: the PNM energy can be conditionally skipped by the 'SKIP' command  
+      in CHARMM, e.g., 'SKIP PNME' will remove the PNM energy and related 
+      force from the energy calculation.
+
+
+File: PNM, Node: Options, Up: Top, Previous: Syntax, Next: Examples
+
+                         PNM Command Options
+
+PNMI: turn on a PNM calculation; specified before ENERGY is called 
+      to invoke the PNM option.
+
+COEA: spring constants for conformational state A
+
+COEB: spring constants for conformational state B
+
+CUTA: network cutoff for conformational state A
+
+CUTB: network cutoff for conformational state B
+
+ZERA: zero of free energy of conformational state A
+
+ZERB: zero of free energy of conformational state B
+
+PMIX: the mixing constant in PNM (epsilon)
+
+REMO: remove the connections between two groups of atoms
+      specified in an double selection following this keyword
+
+atom-selection: define the atom selection that PNM nodes reside on
+
+^_
+File: PNM, Node: Limitations, Up: Top, Previous: Options, Next: Examples
+
+                          Limitations
+
+The current PNM code is only limited for two conformational states.
+The implementation assumes that the atomic coordinates that define 
+the two equilibrium conformations are present in the main and the
+the comparison coordinate set, respectively, at the point where 
+the PNMI command is invoked (once the PNM is initialized, these 
+coordinate information are not used by PNM any more, thus can be
+modified for other purposes).  A script following a similar procedure 
+given below can be used for setting up a PNM:
+
+...
+
+! First make a copy of the main and comparison coordinate
+!--------------------------------------------------------
+scalar x store 1
+scalar y store 2
+scalar z store 3
+
+scalar xcomp store 4
+scalar ycomp store 5
+scalar zcomp store 6
+
+! read in coordinate file (PNM state 1)
+!--------------------------------------
+open read form unit 1 name "pnm1.crd"
+read coord card unit 1
+close unit 1
+
+! read in coordinate file (PNM state 2)
+!--------------------------------------
+open read form unit 1 name "pnm2.crd"
+read coord comp card unit 1
+close unit 1
+
+! PNM initialization
+!-------------------
+PNMI coea 0.2 coeb 0.2 cuta 12.0 cutb 12.0 -
+     zera 0.0 zerb 0.0 pmix 1.0 sele prot end -
+     remo sele crown end sele gamma end
+
+! restore the main and comparison set, as if nothing happened
+!------------------------------------------------------------
+scalar x recall 1
+scalar y recall 2
+scalar z recall 3
+
+scalar xcomp recall 4
+scalar ycomp recall 5
+scalar zcomp recall 6
+
+...
+
+
+File: PNM, Node: Examples, Up: Top, Previous: Limitations, Next: Installation
+
+                          Examples of using PNM 
+
+An example is provided in the test suite to demonstrate the usage 
+of the PNM command: 
+
+pnm_test1.inp
+   This testcase performs a TMD simulation for one beta subunit in
+F1-ATPase from a open to a closed conformation, i.e, beta_E -> beta_TP,
+which corresponds to bind an ATP. The coarse-grained potential used for 
+PNM is defined by CA atom positions in two protein conformations
+(taken from PDB:1BMF, chain E for beta_E and chain F for beta_TP). 
+The system is first equilibrated at the open state (beta_E) for 1000 
+steps, then transformed to the closed conformation (beta_TP) during a 
+1000 steps TMD simualtion, and finally equlibrated at the end state for 
+anther 1000 steps. Energy and first derivatives are also tested. 
+
+
+File: PNM, Node: Installation, Up: Top, Previous: Examples, Next: Status
+
+                        Installation of PNM
+
+Currently, the PNM module is not activated by default in a standard 
+installation. To compile the PNM code under the CHARMM environment, the 
+'PNM' keyword needs to be specified in the build/host-machine-type/pref.dat
+file. The modification of the pref.dat file can be done by providing the 
+'+PNM' argument to the installation script "install.com" when CHARMM 
+is installed:
+
+       ./install.com host-machine-type size +PNM
+
+Here the '+PNM' option will adds the 'PNM' keyword into the pref.dat
+file for a given compilation. 
+
+
+File: PNM, Node: Status, Up: Top, Previous: Installation, Next: References
+
+                       Status of the PNM code
+
+Several aspects of the code will be improved in the future,
+and new functionalities are under development:
+
+1. Parallelization of the code
+2. Treating bonded and non-boned connections differently 
+3. Generalization to a PNM with more than two metastable basins
+4. Multi-scaled molecular dynamics that switch between a coarse-grained 
+   PNM representation and an all-atom representation.
+
+
+File: PIPF, Node: References, Up: Top, Previous: Status, Next: Top
+
+                          References
+
+[1].  Maragakis, P.; Karplus, M. J. Mol. Biol. 2005, 352, 807.
+
+[2].  Tirion, M. M. Phys. Rev. Lett. 1996, 77, 1905. 
+
+[3].  Schlitter, J.; Engels, M.; Kruger, P. J. Mol. Graphics 1994, 12, 84.
+
+[4].  Pu, J.; Karplus, M., work in progress.
+

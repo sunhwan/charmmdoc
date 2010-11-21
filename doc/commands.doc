@@ -1,0 +1,105 @@
+CHARMM Element doc/commands.doc 1.1
+
+File: Commands, Node: Top, Up: (chmdoc/charmm.doc), Previous: (chmdoc/parallel.doc), Next: (chmdoc/install.doc)
+
+                             CHARMM commands
+
+        The commands available for use in CHARMM are classified in
+several groups.
+
+* Menu:
+
+* AFM:         (chmdoc/afm.doc     ). Atomic Force Microscopy Simulation
+* Analysis:    (chmdoc/analys.doc  ). Analysis facility
+* ACE:         (chmdoc/ace.doc     ). Analytical Continuum Electrostatics
+* ADUMB:       (chmdoc/adumb.doc   ). ADaptive UMBrella sampling simulation
+* APBS:        (chmdoc/apbs.doc    ). Adaptive Poisson-Boltzmann Solver
+* ASPENER:     (chmdoc/aspener.doc ). Atomic Solvation Parameter Based Energy
+* ASPENERMB:   (chmdoc/aspenermb.doc). ASP Model with Implicit Membrane
+* Block:       (chmdoc/block.doc   ). BLOCK free energy simulation
+* CCA:         (chmdoc/cca.doc     ). Common Component Architecture
+* CFF:         (chmdoc/cff.doc     ). Consistent Force Field (CFF)
+* CHEQ:        (chmdoc/cheq.doc    ). CHarge EQuilibration Methods
+* Cons:        (chmdoc/cons.doc    ). Harmonic and other constraints or SHAKE
+* CHARMMrate:  (chmdoc/charmmrate.doc). CHARMM-POLYRATE Interface
+* Coordinates: (chmdoc/corman.doc  ). Commands to manipulate coordinates
+* Correl:      (chmdoc/correl.doc  ). Time series and correlation functions 
+* Corsol:      (chmdoc/corsol.doc  ). Solvent Correlation Functions
+* Cross:       (chmdoc/cross.doc   ). Reactive MD with Surface Crossing
+* Crystl:      (chmdoc/crystl.doc  ). Crystal facility
+* Drude:       (chmdoc/drude.doc   ). Drude oscillator commands
+* Dynamics:    (chmdoc/dynamc.doc  ). Dynamics commands
+* DIESEL:      (chmdoc/diesel.doc  ). QM/MM method interface to DIESEL(GAMESS)
+* EEF1:        (chmdoc/eef1.doc    ). Effective Energy Function 1
+* EMAP:        (chmdoc/emap.doc    ). The MAP Object Manipulation Commands
+* Energy:      (chmdoc/energy.doc  ). Energy evaluation
+* Ensemble:    (chmdoc/ensemble.doc). Run communicating copies of CHARMM
+* Ewald:       (chmdoc/ewald.doc   ). Ewald summation
+* FACTS:       (chmdoc/facts.doc   ). Fast Analytical Continuum Solvation Model
+* FitCharge:   (chmdoc/fitcharge.doc). Charge and Drude Polarizability Fitting
+* FlucQ:       (chmdoc/flucq.doc   ). QM/MM Fluctuating Charge Potential
+* GBorn:       (chmdoc/genborn.doc ). Generalized Born Solvation Energy
+* GBIM:        (chmdoc/gbim.doc    ). Generalized Born with Implicit Membrane
+* GBMV:        (chmdoc/gbmv.doc    ). Generalized Born Using Molecular Volume
+* GBSW:        (chmdoc/gbsw.doc    ). Generalized Born with a simple SWitching
+* Genetic:     (chmdoc/galgor.doc  ). The genetic algorithm commands
+* Graphx:      (chmdoc/graphx.doc  ). The graphics subsection for workstations
+* H-bond:      (chmdoc/hbonds.doc  ). Generation of hydrogen bonds
+* H-build:     (chmdoc/hbuild.doc  ). Construction of hydrogen positions
+* HQBM:        (chmdoc/hqbm.doc    ). Biased Molecular Dyanmics
+* Images:      (chmdoc/images.doc  ). Use of periodic or crystal environment
+* Internal:    (chmdoc/intcor.doc  ). Manipulation of internal coordinates
+* I/O :        (chmdoc/io.doc      ). I/O of data structures and files
+* LonePair :   (chmdoc/lonepair.doc). Lone-Pair Facility
+* LUPOPT :     (chmdoc/lupopt.doc  ). Low Energy Path OPTimization
+* MBOND:       (chmdoc/mbond.doc   ). Multi-body dynamics
+* MC:          (chmdoc/mc.doc      ). Monte Carlo simulation program
+* MCMA:        (chmdoc/mcma.doc    ). Monte Carlo Minimization / Annealing
+* Minimiz:     (chmdoc/minimiz.doc ). Description of the minimization methods
+* Miscellany:  (chmdoc/miscom.doc  ). Miscellaneous commands
+* MMFF:        (chmdoc/mmff.doc    ). Merck Molecular Force Field
+* MMFP:        (chmdoc/mmfp.doc    ). Miscelaneous Mean Field Potential
+* MNDO97       (chmdoc/mndo97.doc  ). QM/MM method based on MNDO97
+* Molvib:      (chmdoc/molvib.doc  ). Molecular vibrational analysis facility
+* Mscale:      (chmdoc/mscale.doc  ). Multi Scale Command: MSCALE
+* NMR:         (chmdoc/nmr.doc     ). NMR analysis facility
+* Non-bonded:  (chmdoc/nbonds.doc  ). Generation of the non-bonded interaction
+* Overlap:     (chmdoc/overlap.doc ). Overlap of Molecular Similarity
+* Parameters:  (chmdoc/parmfile.doc). CHARMM energy parameters
+* PBEQ:        (chmdoc/pbeq.doc    ). Poisson-Boltzmann Equation Solver
+* Perturb:     (chmdoc/pert.doc    ). Free energy perturbation simulations
+* PHMD:        (chmdoc/phmd.doc    ). Continuous constant pH Molecular Dynamics
+* PIPF:        (chmdoc/pipf.doc    ). Polarizable Intermolecular Pot Functions
+* PNM:         (chmdoc/pnm.doc     ). Plastic network mode commands
+* Pressure:    (chmdoc/pressure.doc). Pressure calculation and usage
+* PROTO:       (chmdoc/proto.doc   ). Prototype commands
+* QCHEM:       (chmdoc/qchem.doc   ). QMMM method using Q-CHEM interface
+* Quantum:     (chmdoc/qmmm.doc    ). Quantum and Molecular Mechanical FF
+* Qub:         (chmdoc/qub.doc     ). Quantized Classical Path Sampling
+* RDFSol:      (chmdoc/rdfsol.doc  ). Radial correlation functions
+* Repdstr:     (chmdoc/repdstr.doc ). The Parallel Distributed Replica
+* Replica:     (chmdoc/replica.doc ). REPLICA: molecular system replication
+* RISM:        (chmdoc/rism.doc    ). Reference Interaction Site Model
+* RUSH:        (chmdoc/rush.doc    ). A simple implicit solvent force field
+* RXNCONS:     (chmdoc/rxncons.doc ). Reaction coordinate constraints
+* SASA:        (chmdoc/sasa.doc    ). The SASA implicit solvation model
+* Sbound:      (chmdoc/sbound.doc  ). Stoichastic boundary
+* Scalar:      (chmdoc/scalar.doc  ). Scalar command for atom properties
+* SCCDFTB:     (chmdoc/sccdftb.doc ). QM/MM method interface to SCCDFTB
+* SCPISM:      (chmdoc/scpism.doc  ). SCP Implicit Solvent Model
+* Select:      (chmdoc/select.doc  ). Use of the atom selection facility
+* Shell:       (chmdoc/shell.doc   ). Shell decomposition
+* SGLD:        (chmdoc/sgld.doc    ). Self-Guided Langevin Dynamics
+* Structure:   (chmdoc/struct.doc  ). Structure manipulation (PSF generation)
+* Substitute:  (chmdoc/subst.doc   ). Command line substitution parameters
+* TAMD:        (chmdoc/tamd.doc    ). Torsion Angle Molecular Dynamics
+* Test:        (chmdoc/test.doc    ). Commands to test various things
+* TMD:         (chmdoc/tmd.doc     ). Targeted Molecular Dynamics
+* Topology:    (chmdoc/rtop.doc    ). Residue Topology File
+* TPCONTROL:   (chmdoc/tpcntrl.doc ). Temperature and pressure control
+* TPS:         (chmdoc/tps.doc     ). Transition Path Sampling
+* Travel:      (chmdoc/trek.doc    ). Reaction coordinate refinement command
+* TSM:         (chmdoc/perturb.doc ). Thermodynamic Simulation Method
+* Umbrella:    (chmdoc/umbrel.doc  ). Umbrella Sampling
+* Vibration:   (chmdoc/vibran.doc  ). Vibrational analysis facility
+* Zerom:       (chmdoc/zerom.doc   ). Zero-Order Minimization

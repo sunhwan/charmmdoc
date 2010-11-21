@@ -1,0 +1,215 @@
+CHARMM Element doc/cross.doc $Revision: 1.4 $
+
+File: Cross, Node: Top, Up: (chmdoc/commands.doc), Next: Syntax
+
+         Reactive Molecular Dynamics with Surface Crossing 
+
+
+by  David R. Nutt
+and Jonas Danielsson (jonas.b.danielsson@gmail.com)
+and Markus Meuwly (m.meuwly@unibas.ch)
+
+
+Questions and comments regarding RMD should be directed to
+ -----------------------------------------------------------
+  Stephan Lutz (stephan.lutz@unibas.ch)
+  Markus Meuwly (m.meuwly@unibas.ch)
+  
+  
+Reference:
+  D. R. Nutt, M. Meuwly, Biophysical Journal 90 (4), 1191-1201 (2006).
+
+
+The Reactive Molecular Dynamics (RMD) method allows to simulate
+dynamics using two potential energy surfaces provided by the user, such that 
+the dynamics always takes place on the lowest surface. Crossings are detected
+automatically and occur by a smooth switching centered in time around which 
+the crossing was detected. The current implementation assumes 
+that the long-range interactions are handled with the SHIFT command 
+for electrostatics and the SWITCH for the Lennard-Jones potential. To include 
+RMD in the compilation, the flag RMD should be included in pref.dat   
+
+
+* Menu:
+
+* Syntax::                Syntax of the CROSS command
+* Description::           Description of the keywords and options
+* Extra parameter file::  Description of the input format of multiple potential
+                          energy surfaces 
+
+
+File: Cross, Node: Syntax, Up: Top, Previous: Top, Next: Description
+
+          Syntax for the Reactive Molecular Dynamics commands
+
+
+RXMD   SHIF real  UPAR integer [ XTIM integer ] [ UNIT integer ] - 
+                                [ FREQ integer ] [ BTOL real ]
+
+
+SHIF    4.0    Constant Offset between the two potential energy surfaces.
+               It is highly recommended to always set this parameter.
+
+UPAR    Int    Unit containing the parameters for the two surfaces.
+               This unit must be open (FORMatted) for reading when RXMD
+               is called.
+
+XTIM     10    Sets the number of timesteps during which the smooth 
+               switching between the two surfaces takes place around a
+               crossing.
+
+UNIT     -1    Unit to which a coordinate dump (in PDB format) will occur  
+               at the crossing point.  
+
+FREQ      1    Frequency (in time-steps) at which RXMD tries to detect a 
+               crossing
+
+BTOL   0.0001  Threshold that allows events where the potential energies come 
+               close (but not quite cross) to induce surface switching. 
+
+
+File: Cross, Node: Description, Previous: Syntax, Up: Top, Next: Extra Parameter File
+
+        Description of the Reaction Molecular Dynamics command
+
+To invoke RMD, the CROS command should be given before the 
+DYNAmics command. At the point where RXMD is called, it is important
+that the crossing parameter file is opened on the unit UPAR as FORMATTED.
+It is also recommended to proceed the RXMD command with an UPDAte so
+that bonded parameter lists are up-to-date. 
+
+Energy terms present in both the PSF and the crossing parameter file, will 
+have the term removed and replaced with that defined in the parameter file.
+In this sense, the CROSS module can be used to introduce specific parameters
+in the reactive center, or replace a harmonic bond with an anharmonic one, etc.
+
+It is possible to do minimizations on the potential energy surfaces defined in
+the crossing parameter file via the RXMD command. During the minimization, the
+switching function is turned off so that the minimal surface is followed in 
+each step. 
+
+A typical input sequence for a RXMD simulation is as follows 
+
+OPEN UNIT 9 READ FORMATTED NAME cross.dat
+
+UPDATE
+RXMD SHIF 10.0  UPAR 9 XTIM 10 UNIT 14
+
+OPEN UNIT 14 WRITe FORMatted NAME crossing.pdb
+
+OPEN UNIT 11 READ FORMatted NAME old.res
+OPEN UNIT 12 WRITe FORMatted NAME new.res
+OPEN UNIT 13 WRITe UNFORMatted NAME  cross_traj.dcd
+DYNAmics LEAPfrog VERLET RESTart - 
+...
+
+In the first step, RXMD will detect which potential energy surface is
+lower and initiate the dynamics on that. The output from a 
+RXMD simulation is the same as that from a standard dynamics run, with
+the addition of the timepoints of the detected crossings 
+(and the structure at the crossing dumped in UNIT in PDB format). If IPRINT 
+is > 5, additional detailed information about added and removed energy 
+terms and the energy difference between the potential energy surfaces are 
+printed. The crossing procedure uses an energy term called RXMD that can be 
+bypassed by the SKIPE command. The removal of other energy terms with SKIPE
+will also remove the corresponding energy terms in the user-defined PES in a
+consistent way.
+
+For the Electrostatics, any method can be used, but the energy difference
+between the two surfaces is always calculated with the SHIFTed cut-off
+method for the electrostatics, and will therefore not be consistent if
+any other method used for the total energy and forces.
+
+The use of the RXMD module together with any procedure that modifies the
+PSF is for the moment not supported, since the method assumes the PSF to be 
+kept as it is defined at the moment the RXMD command is given.  
+
+
+
+File: Cross, Node: Extra Parameter File, Previous: Description, Up: Top, Next: Top
+ 
+The user has to provide an extra parameter file to describe the two
+potential energy surfaces involved in the crossing. The format should look
+like:
+
+ATOM nr_of_atoms (int)
+atom1 q1_1 sigma1_1 epsilon1_1 q1_2 sigma1_2 epsilon1_2 (int,real*6)
+atom2 q2_1 ...
+...
+BOND nr_of_harmonic_bonds (int)
+atom1a atom1b k1_1 r1_1 k1_2 r1_2 (int*2,real*4)
+atom2a atom2b k2_1 ...
+...
+MORS nr_of_morse_bonds (int)
+atom1a atom1b d1_1 r1_1 b1_1 d1_2 r1_2 b1_2 (int*2,real*6)
+atom2a atom2b d2_1 r2_1 ...
+...
+ANGL nr_of_angles (int)
+atom1a atom1b atom1c k1_1 t1_1 k1_2 t1_2 (int*3,real*4)
+atom2a ...
+...
+DIHE nr_of_dihedrals (int)
+atom1a atom1b atom1c atom1d k1_1 m1_1 p1_1 k1_2 m1_2 p1_2 (int*4,real,int,
+real*2,int,real)
+...
+
+Symbols:
+q - partial charge
+sigma,epsilon - vdw parameters
+k - force constant
+r - equilibrium bond length
+d - dissociation energy
+b - beta parameter in Morse potential
+t - equilibrium angle
+m - dihedral multiplicity
+p - phase angle
+
+_y means that this parameter should be used on surface y, so q1_2 means the
+partial charge of atom 1 on surface 2, and m3_1 means the dihedral 
+multiplicity of dihedral 3 on surface 1.
+
+All forcefield terms that differ between the two states or from the PSF 
+should be defined. If a term is absent in one of the states
+the corresponding force constant should be given a negative 
+value. For dihedrals, a multiplicity of 0 indicates an improper dihedral.
+
+Note that all blocks must be present, even if no new energy term
+of that kind is defined. For example, even if no new dihedrals are defined,
+the file should still has a line reading 'DIHE 0'. There should be no comments
+or empty lines in this file.
+
+An example of the parameter input file is given below, for a NO molecule
+with and without a bond to a heme group. (94 and 95 is the NO ligand, 21 the
+heme iron, 22-25 the pyrrole nitrogen, and 15 the nitrogen of the histidine
+coordinating on the opposite side)
+
+-------
+ATOM 2
+94 -0.063 -0.200 2.000  0.021 -0.200 1.850
+95  0.063 -0.159 2.050 -0.021 -0.120 1.700
+BOND 6
+94   95   1147.5 1.151 826.5 1.141
+21   22    270.2 1.958 270.2 2.100
+21   23    270.2 1.958 270.2 2.100
+21   24    270.2 1.958 270.2 2.100
+21   25    270.2 1.958 270.2 2.100
+15   21     65.0 2.200  65.0 2.100
+MORS 1
+21 94 -1.000 0.000 0.000 30.0 1.740 3.200
+ANGL 14
+21 94 95 -1.000 0.000 35.0 134.0
+22 21 94 -1.000 0.000 50.0  90.0
+23 21 94 -1.000 0.000 50.0  90.0
+24 21 94 -1.000 0.000 50.0  90.0
+25 21 94 -1.000 0.000 50.0  90.0
+15 21 94 -1.000 0.000 50.0 180.0
+22 21 23  14.39  90.0 80.0  90.0
+23 21 24  14.39  90.0 80.0  90.0
+24 21 25  14.39  90.0 80.0  90.0
+25 21 22  14.39  90.0 80.0  90.0
+15 21 22  50.0   90.0 50.0 107.0
+15 21 23  50.0   90.0 50.0 107.0
+15 21 24  50.0   90.0 50.0 107.0
+15 21 25  50.0   90.0 50.0 107.0
+DIHE 0
+----------------
