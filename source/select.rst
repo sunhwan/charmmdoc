@@ -122,7 +122,7 @@ by numerical order for :chm:`BYNUmber` specifications.
 Keyname option
 ^^^^^^^^^^^^^^
 
-The user may specify keynames with the :chm:`DEFIne` command (see :doc:`MISCOM`).
+The user may specify keynames with the :chm:`DEFIne` command (see :doc:`miscom`).
 Each keyname corresponds to a particular atom selection. Keynames
 are processed before tokens, so if there is a naming conflict, the
 keyname will prevail. Keynames may not be abreviated.  Whenever
