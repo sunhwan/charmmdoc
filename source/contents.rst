@@ -97,6 +97,7 @@ CHARMM documentation contents
      sbound
      trek
      umbrel
+     fitcharge
       
 8. system specific
 

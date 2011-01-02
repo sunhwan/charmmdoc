@@ -4,25 +4,21 @@
 FACTS: Fast Analytical Continuum Treatment of Solvation
 =======================================================
 
+.. note::
 
-     Questions and comments regarding FACTS should be directed to 
-     ------------------------------------------------------------
-     Amedeo Caflisch (caflisch@bioc.uzh.ch)
+   **Questions and comments regarding FACTS should be directed to**
 
-     Reference for FACTS:
-     --------------------
-     [1]Haberthuer and Caflisch, J. Comput. Chem., 29(5): 701-715, 2008
-        DOI: 10.1002/jcc.20832
+   Amedeo Caflisch (caflisch@bioc.uzh.ch)
 
-* Menu:
+   **Reference for FACTS:**
 
-* Description:: Description of FACTS
-* Syntax::      Syntax of the FACTS Commands
-* Function::    Description of the FACTS keywords and options
-* Examples::    Usage examples of the FACTS module
-
-File: FACTS, Node: Description, Up: Top, Previous: Top, Next: Syntax
+   1. Haberthuer and Caflisch, J. Comput. Chem., 29(5): 701-715, 2008
+      DOI: 10.1002/jcc.20832
 
+.. _facts_description:
+
+Description
+-----------
 
 FACTS is an efficient generalized Born implicit solvent model [1].Because
 of its speed it is particularly useful for MD simulations. It is based on
@@ -37,7 +33,6 @@ The solvent accessible surface area is used to approximate the non-polar
 contribution to solvation. FACTS is only four times slower than using the
 vacuum energy in molecular dynamics simulations of peptides and proteins.
 
-
 FACTS can be used with either force field "param19" or "param22/27", but
 parameters were derived for protein atoms only. Parameters for unknown 
 atom types can be extrapolated from known ones with the "TAVW" option
@@ -49,25 +44,25 @@ and the FACTS "TAIM" option.
 The FACTS algorithm has been parallelized in 2007 by F.Marchand
 (fmarchand@bioc.uzh.ch).
 
-
-File: FACTS, Node: Syntax, Up: Top, Previous: Description, Next: Function
+.. index:: facts; syntax
+.. _facts_syntax:
 
+Syntax of the FACTS Command
+---------------------------
 
-                    Syntax of the FACTS Command
-                    ---------------------------
+::
 
-FACTs {TCPS 19} {TEPS 1.0} [TKPS real] [GAMM real] 
-      {TCPS 22} {TEPS 2.0} [TAIM] [TAVW] [TPSL] 
+   FACTs {TCPS 19} {TEPS 1.0} [TKPS real] [GAMM real] 
+         {TCPS 22} {TEPS 2.0} [TAIM] [TAVW] [TPSL] 
 
-
-File: FACTS, Node: Function, Up: Top, Previous: Syntax, Next: Examples
+.. _facts_function:
 
-            Description of the FACTS keywords and options
-            ---------------------------------------------
+Description of the FACTS keywords and options
+---------------------------------------------
 
+=======  =======  =============================================================
 Keyword  Default  Purpose
--------  -------  -------
-
+=======  =======  =============================================================
 TCPS        19    Force-field specific, either 19 or 22. TCPS 22 also works
                   with param27, although only protein atoms are parametrized.
 
@@ -96,100 +91,104 @@ TAVW      false   FACTS distinguishes atoms solely based on their VdW radius
 
 TPSL      false   Flag to print detailed information about the atomic
                   self-electrostatic contribution to the energy.
-
+=======  =======  =============================================================
 
-File: FACTS, Node: Examples, Up: Top, Previous: Function, Next: Top
 
-                           Examples
-                           --------
+.. _facts_examples:
+
+Examples
+--------
 
 PARAM 19
---------
+^^^^^^^^
 
 REMARK: It was observed that (for param19) FACTS performs better with
         the dielectric constant set to 2.0 rather than to 1.0.
 
-! ------------------------------------------------------------------
-!
-!  large, globular systems (e.g., protein in folded state)
-!  epsilon=2.0 and gamma=0.025
+::
 
-set diele 2.0
+   ! ------------------------------------------------------------------
+   !
+   !  large, globular systems (e.g., protein in folded state)
+   !  epsilon=2.0 and gamma=0.025
 
-nbond nbxmod 5 atom cdiel eps @diele shift vatom vdistance vshift -
-      cutnb 9.0 ctofnb 7.5 ctonnb 6.5 e14fac 0.4 wmin 1.5
+   set diele 2.0
 
-scalar wmain = radius
-scalar wmain set 1.0 selection (type h*) end
+   nbond nbxmod 5 atom cdiel eps @diele shift vatom vdistance vshift -
+         cutnb 9.0 ctofnb 7.5 ctonnb 6.5 e14fac 0.4 wmin 1.5
 
-facts tcps 19 teps @diele gamm 0.025
+   scalar wmain = radius
+   scalar wmain set 1.0 selection (type h*) end
 
-! ------------------------------------------------------------------
-!
-!  Reversible folding simulations of structured peptides
-!  epsilon=2.0 and gamma=0.015
+   facts tcps 19 teps @diele gamm 0.025
 
-set diele 2.0
+   ! ------------------------------------------------------------------
+   !
+   !  Reversible folding simulations of structured peptides
+   !  epsilon=2.0 and gamma=0.015
 
-nbond nbxmod 5 atom cdiel eps @diele shift vatom vdistance vshift -
-      cutnb 9.0 ctofnb 7.5 ctonnb 6.5 e14fac 0.4 wmin 1.5
+   set diele 2.0
 
-scalar wmain = radius
-scalar wmain set 1.0 selection (type h*) end
+   nbond nbxmod 5 atom cdiel eps @diele shift vatom vdistance vshift -
+         cutnb 9.0 ctofnb 7.5 ctonnb 6.5 e14fac 0.4 wmin 1.5
 
-facts tcps 19 teps @diele gamm 0.015
+   scalar wmain = radius
+   scalar wmain set 1.0 selection (type h*) end
 
-! ------------------------------------------------------------------
-!
-!  Unstructured peptides and peptide aggregation 
-!  epsilon=2.0 and gamma=0.0075
+   facts tcps 19 teps @diele gamm 0.015
 
-set diele 2.0
+   ! ------------------------------------------------------------------
+   !
+   !  Unstructured peptides and peptide aggregation 
+   !  epsilon=2.0 and gamma=0.0075
 
-nbond nbxmod 5 atom cdiel eps @diele shift vatom vdistance vshift -
-      cutnb 9.0 ctofnb 7.5 ctonnb 6.5 e14fac 0.4 wmin 1.5
+   set diele 2.0
 
-scalar wmain = radius
-scalar wmain set 1.0 selection (type h*) end
+   nbond nbxmod 5 atom cdiel eps @diele shift vatom vdistance vshift -
+         cutnb 9.0 ctofnb 7.5 ctonnb 6.5 e14fac 0.4 wmin 1.5
 
-facts tcps 19 teps @diele gamm 0.0075
+   scalar wmain = radius
+   scalar wmain set 1.0 selection (type h*) end
 
-! ------------------------------------------------------------------
-!
-!  Periodic Boundary Conditions
-!  (images should be previously set up with the IMAGE facility)
-!  Print detailed informations about the atomic self-electrostatic 
-!  contributions to the energy
-!  epsilon=1.0 and gamma=0.015
+   facts tcps 19 teps @diele gamm 0.0075
 
-set diele 2.0
+   ! ------------------------------------------------------------------
+   !
+   !  Periodic Boundary Conditions
+   !  (images should be previously set up with the IMAGE facility)
+   !  Print detailed informations about the atomic self-electrostatic 
+   !  contributions to the energy
+   !  epsilon=1.0 and gamma=0.015
 
-nbond nbxmod 5 atom cdiel eps @diele shift vatom vdistance vshift -
-      cutnb 9.0 ctofnb 7.5 ctonnb 6.5 e14fac 0.4 wmin 1.5
+   set diele 2.0
 
-scalar wmain = radius
-scalar wmain set 1.0 selection (type h*) end
+   nbond nbxmod 5 atom cdiel eps @diele shift vatom vdistance vshift -
+         cutnb 9.0 ctofnb 7.5 ctonnb 6.5 e14fac 0.4 wmin 1.5
 
-facts tcps 19 teps @diele gamm 0.015 taim tpsl
+   scalar wmain = radius
+   scalar wmain set 1.0 selection (type h*) end
 
-! ------------------------------------------------------------------
+   facts tcps 19 teps @diele gamm 0.015 taim tpsl
 
 
 PARAM 22
---------
+^^^^^^^^
 
-!  epsilon=1.0 and gamma=0.015
+::
 
-set diele 1.0
+   !  epsilon=1.0 and gamma=0.015
 
-nbond nbxmod 5 atom cdiel eps @diele shift vatom vdistance vswitch -
-      cutnb 14.0 ctofnb 12.0 ctonnb 10.0 e14fac 1.0 wmin 1.5
+   set diele 1.0
 
-scalar wmain = radius
+   nbond nbxmod 5 atom cdiel eps @diele shift vatom vdistance vswitch -
+         cutnb 14.0 ctofnb 12.0 ctonnb 10.0 e14fac 1.0 wmin 1.5
 
-facts tcps 22 teps @diele gamm 0.015
+   scalar wmain = radius
 
-! ------------------------------------------------------------------
+   facts tcps 22 teps @diele gamm 0.015
 
-See also: test cases ~/charmm/test/c35test/facts_p19.inp
-                     ~/charmm/test/c35test/facts_p22.inp
+
+See also: test cases 
+
+* ~/charmm/test/c35test/facts_p19.inp
+* ~/charmm/test/c35test/facts_p22.inp
