@@ -93,9 +93,11 @@ CHARMM documentation contents
      mmfp
      molvib
      replica
+     repdstr
      rism
      sbound
      trek
+     mc
      umbrel
      fitcharge
      

@@ -1,3 +1,9 @@
+.. py::module: mmff
+
+====================================
+Merck Molecular Force Field (MMFF94)
+====================================
+
 ::
 
    CHARMM Element doc/mmff.doc 1.1
