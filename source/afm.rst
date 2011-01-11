@@ -43,15 +43,16 @@ Syntax
 
 
 .. _afm_function:
+
 ====== =====================================================================
 METHOD one of CF, BMD, SMD
-ALPHA  force constant (in pN (CF) or pN/Å (SMD/BMD)) 
-BETA   cantilever speed (in |Aring|/ps only for SMD)
+ALPHA  force constant (in pN (CF) or pN/Ã… (SMD/BMD)) 
+BETA   cantilever speed (in â„«/ps only for SMD)
 IUNJ   write the output 
 
        ::
        
-         istep rc[Å] rc_ref[Å] force[pN] energy[kcal/mol]
+         istep rc[Ã…] rc_ref[Ã…] force[pN] energy[kcal/mol]
       
         on unit IUNJ
 XIMAX  stops the run when the distance between the two selected atoms
