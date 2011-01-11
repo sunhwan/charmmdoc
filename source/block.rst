@@ -1181,97 +1181,102 @@ classified according to their functionality.
     
     .. math::
     
-       V = 
-               __
-              |   CFORCE*(lambda - REF)**NPOWER  if lambda < REF   
-          V  =| 
-              |   0                              otherwise     
-              |__
+       V = \begin{cases}
+          \mathrm{CFORCE} \cdot (\lambda - \mathrm{REF})^\mathrm{NPOWER} , & \text{ if } \lambda < \mathrm{REF}  \\
+          0, & \text{ otherwise }
+       \end{cases}
 
+    
+    CLASS 2:
+    
+    .. math::
+       V = \begin{cases}
+          \mathrm{CFORCE} \cdot (\lambda - \mathrm{REF})^\mathrm{NPOWER} , & \text{ if } \lambda > \mathrm{REF}  \\
+          0, & \text{ otherwise }
+       \end{cases}
 
-CLASS 2:
-               __
-              |   CFORCE*(lambda - REF)**NPOWER  if lambda > REF   
-          V  =| 
-              |   0                              otherwise     
-              |__
-
-
-CLASS 3:
-              
-          V  =    CFORCE*[lambda(I) - lambda(J)]**NPOWER 
+    CLASS 3:
+    
+    .. math::
+       V = \mathrm{CSFORCE} \cdot [\lambda(I) - \lambda(J)]^\mathrm{NPOWER}
             
 
 (c) LDRStart
 
-LDRStart is used only if for some reason, e.g. execution of EXIT command,
-the logical variable QLDM for the lambda dynamics has been set to false. 
-In this case, to restart the dynamics, LDRStart can be used to reset 
-QLDM = .TRUE..  However, if LDIN is also being used in restarting the 
-dynamics, it will automatically reset QLDM. Therefore, LDRS does not 
-need to be called in this case. 
+    LDRStart is used only if for some reason, e.g. execution of EXIT command,
+    the logical variable QLDM for the lambda dynamics has been set to false. 
+    In this case, to restart the dynamics, LDRStart can be used to reset 
+    QLDM = .TRUE..  However, if LDIN is also being used in restarting the 
+    dynamics, it will automatically reset QLDM. Therefore, LDRS does not 
+    need to be called in this case. 
   
 
 (d) LDERite
 
-LDWRite provides specifications for writing out lambda dynamics, i.e.
-the histogram of the lambda variables, the biasing potential etc.  The 
-integer variable IUNLdm is the FORTRAN unit on which the output data 
-(unformatted) are to be saved. The value of the integer NSAVL sets step 
-frequency for writing lambda histograms.  IUNLdm is defaulted to -1 and
-NSAVL is defaulted to 0.  Both IUNLdm and NSAVl can be reset in DYNAmics
-command (Please refer to *note dynamc:(chmdoc/dynamc.doc) for details).
+    LDWRite provides specifications for writing out lambda dynamics, i.e.
+    the histogram of the lambda variables, the biasing potential etc.  The 
+    integer variable IUNLdm is the FORTRAN unit on which the output data 
+    (unformatted) are to be saved. The value of the integer NSAVL sets step 
+    frequency for writing lambda histograms.  IUNLdm is defaulted to -1 and
+    NSAVL is defaulted to 0.  Both IUNLdm and NSAVl can be reset in DYNAmics
+    command (Please refer to :doc:`dynamc` for details).
 
-the following script will set IUNLdm with unit No. 8 and NSAVL equal to 10:
+    the following script will set IUNLdm with unit No. 8 and NSAVL equal to 10:
 
-LDWRite IUNL 8 NSAVL 10
+    ::
+    
+      LDWRite IUNL 8 NSAVL 10
 
 
 (e) RMBOnd and RMANgle
 
-Since each energy term is scaled by lambda, RMBOnd and RMANgle can prevent 
-bond breaking caused by such scaling during dynamic simulations. Alternatively
-one can fix bonds (and angles) using SHAKE. But is is not always possible.
+    Since each energy term is scaled by lambda, RMBOnd and RMANgle can prevent 
+    bond breaking caused by such scaling during dynamic simulations. Alternatively
+    one can fix bonds (and angles) using SHAKE. But is is not always possible.
 
-END
 
-
-File: BLOCK, Node: Limitations, Up: Top, Previous: Hints, Next: Examples
+
+.. _block_limitation:
+
+Limitation
+----------
 
 (1) Please be advised (again) that the AVERage command is unsupported,
-and I would not be surprised if it does not work (anymore).  Unless
-someone who understands this module better than I do maintains it, I
-recommend that we remove it.
+    and I would not be surprised if it does not work (anymore).  Unless
+    someone who understands this module better than I do maintains it, I
+    recommend that we remove it.
 
 (2) BLOCK now coexists with IMAGE "peacefully" and essentially
-transperantly to the user.  It works correctly for the case of a
-periodic water-box (cf. the block3.inp testcase).  I would, however,
-check carefully whether things really work before I would use it on
-something fancier like infinite alpha helices.  Similarly, it is not
-clear to me whether things work with the CRYSTAL facility.  If one
-modifies block3 as to use CRYSTAL instead of IMAGE things (seem to)
-work.  On the other hand, I know that I didn't support XTLFRQ in the
-post-processing routines as I don't understand its meaning.  I'll fix
-things if someone is willing to help me with the bits and pieces I
-don't understand.
+    transperantly to the user.  It works correctly for the case of a
+    periodic water-box (cf. the block3.inp testcase).  I would, however,
+    check carefully whether things really work before I would use it on
+    something fancier like infinite alpha helices.  Similarly, it is not
+    clear to me whether things work with the CRYSTAL facility.  If one
+    modifies block3 as to use CRYSTAL instead of IMAGE things (seem to)
+    work.  On the other hand, I know that I didn't support XTLFRQ in the
+    post-processing routines as I don't understand its meaning.  I'll fix
+    things if someone is willing to help me with the bits and pieces I
+    don't understand.
 
 (3) Bond and bond angle terms (including Urey-Bradleys).  Be advised
-that if you run a simulation at lambda = 0 or lambda = 1 you may
-effectively remove bond (and bond angle terms) as they get scaled by
-zero.  In other words, you would have ghost particles that can move
-freely through your systems, and this leads to all sorts of nasty
-side-effects.  Furthermore, this approach is not sound theoretically
-(S. Boresch & M. Karplus, unpublished).  So in general, avoid running
-at lambda = 0 and 1.  If you have your bonds constrained you're safe
-as the constraint will keep things together (that won't take care of
-angles however!)  In order to avoid artifacts from noisy, diverging
-bond and bond angle contributions throw them out during
-post-processing, e.g. by using the SKIP BOND ANGL UREY command before
-starting block post-processing.  If you want to see what can go wrong,
-look at the block2 test-case...
+    that if you run a simulation at lambda = 0 or lambda = 1 you may
+    effectively remove bond (and bond angle terms) as they get scaled by
+    zero.  In other words, you would have ghost particles that can move
+    freely through your systems, and this leads to all sorts of nasty
+    side-effects.  Furthermore, this approach is not sound theoretically
+    (S. Boresch & M. Karplus, unpublished).  So in general, avoid running
+    at lambda = 0 and 1.  If you have your bonds constrained you're safe
+    as the constraint will keep things together (that won't take care of
+    angles however!)  In order to avoid artifacts from noisy, diverging
+    bond and bond angle contributions throw them out during
+    post-processing, e.g. by using the SKIP BOND ANGL UREY command before
+    starting block post-processing.  If you want to see what can go wrong,
+    look at the block2 test-case...
 
-" Dual Topology Soft Core Potential"
- The new commands PSSP/NOPSsp and the optional parameters ALAM and
+Dual Topology Soft Core Potential
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The new commands PSSP/NOPSsp and the optional parameters ALAM and
 DLAM control the interactions between soft core potentials and BLOCK, 
 which is essentially the same as the PSSP command in the PERT soft 
 core (see pert.doc). After you specify PSSP inside BLOCK, soft core 
@@ -1286,7 +1291,9 @@ of PSSP, all further calls of EVDW will use soft core interactions.
 To turn this off, please use the NOPSsp keyword inside BLOCK/END pair.
 So far, FAST OFF is recommended." -- New by H. Li and W. Yang 
 
-"Adaptive Integration (ADIN) Method for Hybrid MD/MC Simulation"
+Adaptive Integration (ADIN) Method for Hybrid MD/MC Simulation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 In order to overcome the trapped distribution at certain lambda value in the
 chemical space hybrid MD/MC simulation, adaptive integration method was
 implemented. In this method, the biasing free energy potential is derived
@@ -1298,7 +1305,9 @@ when there is severe end point singularity problem. Its general efficiency is
 lower than the simulated scaling method, which does not suffer from end point
 singularity problems. - by Lianqing Zheng and Wei Yang
 
-"Theta-dynamics"
+Theta-dynamics
+^^^^^^^^^^^^^^
+
 This is an alternative method for the original lambda-dynamics. Lambda**2 is
 replaced by sin(theta)**2 and (1-lambda**2) by cos(theta)**2. Theta, instead
 of lambda, now is the variable for propagation. This implementation can avoid
@@ -1307,11 +1316,16 @@ Multiplier boundary treatment. In the theta-dynamics, history dependent
 approaches can work very nicely with no danger of being trapped at the end
 points. - by Lianqing Zheng and Wei Yang
 
-
-File: BLOCK, Node: Examples, Up: Top, Previous: Limitations, Next: Top
+
+.. _block_examples:
+
+Examples
+--------
 
 Here is an example of independently scaling the attractive
 and repulsive terms in the Lennard-Jones interaction:
+
+::
 
   ! scale the interaction parameters
   block 2
