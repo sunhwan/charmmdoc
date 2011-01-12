@@ -1,24 +1,17 @@
-CHARMM Element doc/apbs.doc $Revision: 1.1 $
-
-File: APBS, Node: Top, Up: (chmdoc/commands.doc), Next: Description
+.. py:module:: apbs
 
-                Adaptive Poisson-Boltzmann Solver (APBS)
+========================================
+Adaptive Poisson-Boltzmann Solver (APBS)
+========================================
 
-    The APBS module integrates APBS (Adaptive Poisson-Boltzmann
+The APBS module integrates APBS (Adaptive Poisson-Boltzmann
 Solver, http://agave.wustl.edu/apbs) with CHARMM. For detailed
 documentation and implementation information please see the official
 iAPBS web site http://mccammon.ucsd.edu/iapbs
 
 Please send any comments or bug reports to Robert Konecny (rok@ucsd.edu).
 
-* Menu:
-
-* Syntax::      Syntax of the PBEQ commands
-* Function::    Purpose of each of the commands
-* Examples::    Usage examples of the PBEQ module
-
-
-File: APBS, Node: Description, Up: Top, Previous: Top, Next: Syntax
+.. _apbs_description:
 
 Description
 -----------
@@ -42,8 +35,7 @@ Since this module's functionality overlaps in many aspects
 functionality of the CHARMM's PBEQ module please read also pbeq.doc
 file and example input files.
 
-
-File: APBS, Node: Syntax, Up: Top, Previous: Description, Next: Installation
+.. _apbs_syntax:
 
 Syntax
 ------
@@ -55,8 +47,7 @@ APBS/CHARMM documentation
 (http://mccammon.ucsd.edu/iapbs/usersguide/index.html) for specific
 instructions for using APBS inside of CHARMM.
 
-
-File: APBS, Node: Installation, Up: Top, Previous: Syntax, Next: Examples
+.. _apbs_installation:
 
 Installation
 ------------
@@ -72,17 +63,17 @@ In summary:
 2. set the following environment variables APBS_LIB, IAPBS_LIB,
    APBS_BLAS:
 
-   APBS_LIB  - points to where libapbs.lib and libmaloc.a are installed
-   IAPBS_LIB - points to where iapbs.a is installed
-   APBS_BLAS "-L${BLAS_LIB} -llapack -lcblas -lf77blas -latlas"
-	     where BLAS_LIB is a directory where BLAS library is
-	     located; these flags are BLAS-dependent, the above
-	     example works with ATLAS
+   * APBS_LIB  - points to where libapbs.lib and libmaloc.a are installed
+   * IAPBS_LIB - points to where iapbs.a is installed
+   * APBS_BLAS "-L${BLAS_LIB} -llapack -lcblas -lf77blas -latlas"
+	     
+	  where BLAS_LIB is a directory where BLAS library is
+	  located; these flags are BLAS-dependent, the above
+	  example works with ATLAS
 
 3. run 'install.com gnu medium APBS' to compile APBS-enabled CHARMM
 
-
-File: APBS, Node: Examples, Up: Top, Previous: Installation, Next: Top
+.. _apbs_examples:
 
 Examples
 --------
@@ -90,85 +81,93 @@ Examples
 There are three example input files provided with this release:
 
 Example (1)
+^^^^^^^^^^^
 
-- Simple calculation of electrostatic energies (apbs_elstat.inp)
+Simple calculation of electrostatic energies (apbs_elstat.inp)
 
 This shows how to do a single point electrostatic evaluation on a
 molecule. The result is electrostatic energy of the molecule.
 
-PBEQ
-  stream @0radius.str
+::
 
-  APBS mgauto lpbe dimx 65 dimy 65 dimz 65 -
-  cglx 30 cgly 30 cglz 30 fglx 15 fgly 15 fglz 15 -
-  srfm 2 -
-  calcene 1 -
-  sele all END
+   PBEQ
+     stream @0radius.str
 
-  set elstaten80 = ?enpb
+     APBS mgauto lpbe dimx 65 dimy 65 dimz 65 -
+     cglx 30 cgly 30 cglz 30 fglx 15 fgly 15 fglz 15 -
+     srfm 2 -
+     calcene 1 -
+     sele all END
 
-  APBS mgauto lpbe dimx 65 dimy 65 dimz 65 -
-  cglx 30 cgly 30 cglz 30 fglx 15 fgly 15 fglz 15 -
-  srfm 2 sdie 1.0 -
-  calcene 1 -
-  sele all END
+     set elstaten80 = ?enpb
 
-  set elstaten1 = ?enpb
+     APBS mgauto lpbe dimx 65 dimy 65 dimz 65 -
+     cglx 30 cgly 30 cglz 30 fglx 15 fgly 15 fglz 15 -
+     srfm 2 sdie 1.0 -
+     calcene 1 -
+     sele all END
 
-END
+     set elstaten1 = ?enpb
 
-!  Electrostatic free energy of solvation
-calc solv = @elstaten80 - @elstaten1
+   END
+
+   !  Electrostatic free energy of solvation
+   calc solv = @elstaten80 - @elstaten1
 
 
 Example (2)
+^^^^^^^^^^^
 
-- Molecular dynamics in implicit solvent (apbs_md.inp)
+Molecular dynamics in implicit solvent (apbs_md.inp)
 
 This is an example of a short molecular dynamics simulation in
 implicit solvent using APBS-calculated solvation forces.
 
-PBEQ
-   set factor 0.939
-   set sw     0.4
-   stream @0radius.str
-   scalar wmain add  @sw
-   scalar wmain mult @factor
-   scalar wmain set 0.0 sele type H* end
+::
 
-  APBS mgauto lpbe dimx 65 dimy 65 dimz 65 -
-  cglx 30 cgly 30 cglz 30 fglx 15 fgly 15 fglz 15 -
-  swin @sw srfm 2 -
-  calcene 1 calcfor 1 -
-  sforce -
-  sele all END
-END
+   PBEQ
+      set factor 0.939
+      set sw     0.4
+      stream @0radius.str
+      scalar wmain add  @sw
+      scalar wmain mult @factor
+      scalar wmain set 0.0 sele type H* end
 
-skip none
+     APBS mgauto lpbe dimx 65 dimy 65 dimz 65 -
+     cglx 30 cgly 30 cglz 30 fglx 15 fgly 15 fglz 15 -
+     swin @sw srfm 2 -
+     calcene 1 calcfor 1 -
+     sforce -
+     sele all END
+   END
 
-dynamics leap verlet strt nstep 20 timestep 0.001 -
-firstt 100.0 finalt 300.0 teminc 100.0 -
-twindh 10.0
+   skip none
+
+   dynamics leap verlet strt nstep 20 timestep 0.001 -
+   firstt 100.0 finalt 300.0 teminc 100.0 -
+   twindh 10.0
 
 
 Example (3)
+^^^^^^^^^^^
 
-- Visualization of calculated elstat properties (apbs_vis.inp)
+Visualization of calculated elstat properties (apbs_vis.inp)
 
 This input file show how to generate properties files (electrostatics,
 SASA and charge) which can be then visualized using an external
 application (VMD, PyMol, OpenDX, etc; for details please see the APBS
 Tutorial at http://agave.wustl.edu/apbs/doc/html/tutorial/index.html).
 
+::
 
-PBEQ
-   stream @0radius.str
+   PBEQ
+      stream @0radius.str
 
-  APBS mgauto lpbe dimx 65 dimy 65 dimz 65 -
-  cglx 30 cgly 30 cglz 30 fglx 15 fgly 15 fglz 15 -
-  calcene 1 -
-  ionq1 1.0 ionc1 0.15 ionr1 2.0 ionq2 -1.0 ionc2 0.15 ionr2 2.0 -
-  wpot wsmol wchg -
-  sele all END
+     APBS mgauto lpbe dimx 65 dimy 65 dimz 65 -
+     cglx 30 cgly 30 cglz 30 fglx 15 fgly 15 fglz 15 -
+     calcene 1 -
+     ionq1 1.0 ionc1 0.15 ionr1 2.0 ionq2 -1.0 ionc2 0.15 ionr2 2.0 -
+     wpot wsmol wchg -
+     sele all END
 
-END
+   END
