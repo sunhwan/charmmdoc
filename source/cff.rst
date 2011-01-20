@@ -1,4 +1,4 @@
-py:module:: cff
+.. py:module:: cff
 
 ============================
 Consistent Force Field (CFF)

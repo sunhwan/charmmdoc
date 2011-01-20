@@ -1,5 +1,4 @@
-py:module:: changelog
-
+
 =============================
 CHARMM Developer's Change Log
 =============================

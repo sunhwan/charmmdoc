@@ -1,4 +1,4 @@
-py:module:: cfti
+.. py:module:: cfti
  
 ====================================================
 CFTI: conformational energy/free energy calculations
