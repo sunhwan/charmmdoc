@@ -1,0 +1,356 @@
+.. py:module:: ensemble
+
+ENSEMBLE averaging / replica exchange
+-------------------------------------
+
+By Robert Best
+
+The ENSEMBLE module of CHARMM permits one to start a number of
+copies of CHARMM, communicating using MPI, with some small amount
+of information being shared between the copies. There are a number
+of applications of this:
+
+(i) to average restraints over an ensemble (especially
+    useful for NOE's/spin labels in unfolded states (1,2).
+(ii) to perform replica-exchange (parallel tempering) (3)
+     simulations at a number of temperatures to enhance
+     sampling. 
+(iii) to do replica exchange between different energy functions.
+      (e.g. between different umbrella windows) (4).
+(iv) exponential averaging of different force-fields (5).
+
+Many other applications can be envisaged. 
+
+This feature is still quite new and it is advisable to stick
+closely to the test cases to start with. 
+
+* References:
+
+  1. R. B. Best & M. Vendruscolo, JACS, 126, 8090-8091 (2004) + supp info.
+  2. R. B. Best, J. Clarke & M. Karplus, J. Mol. Biol., 349, 185-203 (2005).
+  3. K. Lindorff-Larsen, R. B. Best, M. A. DePristo, C. M. Dobson &
+     M. Vendruscolo, Nature, 433, 128-132 (2005).
+  4. R. B. Best & G. Hummer, unpublished.
+  5. R. B. Best, Y-G. Chen and G. Hummer, Structure, 13, 1755-1763 (2005).
+
+.. note::
+
+   NOTES ON BUILDING THE ENSEMBLE CODE: These are both valid (one of LAMMPI or MPICH must be specified)
+   
+   ::
+   
+      $> ./install.com gnu medium g77 E LAMMPI
+      $> ./install.com gnu medium g77 E MPICH 
+      
+   It should also work with other compilers.
+   I use the following for an ensemble-specific build directory:
+   
+   ::
+   
+      $> ./install.com gnu.ensemble medium g77 E LAMMPI 3
+      
+   '3' selects stopmark 3 so you can build using make in the build
+   directory without any further trafficking with install.com.
+
+.. warning::
+
+   ENSEMBLE IS INCOMPATIBLE WITH PARALLEL
+
+
+.. _ensemble_syntax:
+
+Replica exchange commands:
+--------------------------
+
+::
+
+   ENSEMBLE EXCH T2REp integer REP2t integer FREQ integer MAPU integer -
+           [ AUTO LOWT real TGRAD real PSWAP real | TEMP1 TEMP2 ... TEMPN ]
+
+   ENSEMBLE [SWON | SWOFF]
+
+   ENSEMBLE WRITE UNIT integer
+
+   ENSEMBLE INFO
+
+General commands:
+-----------------
+
+::
+
+   ENSEMBLE OPEN UNIT integer [READ | WRITE] file-type filename
+           file-type is one of CARD, FILE, etc. as for normal OPEN
+
+   ENSEMBLE CLOSE UNIT integer
+
+   ENSEMBLE SEED [ROOT integer]
+
+Force-field averaging (used for "multi-Go", for example)
+--------------------------------------------------------
+
+::
+
+   ENSEMBLE EXPAvg BETA real [ UNIT real ] -
+            OFFSet real_1 real_2 ... real_nensem
+
+
+.. _ensemble_description:
+
+General Description
+-------------------
+
+The CHARMM run is started using MPI commands to specify the number of processes
+(replicas) to use, each of which is an identical copy of charmm. This number
+is automatically passed by MPI to each copy of the executable, and it is set to
+the internal CHARMM variable :sub:`nensem`, which can be used in scripts, e.g.
+
+::
+
+   set nrep ?nensem
+
+The other internal variable set automatically via MPI is :sub:`whoiam`, e.g.
+
+::
+
+   set node ?whoiam
+
+These are useful for giving different file names to different nodes.
+
+This implementation differs from other implementations of replica exchange
+(excluding those based on external scripting), for example the closely related
+REPDstr function in CHARMM, or that in GROMACS, in that all processes take
+input from the same file rather than reading different files. Reading from a
+single file requires a few additional commands, but has the advantage that all
+simulation input is contained in one place.
+
+The root node (whoiam = 0) reads the input file and passes it line by line to
+all other nodes. So it is as if each node reads the input file itself, but
+substituting its own internal variables, and each node maintains a completely
+independent copy of all data.  This allows dynamics to be run much as usual,
+with all nodes happily unaware of the others, apart from the communication
+entailed in replica-exchange or force-field averaging. A few points about I/O.
+There are two options for opening and closing files:
+
+(i) the usual 'open ...' and 'close ...'
+(ii) 'ensemble open ...' and 'ensemble close'
+
+Syntax is:
+
+::
+
+   ENSEMBLE OPEN UNIT integer [READ | WRITE] file-type filename
+          ! Opens a separate file for each replica. Analogous to normal
+          ! OPEN. File-type is one of CARD, FILE, etc. as for normal OPEN
+
+   ENSEMBLE CLOSE UNIT integer
+          ! Analogous to normal close, but closes units for all replicas.
+
+The syntax for the ensemble versions is almost exactly the same.
+When a file is opened with 'open'/'close', it will only be read/written
+to by the root node. With 'ensemble open'/'ensemble close', each node
+reads/writes independently. You will probably need to give different
+file names for different nodes, certainly for output, e.g.
+
+::
+
+   set node ?whoiam
+   ensemble open unit 20 write file name 'traj_@NODE.dcd'
+
+Files that must be opened with ensemble:
+
+* trajectories (coord/velocities/..)
+* restart files
+* energy files from dynamics runs
+* any other dynamics output which will differ between replicas
+* coordinate writing
+* experimental data files for HQBM
+
+Files that must not be opened with ensemble:
+
+* iunj,iund, etc. files from HQBM
+* eef1 solvation parameters
+
+Files which can be opened either with ensemble or not depending on purpose:
+
+* Topology and parameter files. If these are opened with ensemble,
+  in principle a different force-field may be read by each executable
+  if different file names are specified.
+* Coordinates for reading -- if opened ensemble, each copy can
+  read different coordinates
+
+DO NOT try to close units with 'CLOSE' that have been opened with
+'ENSEMBLE OPEN' & vice versa. These errors should be caught, but
+best to be safe.
+
+Initialization
+--------------
+
+For most ensemble averaged restraints, starting all replicas with the same
+coordinates and velocities this is a waste of time (and is one pathological
+case where an N-replica simulation will behave exactly like a single replica).
+Thusly, one should assign either or both different random seeds (see below) and
+different starting coordinates to different replicas. Bear in mind that not all
+integration schemes in CHARMM actually use a random seed from the dyna command
+(e.g. NOSE does not, but LEAP VERLET does).
+
+::
+
+   e.g. for assigning different seeds
+   if ?whoiam .eq. 0 set seed 23832
+   if ?whoiam .eq. 1 set seed 9375283
+   etc...
+   Then use "dyna start ... iseed @seed ..."
+
+
+.. _ensemble_replica_exchange:
+
+Replica Exchange
+----------------
+
+.. warning::
+
+   THE REPLICA EXCHANGE FEATURE IS STILL NOT THOROUGHLY TESTED AND
+   SHOULD THEREFORE BE USED WITH CAUTION.
+
+At present, only the main dynamics integrator in charmm (that is, the
+three-step verlet in dynamc.src) is fully supported by this command. Thus
+'DYNA NOSE' etc. will not work, but 'DYNA LEAP' will.
+
+An earlier version of this code required a deconvolution of coordinates
+written at different temperatures. However, since the overhead for 
+coordinate swapping is so low, it is easier to do it during the run
+and that is how it is done at present. A record of swaps is still
+written out for information.
+
+NEW IN C34: 
+
+- Constant pressure MD 
+- Support for VV2 integrator (incl. constant pressure)
+
+The idea will not be described here, see Sugita & Okamoto, Chem. Phys. Lett.
+314, 141-151 (1999), for example.
+
+When starting off, replica exchange is turned off. To turn it on and
+set up temperatures use:
+
+::
+
+   ENSEMBLE EXCH T2REp integer REP2t integer FREQ integer MAPU integer -
+           [ RULEs integer ] -
+           [ AUTO LOWT real TGRAD real PSWAP real | TEMP1 TEMP2 ... TEMPN ]
+           T2RE integer: unit to write map of replica(T) as sim progresses
+           REP2 integer: unit to write map of T(replica) as sim progresses
+           (yes, this is redundant!)
+           FREQ integer: frequency in MD timesteps for attempting swaps
+           ##deprecated: MAPU integer: file to read a final temperature map
+                         in order to restart dynamics ##
+           RULEs integer: number of unit to read allowed swaps from.
+               The format of this file is
+               ----------8<--------------8<-------------
+               NRULE
+               I_1     J_1
+               I_2     J_2
+               ...
+               I_NRULE J_NRULE
+               ----------8<--------------8<-------------
+               where NRULE is the number of allowed swaps and subsequent
+               lines detail the pairs of nodes that are allowed to swap
+               Nodes are numbered from 1...NENSEM
+           AUTO LOWT real TGRAD real PSWAP real: this is the first way to
+               set up replica temperatures. Just specify the lowest
+               temperature you want, the gradient of potential energy
+               as a function of T (determined from a few trial
+               simulations), and  the desired probability of
+               swapping replicas. This assumes a delta function for
+               the energy distributions, which is clearly incorrect.
+           TEMP1 TEMP2 ... TEMPN: specify temperatures manually - must give
+               as many as there are replicas!
+
+   ENSEMBLE [SWON | SWOFF]: turn replica exchange on/off. Can be useful to 
+           have it off for initial equilibration.
+
+   ## deprecated: ENSEMBLE WRITE UNIT integer: write temperature map to unit for restart
+           purposes (read in using MAPU in ENSE EXCH). ##
+
+   ENSEMBLE INFO: print out info about replica temperatures, etc.
+
+
+.. _ensemble_ensemble_restraints:
+
+Ensemble restraints
+-------------------
+
+This is mostly documented in :doc:`hqbm`. The only relevant commands
+are the 'general' ones above. Note comments about random seeds!
+
+.. _ensemble_force_field_averaging:
+
+The "ENSEmble EXPAvg" command invokes exponential averaging of different
+force-fields. Each node reads a different force-field (by using node-dependent
+names for the force-field files, for example), and the different potentials
+are averaged with the following function:
+
+::
+
+   exp(-beta_mix * E(R)) = exp(-beta_mix * {E_1(R) + off_1}) + ... 
+                           + exp(-beta_mix * {E_nensem(R) + off_nensem})
+
+(see Structure paper reference in intro) beta_mix is analogous to the 
+standard beta = 1/kT but need not correspond to the temperature at which 
+simulations are run.
+
+All nodes propagate exactly the same dynamics, but each evaluates only one
+energy function, and the forces and energies are subsequently shared at each
+time step to calculate the average. 
+
+The meaning of the various parts of the command:
+
+::
+
+   ENSEMBLE EXPAvg BETA real [ UNIT integer ] -
+            OFFSet real_1 real_2 ... real_nensem
+
+   BETA: specifies beta_mix
+   UNIT: specifies a formatted unit to write energies every NPRINT steps
+         during MD.
+   OFFSet: specifies offsets off_1 ... off_nensem. This allows the relative
+           energies of the different force-fields to be tuned, e.g.
+           to match experimental data
+
+
+.. _ensemble_test_cases:
+
+TESTCASES
+---------
+
+To run ensemble tests for architecture "arch", use the following 
+command in the test directory:
+
+::
+
+   ./test.com E arch 
+   
+in this case the optional fourth command specifying target will be ignored.
+
+This will run four processes for each test case; the
+following test cases (all names ending "_ens.inp") will
+be run.
+
+c33test
+^^^^^^^
+
+::
+
+   hqbm_rc3_ens.inp: }  Ensemble-averaged restraints 
+   hqbm_rc4_ens.inp: }  See hqbm.doc
+   hqbm_rc8_ens.inp: }                   
+   rex_ens.inp: Simple example of replica exchange with different temperatures
+
+c34test
+^^^^^^^
+
+::
+
+   hexrex_ens.inp: Simple example of replica exchange with different force-fields
+   rex2_ens.inp: Example of 2D replica exchange with a custom rules for swapping
+   multi_ens.inp: Exponential averaging of some simple harmonic potentials
