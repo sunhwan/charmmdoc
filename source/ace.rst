@@ -21,6 +21,7 @@ Please report problems to Michael Schaefer at schaefer@piaf.u-strasbg.fr
 
 
 REFERENCES:
+
 *  M. Schaefer & M. Karplus (1996) J. Phys. Chem. 100, 1578-1599.
 *  M. Schaefer, C. Bartels & M. Karplus (1998) J. Mol. Biol. 284, 835-847.
 *  N. Calimet, M. Schaefer & T. Simonson, (2001) Proteins 45, 144-158
