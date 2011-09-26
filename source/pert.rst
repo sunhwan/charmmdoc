@@ -786,7 +786,7 @@ The total free energy of is stored in 'WHAMFE' substitution viriable.
 Some references on WHAM:
 
 * S. Kumar, D. Bouzida, R.H. Swendsen, P.A. Kollman, and J.M. Rosenberg.
-* J. Comp. Chem. 13, 1011--1021 (1992).
+  J. Comp. Chem. 13, 1011--1021 (1992).
 * E.M. Boczko and C.L. Brooks III.  J. Phys. Chem. 97, 4509--4513 (1993).
 * A.M. Ferrenberg and R.H. Swendsen.  Phys. Rev. Lett. 63, 1195--1198 (1989).
 * C.M. Bennet.  J. Comp. Phys. 22, 245--268 (1976).
