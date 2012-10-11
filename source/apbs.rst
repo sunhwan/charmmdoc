@@ -5,7 +5,7 @@ Adaptive Poisson-Boltzmann Solver (APBS)
 ========================================
 
 The APBS module integrates APBS (Adaptive Poisson-Boltzmann
-Solver, http://agave.wustl.edu/apbs) with CHARMM. For detailed
+Solver, http://www.poissonboltzmann.org/apbs) with CHARMM. For detailed
 documentation and implementation information please see the official
 iAPBS web site http://mccammon.ucsd.edu/iapbs
 
@@ -42,7 +42,7 @@ Syntax
 
 The APBS/CHARMM module mimics APBS syntax as close as possible. For
 detailed description and discussion of all APBS parameters please see
-APBS documentation (http://agave.wustl.edu/apbs/doc/index.html) and
+APBS documentation (http://www.poissonboltzmann.org/apbs/doc/index.html) and
 APBS/CHARMM documentation
 (http://mccammon.ucsd.edu/iapbs/usersguide/index.html) for specific
 instructions for using APBS inside of CHARMM.
@@ -52,7 +52,7 @@ instructions for using APBS inside of CHARMM.
 Installation
 ------------
 
-For complete installation instructions please see 
+For complete installation instructions please see
 http://mccammon.ucsd.edu/iapbs/usersguide/index.html
 
 In summary:
@@ -63,10 +63,10 @@ In summary:
 2. set the following environment variables APBS_LIB, IAPBS_LIB,
    APBS_BLAS:
 
-   * APBS_LIB  - points to where libapbs.lib and libmaloc.a are installed
-   * IAPBS_LIB - points to where iapbs.a is installed
+   * APBS_LIB  - points to where libapbs.a and libmaloc.a are installed
+   * IAPBS_LIB - points to where libiapbs.a is installed
    * APBS_BLAS "-L${BLAS_LIB} -llapack -lcblas -lf77blas -latlas"
-	     
+
 	  where BLAS_LIB is a directory where BLAS library is
 	  located; these flags are BLAS-dependent, the above
 	  example works with ATLAS
@@ -156,7 +156,7 @@ Visualization of calculated elstat properties (apbs_vis.inp)
 This input file show how to generate properties files (electrostatics,
 SASA and charge) which can be then visualized using an external
 application (VMD, PyMol, OpenDX, etc; for details please see the APBS
-Tutorial at http://agave.wustl.edu/apbs/doc/html/tutorial/index.html).
+Tutorial at http://www.poissonboltzmann.org/apbs/doc/html/tutorial/index.html).
 
 ::
 
