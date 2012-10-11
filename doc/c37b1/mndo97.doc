@@ -1,0 +1,236 @@
+CHARMM Element doc/mndo97.doc $Revision: 1.4 $
+
+File: Mndo97, Node: Top, Up: (chmdoc/commands.doc), Next: Description
+
+
+      Combined Quantum Mechanical and Molecular Mechanics Method
+                       Based on MNDO97 in CHARMM
+
+                     by Paul Bash (pabash@nwu.edu)
+
+                       Additional modifications
+             Kwangho Nam(nam@chem.umn.edu) and Darrin York
+
+
+* Menu:
+
+* Description::         Description of the MNDO97 commands
+* Usage::               How to run MNDO97 in CHARMM
+* NEWD::                NEWD Command
+* Installation::        How to install MNDO97 in CHARMM environment
+
+
+File: mndo97, Node: Description, Up: Top, Next: Usage, Previous: Top
+
+
+    The MNDO97 QM potential is initialized with the MNDO97 command.
+
+
+[SYNTAX MNDO97]
+
+MNDO97   [REMOve] [EXGRoup] (atom selection) [UNIT int]
+         [GLNK atom-selection]
+
+         [NEWD int] ewald-spec
+
+    ewald-spec::=  { [ KMAX integer ]                        } KSQMAX integer
+                   { KMXX integer KMXY integer KMXZ integer  }
+
+REMOve:  Classical energies within QM atoms are removed.
+
+EXGRoup: QM/MM Electrostatics for link host groups removed.
+
+UNIT:    Fortran unit for MNDO97 input file. (refere following example)
+
+GLNK:    GHO method implementation (refer qmmm.doc).
+
+
+
+     The syntax of the MNDO97 command in CHARMM follows closely that
+of the GAMESS command.
+
+
+File: Mndo97, Node: Usage, Up: Top, Next: NEWD, Previous: Description
+
+
+     For complete information about MNDO97 input see MNDO97 documentation.
+
+     A QM-MM job using MNDO97 needs two input files.  The first is the
+normal CHARMM input file containing the MNDO97 command. The second file is
+the normal MNDO97 input file.
+
+
+Mndo97 Input File
+-----------------
+For the MNDO97 input file all the keywords are required as for a stand
+alone MNDO97 calculation.  The CHARMM minimizer is used so an MNDO97
+run with only an energy and gradient calculation is necessary.
+
+
+Examples
+--------
+An example of a MNDO97 input file to run with CHARMM: (for example, this file
+named as "mndo.inp")
+
+ iop=0  jop=-2  iform=2  igeom=1 + kharge=0 nprint=-5 mprint=-5
+ mminp=2 numatm=7 mmcoup=2 mmpot=7 mmfile=-1 ipsana=1
+LYSINE
+                                                                                
+86  84.122 1 39.595 1 47.383 1
+6  84.879 1 40.615 1 46.561 1
+1  84.209 1 41.474 1 46.345 1
+1  85.187 1 40.149 1 45.601 1
+6  86.125 1 41.126 1 47.288 1
+1  86.886 1 40.317 1 47.281 1
+1  85.845 1 41.349 1 48.339 1
+6  86.761 1 42.385 1 46.686 1
+1  86.016 1 43.208 1 46.649 1
+1  87.116 1 42.176 1 45.654 1
+6  87.922 1 42.778 1 47.563 1
+1  88.790 1 42.117 1 47.353 1
+1  87.628 1 42.695 1 48.631 1
+7  88.359 1 44.196 1 47.319 1
+1  87.569 1 44.842 1 47.519 1
+1  88.652 1 44.303 1 46.327 1
+   0     0.0000000000 0     0.0000000000 0     0.0000000000 0
+
+See the documentation for MNDO97 for a description of the MNDO97 keywords.
+Each atom to be treated QM MUST be listed explicity in this MNDO97
+input file.  They MUST be in the same order as the CHARMM coordinate file.
+MNDO97 is called the first time using this input file and coordinates,
+and does an initial setup and calculates one energy and gradient.  
+Subsequent energy and force calculations use coordinates from CHARMM
+data structures.  Atom "86" above is a special "link" termination atom,
+which may be used instead of a hydrogen.  This may work better in some
+instances than a hydrogen.  Atom 86 is only parameterized for C-C single
+bond.
+
+ Current implementation has a limit is choosing non-bonded options. All 
+atom based cutoffs methods is not fully supported for a certain boundary
+conditions such as periodic boundary condition. In any case, the QM-MM
+non-bond generation routine will only generate the non-bond list based
+on group-group separation scheme. Especially to use any periodic boundary 
+conditions, it is strongly recomented to use group based cutoff scheme.
+ 
+
+A sample shell script to run CHARMM with MNDO97 is:
+
+* Y160F simulation with NHDP isocitrate
+*
+
+! open topology and parameter files
+open unit 10 form read name top_all22_prot_na.inp
+read rtf card unit 10
+close unit 10
+
+open unit 11 form read name par_all22_prot_na.inp
+read param card unit 11
+close unit 11
+
+bomb -3
+
+
+! open appropriate coordinate file
+
+open unit 12 form read name lysn.pdb
+read sequ coor resi pdb unit 12
+rewind unit 12
+generate 7tim first none last none setup warn
+
+read coor resi pdb unit 12
+close unit 12
+
+
+update 
+
+! Before call MNDO command, MNDO97 input file should be opened 
+! and the unit of that file should be specified in MNDO command.
+!
+! call the MNDO command
+! initial setup energy and gradient calculation
+! It is possible at this point to run MNDO97 stand alone
+! by changing the MNDO97 input to do a geometry optimization
+! One would want to place a "stop" command after this command.
+open read unit 66 form name mndo.inp 
+mndo unit 66 sele all end remo
+
+! calculate the energy using coordinates from CHARMM
+energy
+
+! do an energy minimization
+mini abnr nstep 500 nprint 1
+
+! write out coordinates
+open unit 22 form write name lysn_min.pdb
+write coor pdb unit 22
+* water
+*
+close unit 22
+
+stop
+
+To run MNDO97/CHARMM one may use the following script:
+
+At the moment, MNDO97's input file needs to be opened before call MNDO. 
+
+
+File: Mndo97, Node: NEWD, Up: Top, Next: Installation, Previous: Usage
+
+                        Description of the NEWE Command
+
+[ NEWD int ] ewald-spec
+
+   ewald-spec::=  { [ KMAX integer ]                        } KSQMAX integer
+                  { KMXX integer KMXY integer KMXZ integer  }
+
+A simple Ewald sum method is implemented into the QM/MM potential. A full
+description of theory is described in J. Chem. Theory. Comput. (2005) 1, 2.
+This is based on regular Ewald sum method and share similar keywords
+(see ewald.doc).
+
+The defaults for the QM/MM-Ewald calculations are set internallya and are
+currently set to NEWD -1, KMAX=5, KSQMax=27, where the KMAX keyword is the
+number of kvectors (or images of the primary unit cell) that will be summed
+in any direction.  It is the radius of the Ewald summation. For orthorombic
+cells, the value of kmax may be independently specified in the x, y, and z
+directions with the keywords KMXX, KMXY, and KMXZ.  But, different from
+regular Ewald in CHARMM, it has no limitation on the shape of box, and can be
+used with PMEwald in MM part.
+
+The KSQMax key word should be chosen between  KMAX squared and 3 times
+KMAX squared, and KAPPA value share the exact same number you use in Nonbond
+options.
+
+
+File: Mndo97, Node: Installation, Up: Top, Next: Top, Previous: NEWD
+
+MNDO97/CHARMM interface status (February 1997)
+
+- MNDO97, CADPAC, GAMESS and QUANTUM keywords cannot coexist in pref.dat
+
+- The program runs on GNU, SGI, ALTIX, and IBMSP machines.
+
+To compile MNDO97 with CHARMM one uses:
+
+install.com [machine] [size] W
+
+The "W" specifies to compile and link MNDO97 with CHARMM. The MNDO97
+code MUST be in a subdirectory called "mndo97q" that resides in 
+$chmroot/source/mndint.  mndint.src contains the QM/MM interface code.
+It is similar to cadint.src and gamint.src.
+
+In $chmroot/source/mndint/mndo97q are files such as irixx.mak, aix4.mak,
+and etc. These files must be linked to machine.mak in order for the mndo97
+code to compile properly for a given machine.  For example, on the IBMSP
+aix4.mak was used to compile the code.  install.com is already set up
+to make this link for both an IBMSP, GNU, ALTIX, and SGI.  See install.com
+for details and to make changes for other machines.  Also, located in 
+$chmroot/source/mndint/mndo97q is a file called "changes_qmmm".  This
+file lists changes made to the original mndo97 code required due
+primarily to conflicts with variable names in CHARMM.  These variables
+may be changes in subsequent versions of MNDO97.
+
+Note on GNU machine, before start compiling the program, the compiler
+should be determined and modify source/mndint/mndo97q/gnu.mak file
+correspondingly. Otherwise, the error will occur. Currently, several
+compilers are tested, including g77 and ifort.

@@ -1,0 +1,422 @@
+CHARMM Element doc/install.doc 1.1
+
+File: Install, Node: Top, Up: (chmdoc/charmm.doc), Previous: (chmdoc/commands.doc), Next: (chmdoc/usage.doc)
+
+
+                      CHARMM Release and Installation
+
+Welcome to the Fortran95 conversion of CHARMM, the result of about two
+years of intense effort by a core group of developers, and major
+contributions from many of the active development sites.  Note that while 
+all of the features included by default have been fully converted and
+verified via cross testing vs. different compilers and pre-conversion
+code, some optional features may not yet be functional; caveat emptor.
+
+Two new performance features available for the first time with this release are an
+implementation of the domain decomposition code of D.E. Shaw (chmdoc/domdec.doc)
+and an interface to the GPU based OpenMM code from Vijay Pandy (chmdoc/openmm.doc).
+
+Problems and questions related to the installation and post-installation
+testing of CHARMM may be posted in the "Installation and Performance"
+forum at www.charmm.org (registration required to post).
+
+This document contains a formal definition of the current CHARMM release
+followed by a detailed installation procedure.  We describe here
+features and end-line-user-site installation.  Issues regarding
+developer sites are documented in *note Develop: (chmdoc/developer.doc). 
+
+
+* Menu:
+
+* Contents::      List of Contents of the current release
+* Machines::      Machines supported
+* Install::       Installation Procedure
+* Documentation:: CHARMM Documentation via emacs INFO program
+* TOPPAR::        Standard CHARMM Topology and Parameter Files
+* UserForm::      CHARMM User Group support
+
+
+File: Install, Node: Contents, Up: Top, Previous: Top, Next: Machines
+
+
+                          CHARMM Release Package
+
+
+The CHARMM release package for CHARMM developers and user sites includes
+
+    (1) complete source and include files,
+    (2) updated documentation files,
+    (3) some supporting data files,
+    (4) testcases,
+    (5) the PREFX preprocessor and tools needed to set up CHARMM
+        development environments and 
+    (6) standard topology and parameter files.
+
+    The files are organized in the followoing subdirectories.
+~/ denotes the directory where you have unpacked (via tar) the CHARMM
+release package delivered to you.  In ~/cnnXm, nn is the version number,
+X is the version trunk designator (a for alpha or developmental, b for beta
+release and c for gamma or general release) and m is the revision
+number.  For example, c36b1 is CHARMM version 36 beta release revision 1.
+
+  ~/cnnXm/                 The main directory of CHARMM
+
+  ~/cnnXm/source/          Contains all CHARMM source files
+
+  ~/cnnXm/doc/             The most recent CHARMM documentation
+                           If 'info' is available on your host
+                           machine, you may 'soft' link this directory
+                           to the info directory to access the
+                           documentation via the info program.
+
+  ~/cnnXm/support/         Supplementary programs and data files
+
+  ~/cnnXm/test/            CHARMM testcases; post installation tests
+
+  ~/cnnXm/tool/            Preprocessor, FLECS translator and
+                           other CHARMM installation utilities
+
+  ~/cnnXm/toppar/          Standard topology/parameter files
+
+  ~/cnnXm/build/           Contains Makefile, module makefiles and
+                           the log file of the install make command
+                           for each machine in the subdirectory named
+                           after the machine type. 
+
+	Created by the first use of install.com:
+
+  ~/cnnXm/exec/            The CHARMM executable charmm will be
+                           stored here when installation is completed. 
+
+  ~/cnnXm/lib/             Contains library files
+
+
+File: Install, Node: Machines, Up: Top, Previous: Contents, Next: Install
+
+
+                      Supported Machine Platforms
+
+The current release version is available on the following platforms:
+
+               altix     SGI Itanium Altix series (64 bit)
+             * em64t     ifort compilers on x86_64 Linux
+             * gnu       Linux; GNU gfortran compiler by default
+            ** gpu       GPU using CUDA library
+               g95       G95 compiler (Linux)
+               hpitanium HP-UX Itaniums
+               ibmaix    IBM AIX not parallel
+               ibmaixmp  IBM AIX parallel
+               ibmlnxmp  IBM GNU/Linux parallel
+               itanium   INTEL Itanium 2 using ifort compiler
+               nag       Numerical Algorithms Group compiler (Linux)
+             * osx       Mac OSX machines
+               xt4       Cray XT4/XT5 using compute node Linux
+
+  * confirmed to work; others may work, but are unconfirmed (no reports)
+ ** developmental versions only
+
+The new code relies on the full Fortran95 feature set, and some common
+Fortran2003 extensions implemented by most modern Fortran compilers.
+The suggested compiler release versions are:
+
+	GCC gfortran 4.4.x or later, except 4.5.1
+	Intel ifort 11.1 or later
+	PGI pgf95 11.1 or later
+
+The above lists are expected to change as usage of the Fortran95
+conversion becomes more widespread.  The older Fortran77 version
+of CHARMM was historically available on these types of machines:
+
+       Alliant
+       Apollo
+       Convex 
+       Cray X-MP, Cray Y-MP, Cray-2, and Cray T3E
+       DEC Stations running Ultrix
+       DEC Alpha Stations running OSF
+       Hewlett-Packard Apollo 700 Series
+       IBM-3090 running AIX
+       IBM-RS/6000
+       Intel iPSC Hypercube
+       Silicon Graphics (SGI)
+       Sun, Hal
+
+See parallel.doc for details on historical parallel versions.
+
+
+File: Install, Node: Install, Up: Top, Previous: Machines, Next: Documentation
+
+
+                      User Site CHARMM Installation
+
+
+The installation is carried out by the shell script ~/cnnXm/install.com.
+Change your working directory to ~/cnnXm and run install.com.
+install.com expects one or more arguments. Without arguments, the following
+listing is produced:
+
+N.B.: This is the new Fortran95 revision of CHARMM; read install.doc
+ 
+ Usage: install.com host-machine-type [charmm-size] [Sw] 
+ 
+       [1] host-machine-type is one of the following.
+               altix     SGI Itanium Altix series (64 bit)
+               em64t     ifort compilers on x86_64 Linux
+               gnu       Linux; GNU compiler by default
+               gpu       GPU using CUDA library
+               g95       G95 compiler
+               hpitanium HP-UX Itaniums
+               ibmaix    IBM AIX not parallel
+               ibmaixmp  IBM AIX parallel
+               ibmlnxmp  IBM GNU/Linux parallel
+               itanium   INTEL Itanium 2 using ifort compiler
+               nag       Numerical Algorithms Group compiler
+               osx       Mac OSX machines
+               xt4       Cray XT4/XT5 using compute node Linux
+ 
+       [2] Choose [charmm-size] from {huge, xxlarge, xlarge, large, 
+                                      medium, small, xsmall, reduce}.
+           The default is medium.
+ 
+           Optional args clean or distclean can be used here in place of a size;
+           recommended prior to re-installation with changed options
+ 
+       [3] [Sw] are install switches, which must be specified after
+           the size argument.  You may specify any of the following.
+           MPIF90, MPICH, SCALI, and MPISPECIAL are mutually exclusive
+           additional options to be used with M; MPIF90 is the default.
+ 
+           X  include Xlib graphics, along with .ps .pov .fdat files
+           M  links to MPI
+           1  to halt after setting up installation directory.
+           2  to halt after making installation utilities.
+           Q  replace QUANTUM with GAMESS.
+           U  replace QUANTUM with GAMESS-UK.
+           C  replace QUANTUM with CADPAC.
+           T  replace QUANTUM with SCCDFTB.
+          QC  replace QUANTUM with Q-CHEM.
+          QT  replace QUANTUM with Turbomole.
+          SQ  replace QUANTUM with SQUANTUM, only with altix/gnu/ibmaix.
+           W  replace QUANTUM with MNDO97, only with altix/gnu/ibmaix/sgi.
+          QS  replace QUANTUM with QMMMSEMI (AMBER Semi-empirical QMMM).
+         G09  replace QUANTUM with Gaussian09.
+        APBS  compile with APBS support.
+        FFTW  compile with FFTW support (only effective with COLFFT keyword).
+         MKL  compile with MKL support (only effective with COLFFT keyword).
+      OPENMM  add support for OpenMM (see chmdoc/openmm.doc)
+        PIPF  add support for Polarizable Intermolecular Potential Function
+       POLYR  add support for POLYRATE interface
+           S  Uses TCP/IP SOCKET library for parallel.
+        FULL  For FULL featured version (default).
+        LITE  For a version with reduced functional features.
+       IFORT  Uses Intel Fortran ifort/Linux for gnu (default is gfortran).
+         G95  Uses  g95/Linux for gnu (default is gfortran).
+       PGF95  Uses PGI pgf95/Linux for gnu (default is gfortran).
+          PS  Uses PathScale Linux compiler for gnu (default is gfortran).
+         NIH  Uses extra keywords for NIH.
+        TSRI  Uses extra keywords for TSRI.
+      MPIF90  Relies entirely on mpif90 wrapper for MPI compiling/linking.
+       NERSC  Relies entirely on ftn wrapper for NERSC compiling/linking.
+       MPICH  adds special library options for standard MPICH.
+       SCALI  adds special library options for standard SCALI MPI Connect.
+  MPISPECIAL  prompts for special MPI library options for load.
+          GA  Use GA tools version of GAMESS-UK
+           D  link dynamically (ifc/ifort)
+     MODPREF  add/remove keywords from pref.dat (w/ addtl. parameter)
+                e.g.  +CGENFF to add, -MMFF to remove
+       keepf  Will keep the preprocessed .f90 files in build/mach.
+ DEBUG/debug  Compile with debugging options to compiler (FCD)
+ big_e/lit_e  Use big/little_endian binary I/O if supported by compiler
+
+
+When one or more install switches are used, <CHARMM_size> must be
+specified too.  The switch '2' can be used to stop installation and
+modify the pref.dat file to further customize CHARMM features.
+
+When install switches other than the machine type are changed for subsequent
+builds with different features, it is very important to first delete any
+existing build/machine-type and lib/machine-type subdirectories.
+
+	Simple Examples:
+
+./install.com gnu
+
+  1. installs the preprocessor PREFX in ~/cnnXm/tool (prefx_gnu),
+  2. generates the proper ~/cnnXm/build/gnu/pref.dat file (PREFX data file)
+     using the default MEDIUM size with the FULL feature set,
+  3. generates makefile suitable for computers running under Linux
+     (~/cnnXm/build/gnu/Makefile),
+  4. processes FORTRAN and C source files, compiles and builds module
+     libraries in ~/cnnXm/lib/gnu, and 
+  5. links them to produce the executable ~/cnnXm/exec/gnu/charmm.
+
+./install.com em64t xxlarge M
+
+  1. As above, but using ifort compiler, size XXLARGE
+  2. The M option adds parallel support via an MPI implementation
+  3. Creates lib/em64t_M, build/em64t_M, etc.
+  4. See the MPI information in Additional Notes (below)
+
+Note that it is assumed the PATH variable has been set to point to 
+the locations of the compiler and optional MPI wrapper, and that
+these are properly installed and working on your systems.
+
+	Adding features:
+
+./install.com gnu xxlarge M +CORSOL
+
+  1. As above, but adds the CORSOL feature (chmdoc/corsol.doc)
+
+./install.com gnu xxlarge M +ENSEMBLE
+
+  1. Adds ENSEMBLE replica exchange code (chmdoc/ensemble.doc)
+
+./install.com gnu xxlarge M +REPDSTR +GENCOMM +ASYNC_PME
+./install.com em64t xxlarge M +REPDSTR +GENCOMM +ASYNC_PME +CMPI
+
+  1. Adds REPDSTR replica exchange code (chmdoc/repdstr.doc)
+  2. Not compatible with ENSEMBLE; they are mutually exclusive
+  3. By default, gnu includes the CMPI feature, em64t does not
+
+	Additional Notes:
+
+For MPI usage, the distribution of choice (OpenMPI, MPICH, MPICH2, etc.)
+**MUST** have the mpi.mod file created from mpi.f90 using the same
+compiler release version that will be used to compile CHARMM.
+
+In some cases, it may also be useful to set the environment variables
+MPI_HOME or else MPI_INCLUDE and MPI_LIB
+
+
+To speed compilation, one can use multiple threads with make via
+
+export MAKE_COMMAND="make -j4"         # bash
+setenv MAKE_COMMAND "make -j4"         # tcsh
+
+
+The command tool/NewCharmmTree creates a subdir with links to source,
+etc., allowing for compile variations w/o having to copy the entire
+distribution.
+
+
+File: Install, Node: Documentation, Up: Top, Previous: Install, Next: TOPPAR
+
+                          CHARMM Documentation
+
+     The CHARMM documentation set is being updated and improved.  The
+up-to-the-date documentation set is included in the current release.
+The documentation is an integral part of CHARMM.
+
+     The INFO format files can be converted to static HTML files
+via support/htmldoc, or the doc2html package available in the
+Script Archive forum at www.charmm.org
+
+     The files can also be made accessible through the info program or
+GNU emacs.  If either is available on your system, you may incorporate
+the documentation into the info-tree structure.  The following is the
+info-building procedure.
+
+(1) Locate the info directory.  On tammy.harvard.edu, it is 
+    /usr/lib/gemacs/info.  It may differ on your machine.
+(2) Find the file, dir, in the info directory.  You should have a
+    write access of the directory.  If the info directory is protected,
+    contact your system manager and let him do the job.  Edit the dir file
+    and insert the following one line under "* Menu".
+
+* CHARMM: (chmdoc/charmm.doc). CHARMM Documentation
+
+    It should appear exactly as shown; asterisk (*) in the first
+column, etc.  The the part of dir file may look like this.
+
+File: dir       Node: Top       This is the top of the INFO tree
+
+        Quick Key Reference
+
+        d                  return here
+        q                  exit
+        ?                  list INFO commands
+        h                  help
+        mCHARMM<return>    go into CHARMM documentation
+        1                  go into CHARMM documentation (works for 1..5)
+        u                  go up
+
+===========================================================================
+* Menu:
+
+* CHARMM: (chmdoc/charmm.doc). CHARMM Documentation
+* Emacs: (emacs).              Yours truly
+* Info: (info).                This documentation browsing system.
+
+(3) Save the file and exit the editor.  You now have to link the
+    CHARMM documentation directory as in the following.
+
+    ln -s ~/cnnXm/doc chmdoc
+
+    Remember that ~/ is the parent directory that holds the charmm
+    directory. 
+
+
+File: Install, Node: TOPPAR, Up: Top, Previous: Documentation, Next: UserForm
+
+
+                CHARMM Topology and Parameter Files
+
+     The current distribution has topology files:
+
+top_all22_prot.rtf   top_all35_ethers.rtf  top_all36_carb.rtf 
+top_all36_cgenff.rtf top_all36_lipid.rtf   top_all36_na.rtf
+top_all36_prot.rtf
+
+     and matching parameter files:
+
+par_all22_prot.prm   par_all35_ethers.prm  par_all36_carb.prm 
+par_all36_cgenff.prm par_all36_lipid.prm   par_all36_na.prm      
+par_all36_prot.prm 
+
+These are now all in FLEX format, and have been modularized such that there
+are no conflicts of chemical type names or integer code numbers used in the MASS
+statements.  As a consequence, there is no longer any need for pre-combined
+files such as the previous "prot_na" or "prot_lipid" files.
+
+Water and ion residues and parameters are now in  toppar_water_ions.str
+which should be read via STREAM after the other RTF and PARAM files.
+
+The toppar/stream subdir has many additional molecules, along with
+many of the model compounds used in the parameter development.  There
+are number of other special purpose subdirs, such as gbsw, drude, and
+non_charmm.
+
+     However, new developments and updates, along with a wealth of
+other material concerning CHARMM parameter sets can be found at URL
+
+http://mackerell.umaryland.edu/MacKerell_Lab.html
+
+     The extended (united) atom parameters for proteins are the same as those
+included with CHARMM20, which are based on Wally Reiher's thesis.  For
+the extended atom nucleic acid parameters, those of Nilsson and Karplus,
+J. Comp.  Chem.  7:591-616, 1986 are used.  These were also included in
+the CHARMM20 release and are the only set to include explicit hydrogen
+bonding terms.  Some alterations of the extended atom nucleic acid topology
+and parameter files have been made in order to maintain compatibility
+with the multiple dihedral scheme in CHARMM22.
+
+	Comments, questions, and problems related to the distributed
+topology and parameter files should be posted in the Parameter Set
+forum at www.charmm.org
+
+
+File: Install, Node: UserForm, Up: Top, Previous: TOPPAR, Next: Top
+
+
+                      CHARMM User Support
+
+     Users are encouraged to register for the CHARMM forums hosted at
+www.charmm.org, an active web based bulletin board with specific
+forums for usage, and for questions and problems involving installation
+and testing.
+
+     The forms, problem.form and bugfix.form in the support/form
+directory may be useful in reporting problems and bugfixes.
+
+    If you have questions/comments/suggestions about CHARMM
+management, send your remark to chmgr@tammy.harvard.edu.
+
