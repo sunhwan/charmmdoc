@@ -2,12 +2,12 @@
 
 CHARMM documentation contents
 =============================
-   
+
 1. Must reads
 
   .. toctree::
      :maxdepth: 1
-   
+
      io
      miscom
      rtop
@@ -20,14 +20,14 @@ CHARMM documentation contents
 
   .. toctree::
      :maxdepth: 1
-     
+
      corman
      crystl
      hbuild
      images
      intcor
      scalar
-     
+
 3. Energy and minimization
 
   .. toctree::
@@ -41,29 +41,29 @@ CHARMM documentation contents
      nbonds
      parmfile
      qmmm
-   
+
 4. Implicit solvent models
 
   .. toctree::
      :maxdepth: 1
-     
+
      pbeq
      ace
      aspenr
-     eef
+     eef1
      facts
      gbmv
      gbsw
-     genvorn
+     genborn
      sasa
      scpism
-      
+
 5. Dynamics and trajectory
 
   .. toctree::
      :maxdepth: 1
-     
-     analys
+
+     analysis
      correl
      dynamc
      fourd
@@ -73,22 +73,22 @@ CHARMM documentation contents
      nose
      pressure
      vibran
-   
+
 6. Free energy method
 
   .. toctree::
      :maxdepth: 1
-  
+
      block
      pert
-     pertub
+     perturb
      pdetail
-      
+
 7. special features
 
   .. toctree::
      :maxdepth: 1
-     
+
      hbonds
      mmfp
      molvib
@@ -100,30 +100,30 @@ CHARMM documentation contents
      mc
      umbrel
      fitcharge
-     
+
 8. system specific
 
   .. toctree::
      :maxdepth: 1
-     
+
      graphx
      parallel
-      
+
 9. Compiling, testing and maintaining
 
   .. toctree::
      :maxdepth: 1
-     
+
      install
      testcase
      charmm_gen
-      
+
 10. For developers
 
   .. toctree::
      :maxdepth: 1
-     
+
      developer
      changelog
-      
+
 11. Full list of documentation
