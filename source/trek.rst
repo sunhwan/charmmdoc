@@ -7,10 +7,10 @@ TReK: a program for Trajectory REfinement and Kinematics
 .. note::
 
    Current Version 2.10 , July 5-2003
-   
+
    Please report problems or send suggestions to :
-   
-     | Stefan Fischer 
+
+     | Stefan Fischer
      | Tel. +(49)6221-548879
      | e-mail: stefan.fischer@iwr.uni-heidelberg.de
 
@@ -19,11 +19,11 @@ TReK: a program for Trajectory REfinement and Kinematics
 
 
 .. note::
-   
+
    - For the busy user: please read at least the sections marked "!!!"
      before starting to use TReK and CPR.
-         
-   - This interface to TReK replaces the TRAVel module of CHARMM, which is 
+
+   - This interface to TReK replaces the TRAVel module of CHARMM, which is
      no longer supported.  An effort was made to reproduce the "look&feel"
      of TRAVEL, whose input-scripts should work with TReK.
 
@@ -151,7 +151,7 @@ Detailed keywords
    miscrefine  :== miscellaneous :
 
                    [DELTa real (-e-7)]  [DISPlay int (0)]
-                   [NTANgent int (3)]  [REMOvemod int (0)] 
+                   [NTANgent int (3)]  [REMOvemod int (0)]
 
    linextrem   :== one-dimensional line-extremization :
 
@@ -202,7 +202,7 @@ in CHARMM :
 - One structure was read into the main CHARMM coordinate-set
   (for ex. the thoroughly minimized structure of the reactant conformer).
 - Optional: the desired Images were set-up, Image Centering turned off.
-- Optional: the desired atoms were fixed with "CONS FIX SELECT ... END".
+- Optional: the desired atoms were fixed with ``CONS FIX SELECT ... END``.
 - Optional: the desired QM regions and link-atoms were setup.
 - The FASTER mode was set to a value compatible with the non-bond settings.
 - **AND at least one ENERgy call was made, with the above settings being the same as used for the minimization of the path end-points.**
@@ -210,13 +210,13 @@ in CHARMM :
 Once TReK has been launched, a typical session would involve :
 
 - Reading the structures of the initial path, and if applicable, declare
-  already refined saddle-points (see *note typic1: Input).
+  already refined saddle-points (see :ref:`typic1 <trek_input>`).
 - Refining the path with CPR or SCM commands (see respective sections).
-- Saving the resulting path (see *note typic2: Output).
+- Saving the resulting path (see :ref:`typic2 <trek_output>`).
 - Optional: Printing the energy profile along the current path
   (see section "TRAJECTORY ANALYZE").
 - Optional: Copying a specified path-point to the CHARMM coordinate-set,
-  for further analysis (see *note typic3: Output).
+  for further analysis (see :ref:`typic3 <trek_output>`).
 - Leaving TReK with QUIT or END.
 
 
@@ -367,19 +367,19 @@ difficult to analyze the reaction one is interested in.
 .. warning::
 
    In general, it is more efficient to use end-point structures that are
-   very well energy-minimized, for ex. with RMS(gradient) < 0.0001 .     
+   very well energy-minimized, for ex. with RMS(gradient) < 0.0001 .
 
 This is best achieved by minimizing them with the Newton-Raphson
 (ABNR) method in CHARMM.
 
 For molecules with many local minima (ex. proteins), it
 is advisable to run some quenched molecular dynamics (MD): take structures at
-periodic intervals along a MD trajectory and minimize them. Use the ones with 
+periodic intervals along a MD trajectory and minimize them. Use the ones with
 lowest energy as end-states of the reaction. An alternative is to do annealing
 MD (i.e. slowly decrease the temperature).
 
 Using end-points which are poorly minimized or that are stuck in high-energy
-local minima will result in a path whose energy-profile "hangs" between the 
+local minima will result in a path whose energy-profile "hangs" between the
 end-states, without clear activation barriers.
 
 
@@ -436,7 +436,7 @@ have extreme energies. For ex. the 180 degree flip of a phenyl side-chain.
 In that example, an intermediate could be constructed by rigidly rotating
 the Phe ring by 90 degrees. Alternatively, build the initial path by combined
 interpolation in Cartesian and Internal coordinates as described in the next
-section (see *note ringrotate: Initialpath).
+section (see :ref:`ringrotate <trek_initialpath>`).
 
 Varying the initial path allows to search for different minimum energy paths:
 Using different intermediates will direct the refinement toward different and
@@ -455,8 +455,8 @@ AND/OR
 
   2) From an unformatted CHARMM dynamics trajectory file.
 
-The "TRAJECTORY READ" command can be issued several times consecutively (in 
-either of these two forms). The successive path-points will be appended to 
+The "TRAJECTORY READ" command can be issued several times consecutively (in
+either of these two forms). The successive path-points will be appended to
 constitute the input-path used by CPR, SCM, CROS or SDP.
 
 When reading from an unformatted dynamics trajectory file (for example the
@@ -464,7 +464,7 @@ output of an earlier refinement), it is possible to restrict the input
 to subsection of the trajectory file with the BEGIN, SKIP, STOP keywords
 (see examples below in :ref:`trek_cprcmd_exampl`).
 
-Once a path refinement has been started (for ex. by issuing the CPR command), 
+Once a path refinement has been started (for ex. by issuing the CPR command),
 no more path-points can be read and the "TRAJECTORY READ" command is disabled.
 
 
@@ -490,7 +490,7 @@ Alternatively (recommended procedure), the reference structure can be
 read explicitly, by specifying the "REFERence" keyword along with
 the "TRAJ READ" command.
 In that case, the first structure to be read becomes the reference point,
-but does NOT belong to the path. This is useful when the refinement of a very 
+but does NOT belong to the path. This is useful when the refinement of a very
 long path is split into several refinements of path subsections, each of
 which should align path-points onto a unique reference structure.
 
@@ -502,7 +502,7 @@ are read. If desired, the reference point can be centered and oriented
 according to its principal axis (in the same way as would "COOR ORIEnt"),
 by specifying the "ORIEnt" keyword with the "TRAJ READ REFER" command.
 
-Path-points that are subsequently added or modified by a path-algorithm 
+Path-points that are subsequently added or modified by a path-algorithm
 (CPR, SCM) remain essentially aligned with the other path-points.
 They can be re-aligned onto the reference point by specifying the "ORIEnt"
 keyword on the command-line of the respective algorithm, although this is
@@ -522,8 +522,7 @@ these path-points as saddle-points before using commands like "CPR", "SCM"
 or "TRAJ DECR".
 
 The purpose of this is :
-- Before CPR, to avoid that CPR must re-refine those points all over again
-  (very CPU consuming).
+- Before CPR, to avoid that CPR must re-refine those points all over again (very CPU consuming).
 - Before "SCM", to leave the saddle-points unchanged.
 - Before "TRAJ DECR", to prevent that saddle-points get removed.
 
@@ -539,10 +538,10 @@ There are two ways to declare path-points as saddle-points :
 
    The command can be re-issued on successive lines, if necessary.
    Ignore the warning printed after each "SADDLE" command
-   (see :ref:`Bugs <sadwarn>`).
+   (see :ref:`Bugs <trek_bugs>`).
 
 2) An alternative to using the SADDLE command, is to read the restart-file
-   corresponding to the current path (see :ref:`CPRcmd <sadlrestart>`).
+   corresponding to the current path (see :ref:`CPRcmd <trek_cprcmd>`).
    This is done on the CPR command-line.
 
    - If preparing to run a CPR calculation, then the restart-file should
@@ -559,7 +558,7 @@ There are two ways to declare path-points as saddle-points :
      these points really qualify as saddle-points).
 
      .. note::
-     
+
         If a restart-file is used, do not declare saddle-points twice
         by listing them again with the "SADDLE" command.
 
@@ -626,7 +625,7 @@ comb_interpol.inp
 ^^^^^^^^^^^^^^^^^
 
 Is the main CHARMM input-file.
-Calls 
+Calls
 
    - user_def.str
    - vector.pl
@@ -683,56 +682,56 @@ Conjugate Peak Refinement (CPR)
 Description of the algorithm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Provided with an initial guess for the transition path between a reactant 
-and a product state, CPR refines the minimum-energy path and accurately 
-determines all saddle-points of the high-dimensional energy surface along 
+Provided with an initial guess for the transition path between a reactant
+and a product state, CPR refines the minimum-energy path and accurately
+determines all saddle-points of the high-dimensional energy surface along
 that path, in systems with up to several thousands of degrees of freedom.
 CPR uses the configuration energy and its first derivative.
 
 Ref.:  S.Fischer and M.Karplus, Chem. Phys. Letters 194, p.252-261, (1992).
 
-The method is suited for the study of large-scale conformational change in 
-macromolecules using empirical energy functions, or for simulating 
-enzymatic reactions with the help of combined quantum/classical (QM/MM) 
-force-fields.  Because non-relevant saddle-points are abundant on the 
-energy surface of even small molecules, CPR's reliability in finding the 
-transition-state that connects the desired reactant and product makes it 
+The method is suited for the study of large-scale conformational change in
+macromolecules using empirical energy functions, or for simulating
+enzymatic reactions with the help of combined quantum/classical (QM/MM)
+force-fields.  Because non-relevant saddle-points are abundant on the
+energy surface of even small molecules, CPR's reliability in finding the
+transition-state that connects the desired reactant and product makes it
 useful also for the study of reactions with pure QM potentials.
 
-An essential feature of the way CPR finds a path is that it does not drive 
-(steer) the reaction along some pre-defined reaction coordinate, which 
-would have been pre-defined as a function of the degrees of freedom.  
-Rather, CPR self-consistently optimizes a chain of points describing the 
-path, without applying any constraints that would affect the shape or the 
-length of that path.  The primary focus of the algorithm is on accurately 
-determining the saddle-points along the path.  Path-points which are not 
-saddle-points are optimized only to the extent that the energy along the 
-path segments connecting these points decreases monotonously from the 
-saddle-point to its adjacent local minima.  The purpose of points between 
-saddle-points is to ensure the continuity of the path, not to find the 
-bottom of the energy valley, which can be obtained more efficiently 
-afterwards with the SCM method or by steepest descent on each side of the 
-saddle-point(s).  The number of path-points is not fixed during the 
-refinement, but is allowed to increase and/or decrease.  This enables CPR 
-to accommodate any degree of complexity of the underlying energy surface, 
+An essential feature of the way CPR finds a path is that it does not drive
+(steer) the reaction along some pre-defined reaction coordinate, which
+would have been pre-defined as a function of the degrees of freedom.
+Rather, CPR self-consistently optimizes a chain of points describing the
+path, without applying any constraints that would affect the shape or the
+length of that path.  The primary focus of the algorithm is on accurately
+determining the saddle-points along the path.  Path-points which are not
+saddle-points are optimized only to the extent that the energy along the
+path segments connecting these points decreases monotonously from the
+saddle-point to its adjacent local minima.  The purpose of points between
+saddle-points is to ensure the continuity of the path, not to find the
+bottom of the energy valley, which can be obtained more efficiently
+afterwards with the SCM method or by steepest descent on each side of the
+saddle-point(s).  The number of path-points is not fixed during the
+refinement, but is allowed to increase and/or decrease.  This enables CPR
+to accommodate any degree of complexity of the underlying energy surface,
 including the presence of multiple saddle-points along the path.
 
 The method is a heuristic procedure, where in each CPR cycle:
 
-- the highest local energy maximum along the path (called the "peak") is 
-  determined by stepping along the path and computing the energy at each 
+- the highest local energy maximum along the path (called the "peak") is
+  determined by stepping along the path and computing the energy at each
   step (this is referred to as "scanning" the path).
 - the path is modified by either improving, removing or inserting one path-
-  point, so that the new path avoids the peak.  
+  point, so that the new path avoids the peak.
 
-Improved as well as newly inserted points are optimized by a controlled 
-conjugate-gradient minimization, which prevents the point from falling 
-into local minima along the path and which converges to the saddle-point 
+Improved as well as newly inserted points are optimized by a controlled
+conjugate-gradient minimization, which prevents the point from falling
+into local minima along the path and which converges to the saddle-point
 if the path is crossing a saddle-region of the energy surface.
 The path is fully refined when, after a number of such CPR cycles,
-the only remaining energy-peaks along the path are the exact saddle-points.  
+the only remaining energy-peaks along the path are the exact saddle-points.
 
-The settings of the algorithm are independent of molecular size and the 
+The settings of the algorithm are independent of molecular size and the
 nature of the reaction.
 
 
@@ -746,11 +745,11 @@ The following must have been done within TReK :
   with a RMS(gradient) < 0.001 .
   The initial path-points can be read either from a series of
   CHARMM coordinate files (ASCII format) or from a binary CHARMM dynamics
-  trajectoryry file (see *note cpr1invok: Input).
+  trajectoryry file (see :ref:`cpr1invok <trek_input>`).
 
 - Flag those path-points that are already known saddle-points with the SADDLE
   command, or use a CPR restart-file, so that they do not get refined again
-  (see *note cpr2invok: Input).
+  (see :ref: `cpr2invok <trek_input>`).
 
 - Optional:  Setting the desired amount of information printed out during
   refinement with the VERBOSE command.  Also, CHARMM warnings about
@@ -768,8 +767,8 @@ NECAlls allows better control than NCYCLE to determine
 the amount of CPU-time before exit, because the number of energy-calls
 made during one CPR-cycle can vary a lot from one cycle to another.
 
-Tentative saddle-points are improved until their RMS-gradient reaches 
-the value specified with the SADGrad keyword, and this for a successive 
+Tentative saddle-points are improved until their RMS-gradient reaches
+the value specified with the SADGrad keyword, and this for a successive
 number of line-minimizations equal to  SADMini.
 
 In the initial phase of a refinement, only a moderate amount of CPU-time
@@ -783,8 +782,8 @@ the latter being more CPU-time consuming.
 
 If the switch HIGHSAD is used, then the refinement will stop as soon as the
 highest tentative saddle-point has been found.
-This allows to get a quick estimate of the overall barrier height along the 
-path, for example to decide whether it is worthwhile to proceed with 
+This allows to get a quick estimate of the overall barrier height along the
+path, for example to decide whether it is worthwhile to proceed with
 refining of the rest of the path.
 
 The default values of all CPR settings (including the values of SADGrad &
@@ -795,8 +794,8 @@ Note that all values are remembered from one CPR call to the next, as well
 as when temporarily exiting TReK with the END command.
 
 Upon exit, CPR prints a summary of the energy and location of any
-saddle-points found so far. It also summarizes the location of some of 
-the deepest local minima along the path, if any are present. 
+saddle-points found so far. It also summarizes the location of some of
+the deepest local minima along the path, if any are present.
 If all energy-peaks along the path are saddle-points (according to the SADGrad
 and SADMini criteria, see above), then the printed output will contain the
 words "FULLY refined".  If the printout says "NOT fully refined", continue
@@ -810,15 +809,15 @@ costing no extra CPU-time.
 The energy-profile along the current path, and the location of the
 saddle-points can be obtained with the "TRAJ ANALysis" command,
 or by looking at the content of the TReK restart-file
-(see *note eneprof: Output).
+(see :ref:`eneprof <trek_output>`).
 
 
 Saving the path !!!
 ^^^^^^^^^^^^^^^^^^^
 
 After the path has undergone a number of refinement cycles, save
-the whole trajectory to a standard CHARMM dynamics file (binary format). 
-This is done with the TRAJECTORY WRITE command (see *note cprsav: Output).
+the whole trajectory to a standard CHARMM dynamics file (binary format).
+This is done with the TRAJECTORY WRITE command (see :ref:`cprsav <trek_output>`).
 This saving should be done frequently, since a given CPR-cycle
 can be unpredictably long (unless the NECAlls keyword is used).
 
@@ -845,7 +844,7 @@ CPR flags a path-point as a first-order saddle-point when:
 
 .. note::
 
-   the final RMS-gradients at the saddle-point will be much smaller than 
+   the final RMS-gradients at the saddle-point will be much smaller than
    SADGrad, because of the larger number (SADMini) of line-minimizations
    that will be performed.
 
@@ -865,7 +864,7 @@ following keywords :
 ::
 
    [SADGrad e-3] [SADMini 1000] [TOL1proj .5] [TOL2proj .5]
-   [NTANgent 6]  [ATOMax 0]     [DELTa e-7]   [NOORient]  [LOOPreduc 0] 
+   [NTANgent 6]  [ATOMax 0]     [DELTa e-7]   [NOORient]  [LOOPreduc 0]
 
 Specifying another value for any these keywords in addition to
 the SADDLE switch has precedence over these values.
@@ -874,14 +873,14 @@ For ex. "SADDle SADMini 500" will use SADMini = 500, not 1000.
 .. note::
 
    Do not confuse this CPR switch with the "SADDLE" command used
-   to declare saddle-points (see *note cprsad: Input).
+   to declare saddle-points (see :ref:`cprsad <trek_input>`).
 
 
 Reading the restart-file !!!
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A CPR restart-file is written each time a path is saved
-(see *note cprrestart: Output).  It can then be read the first time the
+(see :ref:`cprrestart <trek_output>`).  It can then be read the first time the
 CPR command is given during a TReK session.
 
 The restart-file serves two purposes :
@@ -892,10 +891,10 @@ The restart-file serves two purposes :
    where LinMin(i) counts how many successive times the RMS-gradient at the
    path-point was less than SADGrd.  To distinguish flagged saddle-points in
    the restart-file (or in the printout of "TRAJ ANAL"), they are given
-   a negative sign, i.e.  LinMin(i) = -SADMini (see *note restartinfo: Output).
+   a negative sign, i.e.  LinMin(i) = -SADMini (see :ref:`restartinfo <trek_output>`).
 
    Path-points that have been declared tentatively as saddle-points are also
-   listed with a negative LinMin(i) value, but |LinMin| < SADMini.  If such
+   listed with a negative LinMin(i) value, but ``|LinMin| < SADMini``.  If such
    points are to be left untouched in the next CPR-run, set their LinMin
    to -999999 in the restart-file (not really worth the trouble, since
    usually it takes only 1 CPR-cycle to flag them as saddle-point again).
@@ -904,16 +903,16 @@ The restart-file serves two purposes :
    the information about the energy along the path from the restart-file,
    rather than having to rescan the whole path. However, when the relative
    energy change along a segment is less than 10^-6, this segment will be
-   rescanned anyway to protect against numerical accuracy problems when 
+   rescanned anyway to protect against numerical accuracy problems when
    writing/reading trajectory files.
 
    For each path-point, the energy and RMS(gradient) is listed, one line
    per point, on the first half of the line.
-   Listed on the second half of the line is the scanning information for 
+   Listed on the second half of the line is the scanning information for
    the segment preceding the path-point, such as the segment-length LenSeg(i).
 
 It is imperative that the content of the restart-file correspond to the initial
-path that was read with "TRAJ READ NAME" in TReK, otherwise unpredictable 
+path that was read with "TRAJ READ NAME" in TReK, otherwise unpredictable
 behavior will occur.
 
 If some segments in the restart-file do not have the correct
@@ -1057,9 +1056,9 @@ Example of practical values when using SCF quantum-potentials :
 
    CPR DELTA -1.0e-4 TOLMax 0.1 TOLStep 1.0e-5 TOLEne 1.0e-5
 
-If the SADDle keyword is added (i.e. 1st-order saddle-points are to 
-be optimized), relax the saddle-point convergence criterion. A recommended 
-value is SADGrad 0.01 . 
+If the SADDle keyword is added (i.e. 1st-order saddle-points are to
+be optimized), relax the saddle-point convergence criterion. A recommended
+value is SADGrad 0.01 .
 
 Because high-energy regions of conformational space are explored in the
 early phase of a CPR refinement, it often happens that quantum-methods fail
@@ -1076,7 +1075,7 @@ For. example :
 ::
 
    TREK
-      CPR NECALLS 100  -  
+      CPR NECALLS 100  -
           DELTA 0.0 TOL1proj 3.0  FIRStep 0.001 BRKMagn 2.0   -
           EXIT -3  TOLMax 0.15 TOLGrad 0.1 TOLStep 0.001 TOLEne 0.01
 
@@ -1116,8 +1115,8 @@ Summary of main CPR settings
 
    NECAlls = maximum number of energy-calls to be done.
 
-   SADGrd  = RMS-Gradient in successive line-minimizations leading to a saddle. 
-             Don't set lower than 10^-3, since the final RMS-gradient will be 
+   SADGrd  = RMS-Gradient in successive line-minimizations leading to a saddle.
+             Don't set lower than 10^-3, since the final RMS-gradient will be
    	  much lower anyway due to the many (SADMini) conjugate
              line-minimizations.
 
@@ -1144,7 +1143,7 @@ Internal CPR-settings  (usually do not need to be tampered with)
              - DELTA < 0 : the finite difference step is equal to |DELTA|.
                This is the default. When the gradient vector is computed by
 	       finite-difference or with QM-energy, make sure that |DELTA| is
-	       larger than the finite-difference step used for 1st derivatives 
+	       larger than the finite-difference step used for 1st derivatives
 	       or the numerical accuracy of the QM method.
 
 	     - DELTA > 0 : the finite difference step is equal to the distance
@@ -1226,7 +1225,7 @@ In the previous implementation of CPR called TRAVel, the step-size was not
 variable along the path, but was assigned a constant value specified with
 the STEPsiz keyword.
 
-For the purpose of backward compatibility, this still can be done by setting 
+For the purpose of backward compatibility, this still can be done by setting
 INTERpol < 1, although this is NOT ADVISABLE.
 
 Reduction of STEPsiz (division by SQRT(2) ) then occurs every LOOPred
@@ -1246,7 +1245,7 @@ TRAJECTORY WRITE !!!
 
 This command writes the path to a file in the format of a standard CHARMM
 dynamics trajectory (binary format). This file can then be read with the
-"TRAJECTORY READ NAME" command (see *note output: Input) in order to continue
+"TRAJECTORY READ NAME" command (see :ref:`output <trek_input>`) in order to continue
 the refinement, or be treated like any normal CHARMM trajectory, for ex. for
 visualization with programs like VMD.
 
@@ -1262,7 +1261,7 @@ pertinent, only the LinMin column (used to flag saddle-points) is meaningful.
 
 The restart-file can be read on the CPR command-line in later TReK sessions
 (not with the "TRAJ READ .." command), for ex. when continuing the path
-refinement (see *note readrestart: CPRcmd).
+refinement (see :ref:`readrestart <trek_cprcmd>`).
 
 Writing the restart-file does not cost CPU-time, since the data is
 taken from the internal data-structures of TReK.  Because the lines of this
@@ -1300,7 +1299,7 @@ It is the same as printed by the "TRAJ ANAL" command (described below) :
 
 
 The second part of the line lists internal CPR data. This information is used
-by the CPR algorithm when continuing a refinement (see *note scaninfo: CPRcmd):
+by the CPR algorithm when continuing a refinement (see :ref:`scaninfo <trek_cprcmd>`):
 
 ::
 
@@ -1364,7 +1363,7 @@ Saddle-points are identified by a negative value in the column "LinMin".
    Grad       = The RMS-gradient of the energy (in kcal/(mol*angstrom)).
 
    LinMin     = A negative number indicates a tentative saddle-point :
-             
+
                 -SADMini  the path-point satisfies the SADGrd & SADMini criteria
                          for being a saddle-point (see *note analsad: CPRcmd).
                          The saddle-point is sure to be first-order
@@ -1443,7 +1442,7 @@ between the existing points, so that the distance between adjacent points
 corresponds to the specified STEPsize.
 
 Conversely, if decreasing, points will be removed if they are closer
-than STEPsize to the point preceding them along the path. This allows to 
+than STEPsize to the point preceding them along the path. This allows to
 generate a path with nearly equidistant points, which is required for SCM.
 
 "TRAJ DECREAse" will not delete previously refined or declared saddle-points
@@ -1456,7 +1455,7 @@ for example before smoothing the path with SCM.
 
 To avoid removing the saddle-points of an old path, declare them either with
 the command "SADDLE" or by reading the CPR restart-file corresponding to that
-path (see *note decr: Input).
+path (see :ref:`decr <trek_input>`).
 
 A sample input-script :
 
@@ -1489,7 +1488,7 @@ Miscellaneous
 
 From inside TReK, it is possible to use all the CHARMM commands handled
 by the SUBROUTINE MISCOM(), such as STREAM, GOTO, LABEL, SET, INCR, DECR, etc.
-See *note miscel:(chmdoc/miscom.doc) for more details.
+See :doc:`miscom` for more details.
 
 
 VERBOSE int
@@ -1553,13 +1552,13 @@ This can be quite time consuming, so it is recommended to force an exit
 from SCM by specifying the maximum number of global cycles NCYCLE.
 In every SCM-cycle, there will be between MINUPDATE and MAXUPDATE
 line-minimizations done at each point, so that NCYCLE should be kept small
-to allow for periodic saving of the path (see *note scmsav: Output).
+to allow for periodic saving of the path (see :ref:`scmsav <trek_output>`).
 
 Path-points that are already saddle-points should be declared
-(see *note scmdecl: Input, command "SADDLE"), so that they are kept unchanged
+(see :ref:`scmdecl <trek_input>`, command "SADDLE"), so that they are kept unchanged
 during the SCM refinement.
 
-See *note extrm: CPRcmd for a description of the line-extremization keywords.
+See :ref:`extrm <trek_cprcmd>` for a description of the line-extremization keywords.
 
 
 Example input-file
@@ -1652,7 +1651,7 @@ The SDP command provides a carefully controlled descent along the energy
 valley, down from a 1st-order saddle-point (obtained from CPR, for example).
 This is a rather slow procedure, practical only for small systems.
 For large systems, in it recommended to smooth the existing CPR-path with
-the SCM method (see *note smooth: SCMcmd).
+the SCM method (see :ref:`smooth <trek_scmcmd>`).
 
 Four modes of descent are available :
 
@@ -1691,7 +1690,7 @@ a region where the energy-gradient is less than specified with MINGRAD,
 SDP stops extending the path on that side of the saddle-point, provided that
 it already did at least MINCYCLE steps (to allow moving away from the saddle
 region, where the gradient is also vanishingly small).
-See *note linextr: CPRcmd for a description of the line-extremization keywords.
+See :ref:`linextr <trek_cprcmd>` for a description of the line-extremization keywords.
 
 
 CROSsing
@@ -1704,7 +1703,7 @@ serve as initial guess for the saddle-point crossing direction. The output of
 CROSS is also a chain with three points, the second of which is the unmodified
 saddle-point, while the two surrounding points are located close to the saddle
 and near the bottom of the adiabatic valley.  This is simply achieved by
-stepping down along the gradient in Mode 1 (see *note descmod: SDPcmd for a
+stepping down along the gradient in Mode 1 (see :ref:`descmod <trek_sdpcmd>` for a
 description of the descent modes), after having taken the first step
 on each side of the saddle-point in direction of the two initial surrounding
 path-points.
@@ -1778,7 +1777,7 @@ Sample input-file
    QUIT
    RETURN
 
-.. _trek_bugs
+.. _trek_bugs:
 
 TReK known bugs
 ---------------
@@ -1824,7 +1823,7 @@ SADDLE command
 ^^^^^^^^^^^^^^
 
 A warning is printed after each "SADDLE" command:  Ignore it !  The command
-is accepted anyway.  After the CPR command has been issued, path-points 
+is accepted anyway.  After the CPR command has been issued, path-points
 that have been accepted as saddle-points are listed explicitly.
 
 

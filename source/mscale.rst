@@ -7,8 +7,11 @@ Multi Scale Command: MSCALE
 The multiscale command causes CHARMM to run several
 independent but connected calculations using subsystems. The
 calculations can use either CHARMM or other programs with a consistent
-interface. (by Milan Hodoscek and Bernard Brooks)
+interface. For general information and some of the usage see the reference:
 
+Woodcock HL, Miller BT, Hodoscek M, Okur A, Larkin JD, Ponder JW,
+Brooks BR, "MSCALE: A General Utility for Multiscale Modeling",
+J. Chem. Theo. and Comp., 2011, Vol 7, 1208-1219.
 
 .. _mscale_syntax:
 
@@ -19,12 +22,13 @@ Main script commands:
 
 ::
 
-    MSCAle [ NSUBsystems integer ]
+    MSCAle [ NSUBsystems integer ] [ UPEN integer ]
 
-    SUBSystem keyname [ PROGram filename ]  [ CRYStal ]  [ATOM]  -
-                          [ NPROC integer ] [ FNPR integer ] atom-selection -
-                       [ COEFf   real ]  [ LAMBda ]  [ MLAMbda ] -
-                         [ INPUt filename ] [ OUTPut filename ]
+    SUBSystem keyname [ PROGram filename ]  [ CRYStal ]  [ ATOM ] -
+                      [ AMBEr ] [ TORQue ] -
+                      [ NPROC integer ] [ FNPR integer ] -
+                      [ COEFf   real ]  [ LAMBda ]  [ MLAMbda ] -
+                      [ INPUt filename ] [ OUTPut filename ] atom-selection
 
     SYSDisplay
 
@@ -34,7 +38,7 @@ Subsystem commands:
 
 ::
 
-    SERVer [ NCALls integer ] [ ATOM ] [ CRYStal ]
+    SERVer [ NCALls integer ] [ ATOM ] [ CRYStal ] [ TORQue ] [ DEBUg ]
 
 Meaning of individual keywords:
 
@@ -58,35 +62,59 @@ NPROC              How many processes this subsystem will use. eg
 FNPRoc             Forward this number to the program which is run
                    through the interface in CALL SYSTEM(). Only works
                    with ATOM flag!
+AMBEr              Specify that the specified program is a SANDER executable
+                   from AMBER. This option calls the PROGram with the
+                   "-server" command line argument, which is needed to start
+                   SANDER as an MSCALE server.
 =================  ==============================================================
 
 The folowing 3 keywords must be specified. There are no defaults for them!
 
-================== ============================================================
+================== ===================================================================
 PROGram            the filename of the program to execute for this subsystem
-                  
 INPUt              the filename of the script to run on the subsystem
-                  
 OUTPut             the filename of the output from the program
-                  
-CRYStal            communicate also crystal data and the virial. Must
-                   be specified also on the server command
-                  
+CRYStal            communicate the crystal type (CUBIc, RHDO, etc.), unit cell
+                   data, and the virial. This option must be specified in both
+                   the SUBSystem and SERVer commands.
+TORQue             indicates that the 3x3 rotation matrix of any defined torque
+                   centers (see torque.doc) within the atom-selection is to
+                   be passed via MSCALe to the slaves andf the 1x3 torque vector
+                   is to be returned to the master process. This option must be
+                   specified in both the SUBSystem and SERVer commands.
 SYSDisplay         Display the info about the whole setup
-                  
 END                Must be specified to end the MSCAle block.
-                  
 SERVer             Put CHARMM in server mode.
-                  
 NCALLs integer     Number of energy calls in server mode before going
                    to next CHARMM command in the server script.
                    If the number is not specified, the command will
                    run until the client terminates.
-================== ============================================================
+DEBUg              Makes the server print out the results of each energy evaluation
+                   that it performs. This option is useful for debugging, but
+                   probably should not be used for long runs (it will produce too
+                   much output).
+
+UPEN               If a Fortran unit number is specified, the energy of each
+                   subsystem and the EDS energy (if EDS is being used, see eds.doc
+                   for details) will be written to it at each energy evaluation. This
+                   can assist in debugging or calculating the EDS free energies.
+================== ===================================================================
+
+As of c36a1 MSCAle now supports normal mode (i.e. second derivatives) at both
+the all-atom and hybrid QM/MM levels of theory. Both analytic and finite
+difference 2nd derivatives are supported. To activate the finite difference
+2nd derivatives use the following SERVer command (see vibran_mscale, vsys1.inp,
+or vsys2.inp in c35test)...
+
+::
+
+    SERVer finite step 0.005
+
+where 0.005 is the step size used during the finite difference calculation.
 
 
 .. _mscale_examples:
-
+
 Examples
 --------
 
@@ -95,7 +123,7 @@ Examples
   Main script:
 
   ::
-  
+
     READ/GENERATE PSF
     READ PARAM
     READ COOR
@@ -116,7 +144,7 @@ Examples
   Subsystem 1 (sub1.inp)
 
   ::
-  
+
     READ/GENERATE PSF for one residue
     READ PARAM (one kind of parameters)
     READ COOR
@@ -126,7 +154,7 @@ Examples
   Subsystem 2 (sub2.inp)
 
   ::
-  
+
     READ/GENERATE PSF for one residue
     READ PARAM (different kind of parameters than in one)
     READ COOR
@@ -135,19 +163,31 @@ Examples
 
 
 .. _mscale_notes:
-
+
 Miscellaneous Notes
 -------------------
 
 I. To dynamically start new processes in parallel MPI-2 standard is used,
    namely MPI_COMM_SPAWN routine. It is availalble in OpenMPI library
-   (currently in use) and MPICH-2. MPICH-2 has some problems with
-   standard I/O so it is not recommended for use as of June 2007.
+   (currently in use) and MPICH-2. When running triple parallel jobs,
+   CHARMM must be cmpiled with MPICH-2 library since OpenMPI doesn't
+   support groups and spawn (July 2011)!!
+
+   As of July 2011 the recommended command to compile CHARMM is the
+   following:
+
+   ::
+
+       install.com gnu xxlarge M mpif90 +REPDSTR +MSCALE +ASYNC_PME +GENCOMM
+
+   If not using triple parallel then +REPDSTR and +ASYNC_PME are not
+   needed. For triple parallel using install.com em64t add +CMPI to the
+   above list.
 
 II. Matrices for coefficients in substraction methods:
 
     ::
-    
+
         L=low level theory, H=high level theory
         B=big system, S=small system
 
@@ -159,7 +199,7 @@ II. Matrices for coefficients in substraction methods:
     If you have 3 levels:L, M, H, and 3 reagions B, M, S: B > M > S!
 
     ::
-    
+
              B    M    S
         L    1   -1    0
 
@@ -176,7 +216,8 @@ Interface
 ---------
 
 MSCAle Interfaces contributed by: H. Lee Woodcock (hlwood-at-nih-dot-gov),
-Joseph D. Larkin (jlarkin-at-bloomu-dot-edu), and Milan Hodoscek
+Benjamin T. Miller (btmiller-at-nhlbi-dot-nih-dot-gov), Joseph D. Larkin
+(larkinj3-at-nhlbi-dot-nih-dot-gov), and Milan Hodoscek
 (milan-at-cmm-dot-ki-dot-si).
 
 Currently four (4) external QM programs are interfaced to CHARMM via the
@@ -189,67 +230,67 @@ SCC-DFTB, ect.).
 3. PSI 3          (http://www.psicode.org/) License:(GPL)
 4. GAUSSIAN 03    (http://www.gaussian.com/)
 
-Support for additional QM packages is underway and will be added in the 
-future. To request support for a particular package please contact 
+Support for additional QM packages is underway and will be added in the
+future. To request support for a particular package please contact
 H. Lee Woodcock, Joseph D. Larkin, or Milan Hodoscek.
 
-Below are examples of how to run the various QM packages via MSCAle. All 
-packages require a control file that dictates the options to be passed 
-to the individual package. 
+Below are examples of how to run the various QM packages via MSCAle. All
+packages require a control file that dictates the options to be passed
+to the individual package.
 
-1. NWChem: Here is an example of control file that is needed for a NWChem 
-   calculation... 
+1. NWChem: Here is an example of control file that is needed for a NWChem
+   calculation...
 
    ::
-   
+
        title "for interface"
-   
+
        basis "ao basis"
         * library "6-31g*"
        end
-   
+
        geometry  noautosym
-   
+
        end
-   
+
        task dft gradient
-   
+
        task shell "/bin/rm -f sys1.b sys1.b^-1 sys1.c sys1.db"
        task shell "/bin/rm -f sys1.gridpts.0 sys1.grinfo.0"
        task shell "/bin/rm -f sys1.movecs sys1.p sys1.zmat"
 
-2. MOLPRO: Here is an example of control file that is needed for a MOLPRO 
+2. MOLPRO: Here is an example of control file that is needed for a MOLPRO
    calculation...
 
    ::
-   
+
        ***Title
        memory,1,m
-   
+
        SET,CHARGE=0
        BASIS=sto-3g
-   
+
        thresh,energy=1.d-10
        hf
        optg,maxit=0,coord=cart,startcmd=hf
-   
-      This file will perform a single SCF analytic gradient calculation. If a method 
-      that does not support analytic gradients (i.e. CCSD(T)) is desired the "optg" 
-      line must be changed to read like the following line:
-   
-      ::
-      
-         optg,numerical,maxit=0,coord=cart,displace=cart,startcmd=hf
-   
-      The correct geometry section will be written with the correct keywords immediately 
-      following the line containing the "memory" specification.
-   
 
-3. PSI 3: Here is an example of control file that is needed for a PSI 3 
+      This file will perform a single SCF analytic gradient calculation. If a method
+      that does not support analytic gradients (i.e. CCSD(T)) is desired the "optg"
+      line must be changed to read like the following line:
+
+      ::
+
+         optg,numerical,maxit=0,coord=cart,displace=cart,startcmd=hf
+
+      The correct geometry section will be written with the correct keywords immediately
+      following the line containing the "memory" specification.
+
+
+3. PSI 3: Here is an example of control file that is needed for a PSI 3
    calculation...
 
    ::
-   
+
       psi: (
         label = "Title"
         no_reorient=true
@@ -263,15 +304,15 @@ to the individual package.
        )
       )
 
-   In this case the "no_reorient" keyword must be used to keep all forces in the 
-   correct reference frame. The current molecular geometry will be placed automatically 
+   In this case the "no_reorient" keyword must be used to keep all forces in the
+   correct reference frame. The current molecular geometry will be placed automatically
    in the "geometry" section.
 
-4. Gaussian 03: Here is an example of control file that is needed for a G03 
+4. Gaussian 03: Here is an example of control file that is needed for a G03
    calculation...
 
    ::
-   
+
       %mem=100MB
       %NProcShared=2
       %NProcLinda=4
@@ -281,7 +322,11 @@ to the individual package.
 
       0 1
 
-   Here it should be noted the last line in the control file should be the spin 
-   and multiplicity specifications. i.e. there should be no blank line at the 
-   end of this control file as there is in a typical gaussian input file as the 
+   Here it should be noted the last line in the control file should be the spin
+   and multiplicity specifications. i.e. there should be no blank line at the
+   end of this control file as there is in a typical gaussian input file as the
    current geometry will be appended and the final blank line inserted afterwards.
+
+Additionally, interfaces have been developed to the SANDER program (part of
+the AMBER package) and to the TINKER program. Please contact Benjamin T. Miller
+for further information about these interfaces.

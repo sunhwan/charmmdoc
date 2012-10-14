@@ -14,6 +14,176 @@ This section deals with overall usage, as opposed to the
 detailed description of any given command. This is a good place to
 start when first learning CHARMM.
 
+
+.. _usage_starting_charmm:
+
+Starting CHARMM from Unix shell (command line or in a batch script)
+-------------------------------------------------------------------
+
+::
+
+  $  charmm [arguments] [< input] [>output]
+
+This command assumes that the charmm command is in your
+path. If not, give the fully qualified path to charmm. The
+square-bracketed arguments are optional but almost always used
+for normal runs.
+
+Input and Output
+^^^^^^^^^^^^^^^^
+
+The charmm executable reads input from standard input and
+writes to standard output by default. The charmm input can be
+given interactively via the keyboard if no redirect of input
+is specified. Input can be redirected using "<" from a file
+but should only be done for non-parallel runs. Output can
+always be redirected to a file using ">". Alternatively the
+arguments "-i filename" or "-input filename" can be used to
+specify an input file, and "-o filename" or "-output filename"
+can be used to specify an output file.
+
+Command line arguments
+^^^^^^^^^^^^^^^^^^^^^^
+
+* ARGUMENTS may be specified in any order.
+* Redirection (<, >, or |) must be specified after all arguments.
+
+::
+
+  -h, -help    - charmm prints allowed command line arguments and quits
+
+  -chsize N    - sets arrays to run for maximum atoms of N, an integer
+                 specified by the user here
+
+  -prevclcg    - runs in mode compatible with previous CLCG
+
+  -prevrandom  - runs in old random number generator mode
+
+  -input file  - specifies input file to be read instead of standard input
+  -i file
+
+  -output file - specifies output file to be used instead of standard output
+  -o file
+
+  var=value    - sets a scripting variable to be used in the charmm script as
+                 an "@" variable, the same as the "SET" command (miscom.doc).
+                 This argument allows the same charmm script to be used with
+                 different values of @ variables without editing the scripts.
+
+EXAMPLE:
+
+::
+
+    $ charmm
+              runs charmm interactively, all input comes from
+              keyboard, all output comes to screen.
+
+    $ charmm < myinput.inp
+             or
+    $ charmm -i myinput.inp
+              runs charmm reading input from a file in the
+              present working directory, output to screen or
+              standard output
+
+    $ charmm < myinput.inp > chmout.out
+    $ charmm -i myinput.inp > chmout.out
+    $ charmm -o chmout.out -i myinput.inp
+    $ charmm -o chmout.out < myinput.inp
+    $ charmm -i myinput.inp -o chmout.out
+              All equivalent, last recommended for parallel runs
+              runs charmm reading input from a file in the
+              present working directory, output to screen or
+              standard output
+
+    $ charmm aaa=5 rtffile=top_mine.rtf run=$nrun -prevrandom < myinput.inp
+
+             runs charmm, reads from myinput.inp, writes to
+             standard output. Sets three variables as if the
+             first lines in the charmm script were (where the
+             shell or environment variable nrun is 33):
+
+             set aaa 5
+             set rtffile top_mine.rtf
+             set run 33
+
+    $ charmm -chsize 500000 -input myinput.inp
+
+             runs charmm, reads from myinput.inp, writes to
+             standard output. Sets size of charmm arrays to hold
+             500,000 atoms as if the first line in the charmm
+             script was:
+
+             dimension chsize 500000
+
+
+.. _usage_charmm_size:
+
+Configuring CHARMM Array Sizes in the CHARMM script
+---------------------------------------------------
+
+The current release of CHARMM (c36b1 and beyond) allows the user
+to configure the size of many key arrays in CHARMM at run-time using a CHARMM
+script level command as the FIRST command following the script title. Like
+the command line option -chsize <integer>, the script level commands let
+you configure CHARMM's key arrays and data structures to match the problem
+you are working on. The command key for resizing CHARMM arrays is DIMEnsion
+or RESIze, both are recognized, followed by the particular data structure size
+you wish to change. The command is of the form:
+
+::
+
+    dimension dsize-1 <size-1> [dsize-2 <size-2> ...]
+
+or
+
+::
+
+    resize dsize-1 <size-1> [dsize-2 <size-2> ...]
+
+where the following data structure size names are recognized.
+
+Data Structure Size
+^^^^^^^^^^^^^^^^^^^
+
+======= ============ ==================================================
+chsize               This is a master size that proportions all CHARMM
+                     data structures
+maxa    (chsize)     This controls the maximum number of atoms
+maxb    (chsize)     Maximum number of bonds
+maxt    (chsize*2)   Maximum number of angles
+maxp    (chsize*3)   Maximum number of proper dihedral angles
+maximp  (chsize/2)   Maximum number of improper dihedral angles
+maxnb   (chsize/4)   Maximum number of nonbond fixes
+maxpad  (chsize)     Maximum number of acceptors and donors
+maxres  (chsize/3)   Maximum number of residues
+maxseg  (chsize/8)   Maximum numebr of segments
+maxcrt  (chsize/3)   Maximum number of CMAP dihedrals
+maxshk  (chsize)     Maximum number of SHAKE constraints
+maxaim  (chsize*2)   Maximum number of atoms including images
+maxgrp  (chsize*2/3) Maximum number of groups
+======= ============ ==================================================
+
+EXAMPLES
+^^^^^^^^
+
+1) Configure all of CHARMM to accommodate 10,000 atoms
+
+   ::
+
+     dimension chsize 10000
+
+2) Configure the maximum number of atoms to be 10,000 and the maximum number of
+   dihedrals and impropers to be very small (say 10)
+
+   ::
+
+     dimension maxa 10000 maxp 10 maximp 10
+
+   .. note::
+      The remaining arrays/data structures will be configured according to the
+      default chsize used in the CHARMM build, e.g., small, medium, large, xlarge, etc.
+
+
 .. _usage_meta_syntax:
 
 Rules for Describing the Syntax (The Meta-Syntax)
@@ -101,40 +271,53 @@ indicates that something was mistyped. For some commands, such as DYNAmics,
 where a mistake may be costly, extraneous characters result in a fatal
 error.
 
-
+
 .. _usage_run_control:
 
 Controlling a CHARMM Run
 ------------------------
 
-::
-
-        IF command-parameter test-spec comparison-string command-spec
-
-        GOTO label-string
-
-        LABEL label-string
-
-        STREAM [UNIT integer]
-               [file-specification]
-
-        RETURN
-
-        SET command-parameter string
-
-        INCRement command-parameter [BY real]
-
-        DECRement command-parameter [BY real]
-
-This node describes commands that are used to modify the usual
-sequential interpretation of commands from the command file.  Three
-methods are available to accomplish this: 
+The sizes of arrays can now be dynamically defined at program startup, instead
+of having to recompile.  The charmm-size (chsize) is no longer limited to the
+compile time flag of MEDIUM, LARGE, XLARGE, etc., and can be changed either via
+the command line (see above) or the DIMEnsion command, which **MUST** be the
+first command in the input file.  Otherwise, the compile time limit is used.
+Other arrays may also be specified; :doc:`dimens`
 
 ::
 
-        IF tests to conditionally execute a single command
-        GOTO and LABEL transfers within a file
-        STREAM and RETURN transfers to different command files.
+    DIMEsion chsize <number of atoms>  ! max number of atoms for this run
+
+    Control Logic
+
+    IF command-parameter test-spec comparison-string command-spec
+
+    GOTO label-string
+
+    LABEL label-string
+
+    STREAM [UNIT integer]
+           [file-specification]
+
+    RETURN
+
+    SET command-parameter string
+
+    INCRement command-parameter [BY real]
+
+    DECRement command-parameter [BY real]
+
+:doc:`miscom`
+
+These commands that are used to modify the usual sequential
+interpretation of commands from the command file.  Three methods are
+available to accomplish this:
+
+::
+
+    IF tests to conditionally execute a single command
+    GOTO and LABEL transfers within a file
+    STREAM and RETURN transfers to different command files.
 
 In addition commands can be modified by the use of command parameters.
 The command line reader scans input lines for parameters (specified by
@@ -197,7 +380,7 @@ EXAMPLE:
    STOP
 
 .. _usage_io_units:
-   
+
 Fortran I/O Units Usage by CHARMM
 ---------------------------------
 
@@ -255,75 +438,75 @@ The important data structures are given below: Each data
 structure name is followed by its abbreviation which is used as its name
 in commands.
 
-        1) Residue Topology File (RTF)
-           The residue topology file stores the definitions of all
-           residues. The atoms, atomic properties, bonds, bond angles,
-           torsion angles, improper torsion angles, hydrogen bond donors
-           and acceptors and antecedents, and non-bonded exclusions are
-           all specified on a per residue basis. The term "residue" is
-           somewhat historical, but can be any basic unit.
+1) Residue Topology File (RTF)
+   The residue topology file stores the definitions of all
+   residues. The atoms, atomic properties, bonds, bond angles,
+   torsion angles, improper torsion angles, hydrogen bond donors
+   and acceptors and antecedents, and non-bonded exclusions are
+   all specified on a per residue basis. The term "residue" is
+   somewhat historical, but can be any basic unit.
 
-        2) The Parameters (PARA or PARM)
-           The parameters specify the force constants, equilibrium
-           geometries, van der Waals radii, and other such data needed
-           for calculating the energy.
+2) The Parameters (PARA or PARM)
+   The parameters specify the force constants, equilibrium
+   geometries, van der Waals radii, and other such data needed
+   for calculating the energy.
 
-        3) Structure File (PSF)
-           The structure file is the concatenation of
-           information in the RTF. It specifies the information for the
-           entire structure. It has a hierarchical organization wherein
-           atoms are grouped into residues which are grouped into
-           segments which comprise the structure. Each atom is uniquely
-           identified within a residue by its IUPAC name, residue
-           identifier, and its segment identifier. Identifiers may be up
-           to 4 characters in length.
+3) Structure File (PSF)
+   The structure file is the concatenation of
+   information in the RTF. It specifies the information for the
+   entire structure. It has a hierarchical organization wherein
+   atoms are grouped into residues which are grouped into
+   segments which comprise the structure. Each atom is uniquely
+   identified within a residue by its IUPAC name, residue
+   identifier, and its segment identifier. Identifiers may be up
+   to 4 characters in length.
 
-        4) The Internal Coordinates (IC)
-           The internal coordinates data structure contains information
-           concerning the relative positions of atoms within a structure.
-           This data structure is most commonly used to build or modify
-           cartesian coordinates from known or desired internal coordinate
-           values. It is also used in conjunction with the analysis of
-           normal modes. Since there are complete editing facilities,
-           it can be used as a simple but powerful method of examining
-           or analyzing structures.
+4) The Internal Coordinates (IC)
+   The internal coordinates data structure contains information
+   concerning the relative positions of atoms within a structure.
+   This data structure is most commonly used to build or modify
+   cartesian coordinates from known or desired internal coordinate
+   values. It is also used in conjunction with the analysis of
+   normal modes. Since there are complete editing facilities,
+   it can be used as a simple but powerful method of examining
+   or analyzing structures.
 
-        5) The Coordinates (COOR)
-           The coordinates are the Cartesian coordinates for all the
-           atoms in the PSF. There are two sets of coordinates provided.
-           The main set is the default used for all operations involving
-           the positions of the atoms. A comparison set (also called the
-           reference set) is provided for a variety of purposes, such as
-           a reference for rotation or operations which involve
-           differences between coordinates for a particular molecule.
-           Associated with each coordinate set is a general purpose
-           weighting array (one element for each atom).
+5) The Coordinates (COOR)
+   The coordinates are the Cartesian coordinates for all the
+   atoms in the PSF. There are two sets of coordinates provided.
+   The main set is the default used for all operations involving
+   the positions of the atoms. A comparison set (also called the
+   reference set) is provided for a variety of purposes, such as
+   a reference for rotation or operations which involve
+   differences between coordinates for a particular molecule.
+   Associated with each coordinate set is a general purpose
+   weighting array (one element for each atom).
 
-        6) The Non-bonded List (NBON)
-           The non-bonded list contains the list of non-bonded
-           interactions to be used in calculating the energies as well
-           as optional information about the charge, dipole moment, and
-           quadrapole moments of the residues. This data structure
-           depends on the coordinates for its construction and must be
-           periodically updated if the coordinates are being modified.
+6) The Non-bonded List (NBON)
+   The non-bonded list contains the list of non-bonded
+   interactions to be used in calculating the energies as well
+   as optional information about the charge, dipole moment, and
+   quadrapole moments of the residues. This data structure
+   depends on the coordinates for its construction and must be
+   periodically updated if the coordinates are being modified.
 
-        7) The Hydrogen Bond List (HBON)
-           The hydrogen bond list contains the list of hydrogen bonds.
-           Like the non-bonded list, this data structure depends on the
-           coordinates and must be periodically updated.
+7) The Hydrogen Bond List (HBON)
+   The hydrogen bond list contains the list of hydrogen bonds.
+   Like the non-bonded list, this data structure depends on the
+   coordinates and must be periodically updated.
 
-        8) The Constraints (CONS)
-           There is a variety of available constraints. All data pertaining
-           to constraints reside in this data structure.
+8) The Constraints (CONS)
+   There is a variety of available constraints. All data pertaining
+   to constraints reside in this data structure.
 
-        9) The Images data structure (IMAGES)
-           The images data structure determines and defines the relative
-           positions and orientations of any symmetric image of the primary
-           molecule(s). The purpose of this data structure is to allow
-           the simulation of crystal symmetry or the use of periodic
-           boundary conditions. Also contined in this data structure is
-           information concerning all nonbonded, H-bonds, and bonded
-           interactions between primary and image atoms.
+9) The Images data structure (IMAGES)
+   The images data structure determines and defines the relative
+   positions and orientations of any symmetric image of the primary
+   molecule(s). The purpose of this data structure is to allow
+   the simulation of crystal symmetry or the use of periodic
+   boundary conditions. Also contined in this data structure is
+   information concerning all nonbonded, H-bonds, and bonded
+   interactions between primary and image atoms.
 
 
 .. _usage_standard_files:
@@ -385,18 +568,15 @@ each of these hooks, consult the routine in
 
 ::
 
-        ~/charmm/source/main/usersb.src on UNIX machines or
-        [...CHARMM.SOURCE.MAIN]USERSB.SRC under VAX/VMS.
-
+        ~/charmm/source/main/usersb.src
 
 1) USERSB
 
    The USER command invokes the subroutine, USERSB, and performs
    no other action.  USERSB is a subroutine with no arguments.  However,
-   parameters may be passed to this subroutine via the COMMON blocks.
-   These COMMON blocks store nearly all of the systems data.  These common
-   blocks may be obtained by including them from the directory containing
-   the sources for the version of the program you are using.
+   parameters may be passed to this subroutine via modules.
+   These modules store nearly all of the systems data.  These modules should be
+   created in the source directories for the version of the program you are using.
 
 2) USERE
 
@@ -451,7 +631,7 @@ each of these hooks, consult the routine in
    Some of them are listed below.
 
    CALL GETE(X,Y,Z,...)  will cause the energy and forces to be
-   computed and values are saved in the appropriate common blocks. For
+   computed and values are saved appropriately. For
    this to work properly, NBONDS, HBONDS, and CODES must have been called.
    This can be done by executing both the NBONds and HBONds command,
    by the use of the UPDAte command, or by having previously found the
@@ -462,7 +642,7 @@ each of these hooks, consult the routine in
    It will also write out the cycle or iteration number and optionally
    write out the standard header.
 
-
+
 .. _usage_syntactic_glossary:
 
 Glossary of Syntactic Terms
