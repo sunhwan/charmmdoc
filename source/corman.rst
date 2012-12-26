@@ -1,8 +1,8 @@
 .. py:module:: corman
 
-####################################
+====================================
 The Coordinate Manipulation Commands
-####################################
+====================================
 
 The commands in this section are primarily used for moving
 some or all of the atoms. There is a wide range of commands and options.
@@ -17,10 +17,10 @@ Syntax of Coordinate Manipulation commands
 
 ::
 
-   COORdinates { INITialize                       } [COMP] [atom-selection]
+   COORdinates { INITialize                       } [COMP] [DIMS] [atom-selection]
                { COPY                             }   [WEIGhting_array]
                { SWAP                             }   [IMAGes] [SECOnd]
-               { AVERage  [ FACT real ]           }     
+               { AVERage  [ FACT real ]           }
                { SCALe    [ FACT real ]           }
                { MASS_weighting                   }
                { ADD                              }
@@ -31,6 +31,8 @@ Syntax of Coordinate Manipulation commands
                { TWISt  vector-spec   RATE real   }
                { ORIEnt [MASS] [RMS] [NOROtation] }
                { RMS    [MASS]                    }
+               { TMSCore                          }
+               { UFSR                             }
                { DIFFerence                       }
                { FORCe  [MASS]                    }
                { SHAKe  [MASS]                    }
@@ -56,14 +58,14 @@ Syntax of Coordinate Manipulation commands
                          { R }
 
    COORdinates { HBONd   }  [CUTHB <real>] [CUTHA <real>] [IUNIt <int>]  -
-               { CONTact }  [BRIDge <resnam>] [VERBose] [TCUT real] - 
+               { CONTact }  [BRIDge <resnam>] [VERBose] [TCUT real] -
                               2X(atom-selection) traj-spec -
                             [IRHI <int> [DRH <real> ][RHMAx <real>] ] -
                             [ITHI <int> [DTH <real> ][THMAx <real>] ] -
                             [PBC [CUBIC|TO|RHDO BOXL|XSIZE <real> -
                                    [YSIZE <real> [ZSIZE <real>] ] ]]
 
-   COORdinates SECStructure [first-selection [second-selection]] - 
+   COORdinates SECStructure [first-selection [second-selection]] -
                             [QUIEt | VERBose] [CUTH real] [CUTA real]
 
    COORdinates  DYNAmics  [COMParison]  [PAX]  [atom-selection] [NOPRint] -
@@ -140,15 +142,15 @@ Syntax of Coordinate Manipulation commands
      {IGDISt <unit> [IHH <unit>] [IOH <unit>]|ISDISt <unit>} - ! g(r) requests
        {BYGRoup|BYREsidue|BYSEgment}          ! discard distances WITHIN
                                               ! specified unit for g(r)
-     IMRD                       ! Magnetic Relaxation Dispersion analysis 
+     IMRD                       ! Magnetic Relaxation Dispersion analysis
          RRES  cutoff radius for calculation of residence time. if 0 use shell
                beteween RSPIN, RSPOUT
 
      IKIRkg <unit> -                   ! Kirkwood g-factor (dipole correlations)
      RKIRk               ! distance dependent Kirkwood factor for water
-                         ! iff a SITE MULTI selection containing 
+                         ! iff a SITE MULTI selection containing
                          ! at least two atoms is
-             given, then a unit-vector pointing from the first to 
+             given, then a unit-vector pointing from the first to
              the second site atoms  will be used in the
              scalar product with a unit vector along the water dipoles
      NKIRk   number of points in r-dimension for IKIR and RKIR
@@ -164,7 +166,7 @@ Syntax of Coordinate Manipulation commands
       IDIP <unit> [MIND <real>] [MAXD <real>] [NUMD <int>] -
                                                    ! dipole distribution
       EXVC <atom-selection> MCP <int> MCSH <int> - ! EXcludedVolumeCorrection
-      RPRObe <real> ISEEd [WEIG] - 
+      RPRObe <real> ISEEd [WEIG] -
 
       RCOR <integer> -                 ! Rotational Correlation Time Analysis
       ROUT <unit>  TLOW <real>  TUP <real>  MAXT <integer> -
@@ -172,7 +174,13 @@ Syntax of Coordinate Manipulation commands
       IHYDn <integer>  RHYD <real>     ! Hydration numner
 
    COORdinates INERtia [atom-selection] -
-                   [ENTRopy [TEMPerature <real>] [SIGMa <real>] ]
+                    [ENTRopy [TEMPerature <real>] [SIGMa <real>] ] -
+                    [STANdard <SOLUtion|GAS>]
+
+   COORdinates CONFormational { <resname> } [ PRINT ] [ READ io-speficication ] -
+                    [atom-selection] [COMP]
+
+   COORdinates PATH { NREP <int> } {NAME <character*>} [<PDB|FILE|UNFO|CARD|FORM>]
 
    atom-selection:== (see *note select:(chmdoc/select.doc).)
 
@@ -182,7 +190,7 @@ Syntax of Coordinate Manipulation commands
           { [UNIT int] [CUT real] [ENERGy [CLOSe]] 2X(atom-selection) -    }
 
                    { [Nonbonds] } { [NO14exclusions] } { [NOEXclusions] }  -
-                   { NONOnbonds } {    14EXclusions  } {    EXCLusions  }  
+                   { NONOnbonds } {    14EXclusions  } {    EXCLusions  }
 
                 [TRIAngle]   [ HISTogram HMIN real HMAX real HNUM integer  -
                                 [HSAVe] [HPRInt] [HNORm real] [HDENsity real] ]
@@ -192,12 +200,11 @@ Syntax of Coordinate Manipulation commands
                     [XCEN real] [YCEN real] [ZCEN real]       [FACTor real]
                  {  AXIS                                 }
 
-   draw-spec::= [DFACt real] [NOMO]  UNIT integer 
+   draw-spec::= [DFACt real] [NOMO]  UNIT integer
 
    io-specification:== (see *note io:(chmdoc/io.doc).)
 
    traj-spec::= [FIRSt int] [NUNIts int] [NSKIp int] [BEGIn int] [STOP int]
-
 
 .. corman_simple
 
@@ -209,18 +216,25 @@ or the comparison set (:chm:`COMP` keyword) to be modified. The other coordinate
 set is only changed by the :chm:`SWAP` command and the :chm:`ORIEnt RMS` command when
 the specified atoms are not centered about the origin.
 
+The DIMS coordinate set (DIMS keyword) is used with the
+DIMS command (:doc:`dims`) and it is mainly used with COPY
+to load the target structure:  'COOR COPY DIMS'. The DIMS set also works with
+ORIENT, PRINT, and STAT, but not with any other operations. Copy the
+DIMS set to the comparison set ('COOR COPY DIMS COMP') if other
+operations on the target structure are required.
+
 Each of these commands may also operate on a subset of the full
 atom space. The selection specification should be at the end of the command.
 The default atom selection includes all atoms.
 
 If the :chm:`IMAGes` keyword is specified, then the operation will be
 performed on the image atoms as well (if images are present).
-        
+
 The :chm:`SECOnd` keyword specifies that the second comparison set be used.
 This keyword can be used with any command that uses a comparison set (e.g.
 :chm:`COPY COOR COMP SECOnd` to copy coordinates to the second comparison set;
 :chm:`COPY COOR SECOnd` to copy the coordinates from the second to the main set).
-Use of this command requires compilation with the COMP2 precompiler keyword. 
+Use of this command requires compilation with the COMP2 precompiler keyword.
 
 
 The INITialize command
@@ -363,8 +377,8 @@ planar structures.
 .. note::
 
   this command uses a left handed sense, not the usual right hand rule...
-  (see :chm:`ROTAte` above). 
-  
+  (see :chm:`ROTAte` above).
+
 
 The ORIEnt command
 ^^^^^^^^^^^^^^^^^^
@@ -380,7 +394,7 @@ geometric axis coincides with the X-axis and the next largest coincides
 with the Y-axis. This command is primarily used for preparing a
 structure for graphics and viewing. It can also be used for finding
 RMS differences, and in conjunction with the vibrational analysis.
-        
+
 The :chm:`NOROtation` keyword will suppress rotations. In this case,
 only one coordinate set will be modified.
 
@@ -437,13 +451,23 @@ as origin for the coordinate system in which the dipole moment is calculated.
 This can be altered by the :chm:`MASS` keyword. If it is present the center of mass
 will be used as origin of the relative coordinate system.
 
-For the purpose of compatibility with Gaussian program this feature can be 
+For the purpose of compatibility with Gaussian program this feature can be
 disabled by adding :chm:`OXYZ` keyword, which forces calculation of dipole moment
 relatively to the origin of Cartesian coordinate system.
 
 Prints out dipole moment cartesian components and magnitude (in Debyes) and
 the total charge. CHARMM variables :sub:`CHARGE`, :sub:`XDIP`, :sub:`YDIP`, :sub:`ZDIP` and :sub:`RDIP` (charge, x,y,z and magnitude of dipole) are set.
 
+The UFSR command
+^^^^^^^^^^^^^^^^
+
+Compare two structures (working set versus comparison set)
+with the Ultra Fast Shape Recognition algorithm by Ballester and
+Richards (:ref:`Ballester 2007 <dims_references>`). This
+algorithm is intended to differentiate two structures based on atomic
+distributions. Notice that in this approach the score is normalized
+and a value of 1 means two identical structures. The current
+implementation is identical to the one proposed in their paper.
 
 .. corman_function
 
@@ -483,7 +507,7 @@ The command;
 
          COOR DISTance ENERgy CLOSe CUT 5.0 SELE ALL END SELE ALL END -
                 14EXclusions NONBonds
-                
+
 will list all atom pairs that have a positive van der Waal energy.
 
 The command;
@@ -579,7 +603,7 @@ The current keywords are:
       :chm:`WEIG`   use a weight array (WMAIN or WCOMP) for the weighting
       :chm:`FACT`   constant to be subtracted from each weight
       ===========   ================================================================
-      
+
 The weight arrays can be filled, by using :chm:`COOR` or :chm:`SCALAR` commands,
 before invoking the :chm:`RGYR` routine. In this way almost any :chm:`RGYR` can be computed.
 
@@ -709,14 +733,14 @@ of the previous atom (by number). This has been used with the command;
 ::
 
         COOR DUPLicate PREVious SELE TYPE H* END
-        
+
 to assign hydrogen atom positions to that of the associated heavy atom.
 
 The :chm:`COMP` keyword causes only the comparison coordinates to be used and
 modified.  Otherwise, the entire operation involves only the main coordinates.
 
 
-The DYNAmics command 
+The DYNAmics command
 ^^^^^^^^^^^^^^^^^^^^
 
 The :chm:`COOR DYNAmics` command will read a (set of) dynamics trajectory
@@ -755,7 +779,7 @@ to be saved (for subsequent :chm:`COOR PAXA` commands).
 The SEARch command
 ^^^^^^^^^^^^^^^^^^
 
-:: 
+::
 
    COORdinates  SEARch { search-spec               } disposition-spec
                        { INVErt                    }
@@ -787,9 +811,9 @@ The grid specifiers must be input (min, max, and grid) for each dimension.
 (grid implies number of grid points. Hence
 
 ::
- 
+
         XMIN -10.0 XMAX 10.0 XGRID 41
-        
+
 implies a half Angstrom sampling along the x direction)
 
 The :chm:`FILLed` option will cause non-vacuum points to be listed or plotted.
@@ -802,7 +826,7 @@ array.  To get van der Waal radii into the weighting array, the command;
 ::
 
         SCALar WMAIn = RADIus
-        
+
 may be used. If a hole big enough to stuff a water into is to be found,
 then the command sequence;
 
@@ -811,7 +835,7 @@ then the command sequence;
         SCALar WMAIn = RADIus
         SCALAR WMAIN ADD 1.6
         SCALAR WMAIN MULT 0.85
-        
+
 would be probably the best to use.
 
 If the :chm:`RCUT` or :chm:`RBUFf` value is set to a nonzero value, then the accessible
@@ -833,7 +857,7 @@ operations to combine the results.  For example, the script sequence;
 
 ::
 
-   COORdinates   SEARch  IMAGe - 
+   COORdinates   SEARch  IMAGe -
          XMIN -10.0 XMAX 10.0 XGRId 20 -
          YMIN -10.0 YMAX 10.0 YGRId 20 -
          ZMIN -10.0 ZMAX 10.0 ZGRId 20 -
@@ -841,7 +865,7 @@ operations to combine the results.  For example, the script sequence;
    ....
    SCALAR WMAIN ...
    ....
-   COORdinates   SEARch  IMAGe - 
+   COORdinates   SEARch  IMAGe -
          XMIN -10.0 XMAX 10.0 XGRId 20 -
          YMIN -10.0 YMAX 10.0 YGRId 20 -
          ZMIN -10.0 ZMAX 10.0 ZGRId 20 -
@@ -957,7 +981,7 @@ The angle values are specified in degrees. See the routine CONCOR for
 details concerning the transformation.
 
 As an example, the following manipulations should have no net affect on the
-coordinates, 
+coordinates,
 
 ::
 
@@ -1001,7 +1025,7 @@ and the normalized covariance matrix is given by
 The command syntax and variables are as in the :chm:`coor dynamics` command.
 The exceptions are the keywords:
 
-   ====================== ============================================================== 
+   ====================== ==============================================================
    :chm:`SET1`            specifies the selection for the "J" groups in covariance
    :chm:`SET2`            specifies the selection for the "K" groups in covariance
    :chm:`UNIT_for_output` specifies unit for output of covarience matrix (ascii)
@@ -1011,23 +1035,23 @@ The exceptions are the keywords:
                           giving a NRES1 x NRES2 covariance matrix.
    :chm:`MATRix`          gives output of just the covariance values in a matrix format
    :chm:`ENTRopy`         config. entropy [kcal/mol/K] using approximation S'' of
-                          Andricioaei&Karplus (J. Chem. Phys 115,6289 (2001)) or 
-   :chm:`SCHL`            J. Schlitter's variation S' 
+                          Andricioaei&Karplus (J. Chem. Phys 115,6289 (2001)) or
+   :chm:`SCHL`            J. Schlitter's variation S'
                           (Chem. Phys. Lett. 215, 617 (1993)) on Karplus&Kushick.
                           See also Schafer et al  J. Chem. Phys. 113, 7809 (2000).
                           This approximation is an upper limit to the true entropy.
                           Sets CHARMM variable ENTROPY
                           It is recommended to remove translational(rotational) motion
                           before extracting the entropy (merge orient..[norot].);
-                          for flexible molecules removal of rotation may be tricky.  
+                          for flexible molecules removal of rotation may be tricky.
                           NB! The covariance matrix used for this calculation is
                           not normalized and is 3N by 3N
    :chm:`TEMP`            temperature used in entropy calculation (default 298.15)
-   :chm:`DIAG`            use only diagonal elements of covariance matrix, 
+   :chm:`DIAG`            use only diagonal elements of covariance matrix,
                           mainly for testing purposes
    :chm:`RESI`            evaluate entropy using covariance for each residue only
-   ====================== ==============================================================    
-   
+   ====================== ==============================================================
+
 Example:
 
 ::
@@ -1060,11 +1084,11 @@ The entire syntax is:
         PROJect UPRJ <int> [MKPRoj] PROBability UPRB <int> TOLE <real> -
         [ [RELAtive] RMSF] [DUNIt <int>] [MATRix]
 
-The command structure is like that of most other coordinate manipulation 
+The command structure is like that of most other coordinate manipulation
 commands other sub-parser keywords are:
 
     ======== ===================================================================
-    UNIT     the distance matrix will be written to the unit 
+    UNIT     the distance matrix will be written to the unit
              number specified as an ASCII file unless the TRAJ
              keyword is specified, in which case a binary "trajectory" of
              the distance matrix will be written.
@@ -1079,7 +1103,7 @@ commands other sub-parser keywords are:
              smaller than cutoff value
     PROJect  project out a subset of contacts for printing
     UPRJ     read projection matrix from unit UPRJ
-    MKPRoj   A projection matrix will be printed. Its elements are 1 if 
+    MKPRoj   A projection matrix will be printed. Its elements are 1 if
              the distance is < CUTOff, 0 otherwise. To be used with subsequent
              PROJ UPRJ unit command. (If a standard DMAT is used as projection
              matrix the CUTOff in the PROJ command has to be squared)
@@ -1092,7 +1116,7 @@ commands other sub-parser keywords are:
     RELAtive Divides the RMSF value by the distance
     DUNIt    Write distances to file open on the specified unit. This
              allows calculation of distance and (relative) fluctuation
-             matrices in one pass. 
+             matrices in one pass.
     MATRix   Output is in the form of a rectangular matrix with just the
              z-values (distances or fluctuations)
     ======== ===================================================================
@@ -1102,7 +1126,7 @@ commands other sub-parser keywords are:
    contain the following information:
 
    ::
-   
+
                   WRITE(UNIT) HDRD,ICNTRL
                   CALL WRTITL(TITLEA,NTITLA,UNIT,-1)
                   WRITE(UNIT) NSET1,NSET2
@@ -1110,15 +1134,15 @@ commands other sub-parser keywords are:
                   WRITE(UNIT) (IND2(I2),I2=1,NSET2)
 
    and then nframes of
-   
+
    ::
-   
+
                   WRITE(UNIT) ((CO(I1,I2),I1=1,NRES1),I2=1,NRES2)
 
    Where ICNTRL is a 20 element integer array with the following data:
 
    ::
-   
+
                   ENDDO
                   ICNTRL(1) = (STOP - BEGIN)/SKIP
                   ICNTRL(2) = BEGIN
@@ -1183,7 +1207,7 @@ unit 1.  Use NOE inverse-sixth power weighting in the averaging and
 
    coor dmat unit 1 cutoff 6.0 noe_weighting select hydrogen end -
         select hydrogen end -
-        first_unit 10 nunit 1 begin 100 skip 100 stop 10000 
+        first_unit 10 nunit 1 begin 100 skip 100 stop 10000
 
 4.  Compute the center-of-gemoetry distance matrix for side chains and
 write this as a binary "trajectory" file to unit 1.  Read the
@@ -1201,7 +1225,7 @@ trajectory from unit 10.
         first_unit 10 nunit 1 begin 100 skip 100 stop 10000
 
 5.  Compute the center-of-geometry contact map probability based on a
-precomputed distance matrix (e.g. from a PDB structure) based on a 6.5 A 
+precomputed distance matrix (e.g. from a PDB structure) based on a 6.5 A
 cutoff. (This example is for the interdomain (helix-helix) contacts in
 GCN4.  The two helices are segids zipa and zipb.)
 
@@ -1327,7 +1351,7 @@ Keywords:
                     belonging to the same segid since it is design for the analysis of
                     independent subset of solvent molecules.
   ================= ===============================================================================
-  
+
 .. note::
    The keyword CROSs cannot be selected with the following options:
    WATer, SITE, IKIRkg, ISDIst, IFDBf.
@@ -1349,13 +1373,13 @@ Keywords:
      ZP0       initial reference site - dynamics sphere origin separation
      NZP       number of separations to compute dbf
      TYP       for DBF calc 1=oxygen, 1=hydrogen
-              
+
      IHIS      unit for output of 3Dhistogram data (in "DN6" format) or
      IPDB      unit for output of "atoms" where density exceeds THREshold
      ========= ==================================================================
-     
+
    with options:
-   
+
      ============ =============================================================
      WEIG         use WMAIN to weight points       !! Not tested
      DIPO         accumulate dipole vector density !! NOT working yet (June 98)
@@ -1363,12 +1387,12 @@ Keywords:
                   default is to just accumulated number density of sel. atoms
      NORM value   densities are divided by this value (and by number of frames)
                   (default 1)
-     XMIN,XMAX,DX  
+     XMIN,XMAX,DX
      YMIN,YMAX,DY grid dimension&spacing (default +/- 20A,0.5A spacing)
-     ZMIN,ZMAX,DZ  
+     ZMIN,ZMAX,DZ
      THREshold    value for density to output atoms in PDB file format
      ============ =============================================================
-               
+
 The atoms indicated by the solvent selection are analyzed. If dipole
 data is to be analyzed the selection should contain 1 atom/group - the
 groups define what atoms are to be used for the dipole calculation.
@@ -1380,7 +1404,7 @@ function.
        This facility is intended for use with polarisable modelling of bulk
        solvent, and requires the FLUCQ compilation keyword for activation.
        (If IDIP is not specified, then no distribution is plotted.)
-       
+
        ========= ====== ====================================================
        MINDipole  real  The minimum dipole (in Debye) to plot (default 0)
        MAXDipole  real  The maximum dipole to plot (default 4.0 Debye)
@@ -1390,7 +1414,7 @@ function.
        is corrected for the volume excluded around the solute (ie the SITE)
        by the atoms in the selection following EXCV. This correction is
        computed using a Monte Carlo procedure with parameters:
-       
+
        ========= ====== ====================================================
         MCP       int   Total number of points to use in the Monte Carlo
                         (default 1000)
@@ -1403,11 +1427,11 @@ function.
         WEIG            Use WMAIN instead of the vdW radii
        ========= ====== ====================================================
   ==== =======================================================================
-        
+
 The following has been found to give good results even when looking
 at g(r) for water hydrogens around a site:
 
-:: 
+::
 
    scalar wmain = radius
    scalar wmain mult 0.85
@@ -1418,7 +1442,7 @@ The key is to make sure that the a non-zero accessible volume is obtained
 at the shortest distances where g(r) starts being non-zero.
 The data file produced with EXCV contains two extra columns; column 4 contains
 the uncorrected g(r) and column 5 contains the accessible volume fraction.
-     
+
 EXAMPLES: (See also the test/c27test/solanal2.inp testcase)
 The following examples use a trajectory of a short peptide in a periodic
 water box
@@ -1443,20 +1467,20 @@ water box
    open unit 32 write form name @9pept500.goh
    open unit 33 write form name @9pept500.ghh
    ! specify WATEr to get all three g(r) functions computed
-   coor anal water select type OH2 end - 
+   coor anal water select type OH2 end -
          firstu 21 nunit 1 skip 10 -    ! trajectory specification
          igdist 31 ioh 32 ihh 33 -      ! flag to do the solvent-solvent g(r)
          mgn 100 dr 0.1 -               ! comp. g(r) at MGN points separated by DR
          rsph 999.9  -                  ! use ALL waters for rdf calculation
          xbox @6 ybox @7 zbox @8        ! and we did use PBC
 
-   ! g(r) backbone amide hydrogen -  water oxygens 
+   ! g(r) backbone amide hydrogen -  water oxygens
    ! if a single solute atom is looked at the MULTi keyword is not necessary
    ! when several solute atoms are specified as the site, their average position
    ! will be used as the reference position if MULTi is not present
    open unit 21 read unform name @9pept500.cor
    open unit 31 write form name @9pept500.gonh
-   coor anal select type oh2 end  -     ! Water oxygens 
+   coor anal select type oh2 end  -     ! Water oxygens
          site select type H end multi - ! and the amide hydrogens
          firstu 21 nunit 1 skip 10 -    ! trajectory specification
          isdist 31  -                   ! do the g(r) (here solute-solvent)
@@ -1467,7 +1491,7 @@ water box
    ! g(r) for GLY3 NH - the water oxygens - with excluded volume correction
    open unit 21 read unform name @9pept500.cor
    open unit 31 write form name @9pept500.gn3ox1
-   coor anal  select type OH2 end - 
+   coor anal  select type OH2 end -
          site multi select atom pept 3 H end -
          EXVC select segid pept end -
          MCPoints 2000 MCSHells 20 RPRObe 1.7 -
@@ -1485,7 +1509,7 @@ Calculation of rotational correlation times corresponding to the three
 rotational motions of a water molecule has been added to the solvent
 analysis code. The three rotational motions refer to motion around the
 dipole axis (twist), around an axis perpendicular to the molecular
-plane (rock) and around an axis parallel to the H-H vector (wag) (Ref 1).  
+plane (rock) and around an axis parallel to the H-H vector (wag) (Ref 1).
 The correlation time is calculated by fitting the exponentional decay part
 of the corresponding time correlation function C(t) to an
 exponentional function of the form C(t) = A exp(-t/tau) where tau is
@@ -1512,7 +1536,7 @@ Keywords for rotational correlational time calculation are:
                  water dipole; P2(x)=(3x**2-1)/2
                  output is to unit specified by ROUT
   ==== ========= =============================================================
-  
+
 For P1 and P2 the analysis may be performed in a shell defined by RSPIn
 and RSPOut, and the minimum image  xbox,ybox,zbox is also accounted for
 
@@ -1549,7 +1573,7 @@ molecules within a specified distance of a multi atom or single atom site:
 * number of solvent atoms within RHYD of the solute
 * number of solvent atoms within RHYD of solute atoms (ie, if three water
   molecules are all within RHYD of a 7-atom solute this will be 63)
-  
+
 Sets CHARMM variables NHYDRR, NHYDAR and NHYDAA to the averages for these
 three numbers.
 If IHYDN>0 these numbers are written to unit IHYD every timestep.
@@ -1565,7 +1589,7 @@ Keywords for hydration number calculation are:
   RHYD <real>    calculate hydration number at this distance from
                  each atom in the site
   ==== ========= ===================================================
-  
+
 Example:
 
 ::
@@ -1598,7 +1622,7 @@ also be displayed. The current keywords are:
    RETUrn Specifies which stream the plotting program will
           return to after plotting this section (default none)
    ====== ====================================================
-   
+
 An atom selection is also looked for. Any atom not selected will
 not be considered. The default is to include all atoms.
 
@@ -1607,31 +1631,31 @@ The HBONd / The CONTact command
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The HBONd command analyses a trajectory, or the current coordinates,
-for hydrogen bonding patterns. 
+for hydrogen bonding patterns.
 
 The form COOR CONTact ... ignores the hydrogen bond donor/acceptor
-definitions in the psf and looks for all contacts which satisfy the 
+definitions in the psf and looks for all contacts which satisfy the
 distance cutoff criterion between all atoms in the two selections; possibly
 bridged by a residue as defined by the BRIDge keyword. This is useful for
 hydrophobic contact analysis, or for salt bridges. No angle cutoff can
-be used with this form of the command. 
+be used with this form of the command.
 Output and other options are as for the COOR HBONd variant.
 
 The form COOR HBONd makes use of the DONOR/ACCEPTOR definitions in the psf.
 For each acceptor/donor in the first selection the average number and average
 lifetime (for trajectories only) of hydrogen bonds to any atom in the second
-selection is calculated. A hydrogen bond is assumed to exist when two 
+selection is calculated. A hydrogen bond is assumed to exist when two
 candidate atoms are closer than the value specified by CUT (default 2.4A,
 (reasonable criterion, DeLoof et al (1992) JACS 114,4028), and if a value
 for CUTAngle is given the angle formed by D-H..A is greater than this CUTAngle
-(in degrees, 180 is a linear H-bond); the default is to allow all angles.  
+(in degrees, 180 is a linear H-bond); the default is to allow all angles.
 The current implementation assumes that hbonding hydrogens are present in
 the PSF and uses ACCEptor and DONOr information from the PSF to determine
 what pairs are possible. If output is wanted to a separate file the IUNIt
 option can be used. If the BRIDge option is used the routine calculates average
 number and lifetime of bridges formed between all pairs of atoms in the
 two selections; a bridge is counted when a residue of the type specified with
-the BRIDge <resnam>  hydrogen bonds (using same criteria as for direct 
+the BRIDge <resnam>  hydrogen bonds (using same criteria as for direct
 hbonding) to at least one atom in each selection. The typical
 use of this would be to find water bridges. Here again, results are presented
 for each atom in the first selection.
@@ -1656,20 +1680,22 @@ set the actual box dimensions (overriding the value(s) specified on the
 COOR command line). The minimum image code is turned off when the command
 exits, which means that a previous BOUND command will no longer be in effect.
 
-Keyword VERBose provides a more detailed output:
+Keyword :chm:`VERBose` provides a more detailed output:
 
 For trajectory analysis the duration and endtime (ps) of each H-bond,
 or bridge, together with a specification of the atoms involved is output;
 potentially very large amounts of data! Only hbonds/bridges with a lifetime
 longer than the value specified by keyword TCUT (default 0.0 ps) are included
-here and in the summary. 
+here and in the summary.
 
-NB: TCUT (and NSKIP) may influence the results, since hbonds with
-a duration < TCUT are not counted, and for the lifetime analysis a quick
-fluctuation in hbond distance may with one choice of NSKIP result in the
-hbond being perceived as broken at that instant, whereas with a longer NSKIP
-the event would not have been noticed, resulting in a longer lifetime
-being reported.
+.. note::
+
+   TCUT (and NSKIP) may influence the results, since hbonds with
+   a duration < TCUT are not counted, and for the lifetime analysis a quick
+   fluctuation in hbond distance may with one choice of NSKIP result in the
+   hbond being perceived as broken at that instant, whereas with a longer NSKIP
+   the event would not have been noticed, resulting in a longer lifetime
+   being reported.
 
 For single coordinate set analysis the VERBose keyword results in a more
 detailed listing giving all atoms involved, and also the geometry for
@@ -1686,7 +1712,7 @@ different hbonds formed by these atoms)
 Note that the lifetime can be influenced by end-effects (ie hbonds
 still active at end of trajctory are counted as being terminated then!)
 
-Output can be directed to a separate file specified by IUNIT int. 
+Output can be directed to a separate file specified by IUNIT int.
 
 The following charmm substitution parameters are set in the module:
 
@@ -1695,7 +1721,7 @@ The following charmm substitution parameters are set in the module:
   :sub:`AVNOHB` average number of hydrogen bonds over selected atoms (timeaver.)
   :sub:`AVHBLF` average lifetime of hydrogen bonds
   ============= ================================================================
-  
+
 Note that these averages are over the selected atoms, which may include
 a number of atoms with no hbonds > TCUT!
 
@@ -1705,7 +1731,7 @@ contain non-zero data also for bins > CUT. For bridges the lifetimes are those
 of the bridging events, but the distances are computed from all individual
 hydrogen bonds.
 
-The three columns in the output are: 
+The three columns in the output are:
 
 ::
 
@@ -1734,11 +1760,11 @@ for the selected atoms.
 The histogram can either be a simple count of the number of atoms
 contained in each bin (specified by the HNUM=number of bins between
 HMIN,HMAX keywords), or if the WEIGhting keyword is present the WMAIN
-array is summed for the atoms in each bin. 
+array is summed for the atoms in each bin.
 HSAVe specifies that the histogram should be saved and incremented at
 the next invocation of COOR HIST. HPRInt specifies that the resulting
 histogram should be printed. For X,Y,Z histograms the output is
-the accumulated density/HNORM (default=1.0) in each bin. If HDENS>0.0 
+the accumulated density/HNORM (default=1.0) in each bin. If HDENS>0.0
 (default=0.0) there is also a third column for R histograms containing
 the accumulated density/(volume of shell containing this bin)/DENS.
 
@@ -1767,7 +1793,7 @@ could be done in the following way:
    ! scalar x divi ?TIMFAC
    ! scalar y divi ?TIMFAC
    ! scalar z divi ?TIMFAC
-   coor hist R hnum 50 hmin 0.0 hmax 10.0 hsave weig 
+   coor hist R hnum 50 hmin 0.0 hmax 10.0 hsave weig
    incre i by 1
    if i .lt. 100 goto loop
 
@@ -1789,7 +1815,7 @@ The PUCKer command
 
 The sugar pucker phase and amplitude, as defined by
 Altona&Sundaralingam (default, keyword AS)  or (CP) Cremer&Pople (JACS 1975),
-are calculated for the (deoxy)ribose of the specified residue(s); 
+are calculated for the (deoxy)ribose of the specified residue(s);
 the first segment is the default. A range of residues from resid1 TO resid2
 can be analyzed.
 
@@ -1802,20 +1828,20 @@ The INERtia command
    COORdinates INERtia [atom-selection]
 
 Principal moments of inertia I_xx, I_yy, I_zz are calculated and
-the eigenvectors of the inertia tensor are printed. Normally atom selection 
+the eigenvectors of the inertia tensor are printed. Normally atom selection
 should not be used and the command
 
 example:
 
 ::
-   
+
    COOR INER
 
 is sufficient, since all ithe atoms are selected by default. The units for
 principal moments of inertia are
 
 :math:`amu \cdot A^2`,  where amu - atomic mass unit (Carbon is 12), and A stands
-for Angstrom. 
+for Angstrom.
 
 
 The INERtia ENTRopy command
@@ -1824,11 +1850,12 @@ The INERtia ENTRopy command
 ::
 
    COORdinates INERtia [atom-selection] ENTRopy
-                       [TEMPerature <real>] [SIGMa <real>]
+                    [TEMPerature <real>] [SIGMa <real>] -
+                    [STANdard <SOLUtion|GAS>]
 
 Entropy calculation is an extension to the INERtia command.
 In addition to calculation of principal moments of inertia the rotational
-and translational entropy components will be evaluated. Calculation of 
+and translational entropy components will be evaluated. Calculation of
 these two entropy terms is very fast. See :doc:`vibran.doc <vibran>` to see how to
 calculate the vibrational entropy term.
 
@@ -1838,14 +1865,30 @@ low symmetry groups. For symmetric molecules one should enter a correct
 value for sigma (see, for example, C.J.Cramer, "Essentials of Comp.Chem.",
 2002,p.327).
 
+Translational component of entropy depends on the defition of standard state.
+There are two definitions: solution (1M) and ideal gas. The default is solution.
+They differ by a constant of 6.35236 kcal/mol, with higher entropy in gas state.
+See details inTidor and Karplus, J Mol Biol (1994) vol. 238 (3) pp. 405-14
+
 example:
 
 ::
 
-   COOR INER ENTRopy
+  COOR INER ENTRopy
+  COOR INER ENTRopy TEMPerature 298.15 SIGMa 1
+  COOR INER ENTRopy TEMPerature 298.15 SIGMa 1 STANdard SOLUtion
+  COOR INER ENTRopy TEMPerature 298.15 SIGMa 1 STANdard GAS
 
-The units for entropy are :math:`cal/(mol \cdot K)`. Rotational and translational
-entropy terms can be accessed in CHARMM input file as ?SROT and ?STRA
+  VIBRan
+  DIAGonalize ENTRopy TEMP 298.15 SIGM 1
+  DIAGonalize ENTRopy TEMP 298.15 SIGM 1 STANdard SOLUtion
+  DIAGonalize ENTRopy TEMP 298.15 SIGM 1 STANdard GAS
+  END
+
+testcase in c32test/entropy.inp
+
+The units for entropy are :math:`cal/(mol \cdot K)`. Rotational, translational, vibrational, and
+total entropies can be accessed in CHARMM input file as ?SROT, ?STRA ?SVIB, and ?SSUM
 substitution parameters.
 
 
@@ -1877,6 +1920,189 @@ angle cutoff for the N-H..O angle (default is not to use this criterion).
 Keywords QUIEt/VERBose control the amount of output
 
 
+The CONFormational command
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+  COORdinate CONFormational { <resname> } [ PRINT ] [ READ io-speficication ] -
+                   [atom-selection] [COMP]
+
+Current methods for generating transition paths between macromolecules e.g.,
+the TMD and TREK modules, rely on the Cartesian coordinates of a subset of
+atoms in a protein.  Although several residue types possess symmetry (e.g.
+planar symmetry of a PHE ring), so that the conformation of such a residue is
+invariant with respect to a rotation around the symmetry axis, rendering
+certain groups of atoms effectively indistinguishable, topology files must
+distinguish between these atoms (e.g. PHE CD1 vs. PHE CD2). Given two different
+coordinate sets for a macromolecule, any two-set path generation method that
+makes use of the Cartesian coordinates of atoms that belong to residues with
+symmetry decides arbitrarily the correspondence between the `indistinguishable'
+atoms. For example, performing TMD using coordinates of the ring atoms of a
+PHE, will force the position of atom CD1 in the initial set to move to the
+position of atom CD1 in the target set, although the movement from CD1 to CD2
+is also possible. In such transitions, it is likely that there exist a path
+with a high energy barrier (e.g. flipping of a PHE ring in a tightly-packed
+protein interior) that can be avoided by making use of symmetry. The current
+method, CONFormational consistency, is an algorithm for renaming certain atoms
+to minimize rotation and flipping of the involved residues during path
+generation.
+
+The algorithm is heuristic and is as follows.  (Two coordinate sets are assumed
+present, in the main and comparison sets).  For each residue in the optional
+atom selection, the following procedure is performed.  The residue is
+partitioned into three (non-disjoint) sets of atoms: swap atoms, orientation
+atoms and test atoms.  Swap atoms are organized into pairs, which will be
+swapped during the check. The residues in the two conformations are RMSD-
+aligned based on the orientation atoms only. RMSD is computed between the test
+atom positions in the two coordinate sets. The configuration of the swap atoms
+that gives the lesser test-atom-RMSD value is accepted.  Positions of any
+hydrogen atoms that are bonded to swap atoms are initialized, and can be
+regenerated with HBUIld.
+
+The three sets in the residue partitioning are defined by default for the
+following residues (i.e. by default, {<resname>} can contain any number of
+these)
+
+::
+
+  ARG ASP GLU HIS HSC HSD HSE HSP LEU PHE TYR VAL
+
+Users can override pre-existing defaults for these residues, and declare new
+residues in an optional input file.  In the following, the default residue
+partitioning is shown for ARGinine (only the relevant atoms are shown):
+
+::
+
+                         HH11
+                         |
+            -- CD        NH1-HH12
+                 \      //(+)
+                  NE--CZ
+                        \
+                         NH2-HH22
+                         |
+                         HH21
+
+
+  swap atoms:               NH1 NH2
+  orientation atoms:        CZ NH1 NH2
+  test atoms:               CD
+
+Note that the HH* hydrogens will have undefined positions after the check is
+complete, and can be redefined using HBUIld.  Also note that more than one
+partitioning scheme may lead to the same results.
+
+A custom residue partitioning file can be specified, following the READ
+option.
+
+For the twelve residue types supported by default, the equivalent partitioning
+file is:
+
+::
+
+  12
+  ARG 1 CD 1 CZ 1 NH1 NH2 0
+  ASP 1 CA 2 CB CG 1 OD1 OD2 0
+  GLU 1 CB 2 CG CD 1 OE1 OE2 0
+  HIS 1 CA 2 CB CG 2 ND1 CD2 NE2 CE1 0
+  HSC 1 CA 2 CB CG 2 ND1 CD2 NE2 CE1 0
+  HSD 1 CA 2 CB CG 2 ND1 CD2 NE2 CE1 0
+  HSE 1 CA 2 CB CG 2 ND1 CD2 NE2 CE1 0
+  HSP 1 CA 2 CB CG 2 ND1 CD2 NE2 CE1 0
+  LEU 1 CB 1 CG 1 CD1 CD2 0
+  PHE 1 CA 3 CB CG CZ 2 CD1 CD2 CE2 CE1 0
+  TYR 1 CA 3 CB CG CZ 2 CD1 CD2 CE2 CE1 0
+  VAL 1 CA 1 CB 1 CG1 CG2 0
+
+The first line specifies the number of lines to be read (number of residues)
+Each subsequent line is organized as follows:
+
+::
+
+  <residue name> <# test atoms> <list of test atoms> -
+                 <# orientation atoms that are not swapped> <list ...> -
+                 <# PAIRS of orientation atoms that are swapped> <list...> -
+                 <# swap atoms that are not part of the orientation set> <list...>
+
+Note that the default residue partitioning file includes residues which do not
+have any symmetry. These are histidine residues : HIS, HSD, HSE, HSP, and HSC.
+In these cases the atoms ND1 and CD2 are assumed to be indistinguishable.
+
+The optional PRINT command will print checking information for each tested
+residue By default, the main comparison set is modified.  Specifying COMP will
+cause the comparison set to be modified (note that this may lead to undefined
+hydrogen atoms in the comparison set).
+
+Finally, an atom selection may be specified. In this case, only the residues
+for which at least one atom is selected will be tested.
+
+Examples:
+
+1)
+
+   ::
+
+     coor conf his arg phe tyr hsd glu asp print select all end
+
+   will check the specified residues and, if needed, make modifications to
+   the main set. Results for each residue will be printed. Default partitioning
+   is used.
+
+2)
+
+   ::
+
+     coor conf arg print select all end read
+     * residue partitioning file
+     *
+     2
+     ARG 1 CD 1 CZ 1 NH1 NH2 0
+     ASP 1 CA 2 CB CG 1 OD1 OD2 0
+
+   will check all arginines using the custom partitioning specified below the
+   command line
+
+   Testcase: c35test/confcons.inp
+
+The PATH command
+^^^^^^^^^^^^^^^^
+
+::
+
+  COORdinate PATH { NREP <int> } {NAME <character*>} [<PDB|FILE|UNFO|CARD|FORM>]
+
+This command will create an interpolated path connecting two structures stored
+in the main and comparison sets.  Currently, only linear interpolation in
+Cartesian atom coordinates is implemented.
+
+NREP specifies the number of replicas desired (this includes the two endpoints,
+and must be at least three)
+
+NAME specifies the base name of the file to which the interpolated coordinates
+will be written.  An extension will be appended to the base name, which
+consists of a number in the range [0.. NREP-1] followed by '.<ext>', in which
+ext depends on the format specification as follows:
+
+---------------- ---
+format spec      ext
+---------------- ---
+PDB              PDB
+FILE/UNFO/CARD   COR
+---------------- ---
+
+Example:
+
+::
+
+  coor path nrep 32 name output/conv card
+  ! will create a linearly interpolated path of 32 replicas named
+  ! output/conv0.cor, ..., output/conv31.cor
+  ! in card format
+
+Testcase: c35test/confcons.inp
+
+
 .. _corman_substitution:
 
 Coordinate Manipulation Values
@@ -1897,7 +2123,7 @@ may be more up-to-date).
 
 * 'XMIN','YMIN','ZMIN','WMIN','XMAX','YMAX','ZMAX','WMAX','XAVE','YAVE','ZAVE','WAVE'
 
-   Statistics set by the COOR STAT command. 
+   Statistics set by the COOR STAT command.
 
 * 'THET'
 
@@ -1911,3 +2137,33 @@ may be more up-to-date).
 
    Resulting RMS value set by the COOR RMS, COOR ORIEnt, or COOR RGYR
    commands.
+
+The TMSCore command
+-------------------
+
+Computes the TM-score between the selected sets of atoms.  The TM-score
+(see Zhang, Y. and Skolnick, J. Proteins, 2004 57:702-710) is a scoring
+function that quantifies the similarity between two structures, returning a
+number between 0 and 1.  We assume that the sequences of the two structures
+are identical.  The TM-score is computed as:
+
+::
+
+  TM-score = Max [ 1/N  sum_{i=1}^N  1/(1 + (di/d0)**2) ]
+
+where di is the distance between the two structures of atom i, d0 is a
+constant reference length that depends only on the number of residues in
+the protein, N is the number of atoms selected, and the Max is computed
+over many different alignment attempts of the two molecules (see Zhang and
+Skolnick for more details).  The aim of the multiple alignments is to emphasize
+the matching parts of the molecule.
+
+After the command is executed, the TMScore, the TMScore with a cutoff of 10 A,
+and the d0 value used to compute the TMScore are assigned to the variables
+?tmscore, ?tm10 and ?tmd0, respectively.
+
+Ex/
+
+::
+
+  coor tmsc sele type CA end

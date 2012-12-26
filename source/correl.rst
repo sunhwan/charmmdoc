@@ -87,6 +87,11 @@ Syntax for the CORREL command and subcommands
                    {   HELIx [ SELE atom-selection END ]                   } c
                    {   INERtia  [ SELE atom-selection END ][ TRACe | ALL]  } c
                    {   PUCK  RESI <resid> [SEGI <segid>]                   } c
+                   {                                                       }
+                   {   PUCK ATOM [ Q ]      repeat(6x(atom-spec))          }
+                   {             [ THETa ]                                 }
+                   {             [ PHI ]                                   }
+                   {                                                       }
                    {   USER user-value [ repeat(atom-spec) ]  s**          } e
                    {   SURF [ RPRPobe real] [ WEIG ] [ACCE|CONT] [RESI]    } c
                    {        [ SELE atom-selection END ]                    }
@@ -102,6 +107,7 @@ Syntax for the CORREL command and subcommands
                    {        [ BULK ]                                       }
                    {   SATM [ SHELL int ] atom-spec                        } c***
                    {        [ BULK ]                                       }
+                   {   OMSC ETA friction-coefficient                       } c
                    {                                                       }
                    {   PRDI proto_num [ MASS ]                             } c****
                    {                                                       }
@@ -138,7 +144,7 @@ Syntax for the CORREL command and subcommands
          *** WARNING: For angles and dihedrals, if SELE is used to
              specify atoms, then the order that the atoms are
              used to determine the angle value is the order that
-             the atoms are in the psf/coord array. Recommend that 
+             the atoms are in the psf/coord array. Recommend that
              BYNUm is used to specify the correct order of atoms.
 
 
@@ -149,7 +155,7 @@ Syntax for the CORREL command and subcommands
 
            { ALL                     } [P2] [UNIT int]
    SHOW    { time-series-name        }
-           { CORRelation-function    }        (defines ?P2, ?AVER, ?FLUC) 
+           { CORRelation-function    }        (defines ?P2, ?AVER, ?FLUC)
 
            { ALL                     }
    EDIT    { time-series-name        }  edit-spec
@@ -189,15 +195,18 @@ Syntax for the CORREL command and subcommands
                { RATIo name2         } ! Q(t) = Q(t) / Q2(t)
                { DOTProdcut name2    } ! Q(T) x-comp=Q(T).Q2(T)
                                          Q2(T)x-comp=angle Q(T) vs Q2(T) degrees
-               { CROSproduct name2   } ! Q(T) = Q(T)xQ2(T) 
+               { CROSproduct name2   } ! Q(T) = Q(T)xQ2(T)
                { KMULt name2         } ! Q(t) = Q(t) * Q2(t)
                { PROB integer        } ! Q(t) = PROB(Q(t))
                { HIST min max nbins  } ! Q(ibin) = Fraction of Q(t) values in ibin
                { POLY integer        } ! fit time series to polynomial (0-10)
-                     [REPLace] [WEIGh name] 
+                     [REPLace] [WEIGh name]
                { CONTinuous [real]   } ! make a (dihedral) time series continuous
                                          Q(t) = Q(t)+ n(t)*2*real, n(t)=integer
                                              (default real is 180.0)
+               { MAP real1 real2     } ! Q(t)is mapped to [real1,real2]
+                                       ! (typically [0,360] -
+                                       ! default or both have to be specified!
                { LOG                 } ! Q(t) = LOG(Q(t))
                { EXP                 } ! Q(t) = EXP(Q(t))
                { IPOWer integer      } ! Q(t) = Q(t) ** integer
@@ -215,7 +224,7 @@ Syntax for the CORREL command and subcommands
                { DERIvative          } ! Q(t) = (Q(t+dt)-Q(t))/dt
                { SPHErical           } ! Q(t) = Q(t) 3-component vector series
                                        !      converted to spherical coord:
-                                       !     (x,y,z)-> (r,phi,theta) 
+                                       !     (x,y,z)-> (r,phi,theta)
 
    CORFUN 2x(time-series-name)
              { [ PRODuct ]  [ FFT   ] [ LTC  ] [ P1 ] [ NONOrm ] } [ XNORm real ] [ TOTAl int ]
@@ -233,7 +242,7 @@ Syntax for the CORREL command and subcommands
                             [ STOP <int> ] [ ANGLE ]
 
    END        ! return to main command parser
-   
+
 
 
 .. _correl_general:
@@ -337,12 +346,12 @@ The ENTER options are;
 
 *  Internal Coordinates
    ::
-   
+
       [ BONDS   repeat(2x(atom-spec))        ] [ GEOMETRY ]
       [ ANGLE   repeat(3x(atom-spec))        ] [ ENERGY   ]
       [ DIHEd   repeat(4x(atom-spec)) [NOTR] ]
       [ IMPRo   repeat(4x(atom-spec))        ]
-      
+
    These specifications cause a particular internal coordinate
    (or an average of several) to define the time series. It is not necessary
    that the specified atoms have a corresponding PSF entry, but if ENERGY is
@@ -359,13 +368,13 @@ The ENTER options are;
          [ Z   ]
          [ R   ]
          [ XYZ ]
-   
+
    These ENTER commands define a time series, Q(t), based on atom
    positions or velocities. The ATOM option uses the (X,Y,Z,R,or XYZ) values
    directly.  The FLUCtuation option subtracts off the reference values
    (contained in the comparison coordinates). For example, if the average
    structure is desired as the reference value, then the command:
-   
+
    ::
 
       COOR DYNA COMP trajectory-spec
@@ -382,24 +391,24 @@ The ENTER options are;
 
 *  Vector
    ::
-   
+
       VECT   [ X   ]  repeat(2x(atom-spec))
        [ Y   ]
        [ Z   ]
        [ R   ]
        [ XYZ ]
-       
+
    The VECTor command is similar to the ATOM and FLUCtuation
    commands listed above, except the values are given by the difference
    in position or velocity of 2 atoms. If more than one pair of atoms
    is specified, then the values for each vector are averaged.
-   
+
    Q(t) = X1(t) - X2(t)
 
 *  Vector product
 
    ::
-   
+
       ATOM DOTProduct  repeat(2x(atom-spec))
       FLUC DOTProduct  repeat(2x(atom-spec))
       VECT DOTProduct  repeat(4x(atom-spec))
@@ -412,7 +421,7 @@ The ENTER options are;
    velocities or positions with the following definitions;
 
    ::
-   
+
       ATOM DOTP:  Q(t) =  ( r1(t) | r2(t) )
       FLUC DOTP:  Q(t) =  ( (r1(t)-r1(ref)) | (r2(t)-r2(ref)) )
       VECT DOTP:  Q(t) =  ( (r1(t)-r2(t)) | (r3(t)-r4(4)) )
@@ -425,7 +434,7 @@ The ENTER options are;
 
 *  Gyration
 
-   :: 
+   ::
 
       [ GYRAtion ] [ CUT real ]
       [ DENSity  ]
@@ -441,7 +450,7 @@ The ENTER options are;
    by projecting the velocities onto the specified normal mode, or to
    project the coordinate displacement from the reference structure. The
    result is given by;
-   
+
    * velocity:  Q(t) = < root(mass)*v(t) | q >
    * position:  Q(t) = < root(mass(i))*(r(t)-r(ref)) | q >
 
@@ -474,8 +483,8 @@ The ENTER options are;
    sorted with the main axis first.
 
    .. note::
-   
-      There may be problems, in particular for flexible systems, with 
+
+      There may be problems, in particular for flexible systems, with
       exchange of the two minor axes; the code tries to correct for this
       (messages about this are printed at PRNLEV 7), but it may not always be
       right...
@@ -492,7 +501,7 @@ The ENTER options are;
 *  RMS  [ORIE]
    The RMS deviation from the COMPARISON coordinate set is
    computed for the atoms in the first selection on the TRAJ command,
-   with a superposition to obtain a best fit to the same atoms in the 
+   with a superposition to obtain a best fit to the same atoms in the
    COMParison coordinate set if ORIEnt is specified.
    If the TRAJ command also contains an ORIENT second_selection, this second
    selection will first have been used for a superposition onto the COMP
@@ -505,14 +514,24 @@ The ENTER options are;
    being the phase (degrees) and component 2 the pucker amplitude
    (Angstroms), as defined by Cremer&Pople (JACS 1975).
 
+*  ::
+
+     PUCK ATOM [ Q ]      repeat(6x(atom-spec))
+               [ THETa ]
+               [ PHI ]
+
+   Reports the Cremer & Pople puckering coordinates Q, THETa, and PHI for
+   a six member ring of atoms. If Q, THETa, or PHI are not defined, all three
+   coordinates are reported.
+
 *  USER user-value [ repeat(atom-spec) ]
    The USRTIM routine is called for each coordinate or velocity
    set. The user value and atom list is also passed along. See the
    description in (USERSB.SRC)USRTIM for more details.
-   
+
    Q(t) = Whatever you want!
-          
-*  SURF [RPRObe real] [WEIG] [ACCE|CONT] [RESI] [SELE atom-selection END] 
+
+*  SURF [RPRObe real] [WEIG] [ACCE|CONT] [RESI] [SELE atom-selection END]
    Computes the solvent accessible surface area vs time for the selected
    atoms in the context of the FIRST selection given to the TRAJ command. Uses the
    analytical method (see :doc:`SURF <corman>`).
@@ -526,29 +545,29 @@ The ENTER options are;
    RESI       .FALSE.   give ASA per residue in the selected set (creates a vector
                         time series with one component for each residue)
    ========== ========= ===========================================================
-   
+
    Example:
    ::
-   
-      * Compute individual ASAs for 8 Trp residues in protein context given by all 
+
+      * Compute individual ASAs for 8 Trp residues in protein context given by all
       * residues with at least one atom within 8A of the Trp rings
-      * 
-      ! r1 .. r8 are previously defined as 8 different Trp rings 
+      *
+      ! r1 .. r8 are previously defined as 8 different Trp rings
       define trps sele r1 .or. r2 .or. r3 .or. r4 .or. r5 .or. r6 .or. r7 .or. r8 end
-      define environment sele .byres. (segid cht .and. ( trps .around. 8.0 ) ) end   
+      define environment sele .byres. (segid cht .and. ( trps .around. 8.0 ) ) end
       long ! allows all ASA values at each time point to be written on one line
       correl maxseries 10 maxtime 50000 maxatom 200
       enter asa surf rprobe 1.4 sele trps end resi
       traj firstu 51 nunit 1 begin 100000 skip 500 sele environment end stop 125000
-      write asa dumb time unit 21 
+      write asa dumb time unit 21
       *hi
       *
-      end                  
+      end
 
 
 *  TIME [ AKMA ]
    The time is returned in picoseconds unless AKMA is specified.
-   
+
    * Q(t) = t
 
 *  ZERO
@@ -571,10 +590,10 @@ The ENTER options are;
 
 *  Dipole moment of a water/solvent shell
    ::
-   
+
       SDIP [ SHELL int ]
       [ BULK ]
-      
+
    Computes the dipole moment of a water/solvent shell. Returns
    X/Y/Z and the number of atoms in the shell.
    See :doc:`shell` for further details.
@@ -584,10 +603,10 @@ The ENTER options are;
 *  Shell
 
    ::
-   
+
       SATM [ SHELL int ] atom-spec
       [ BULK ]
-   
+
    The series contains zero or one depending on whether the atom is
    in the specified shell (or the bulk). See :doc:`shell`.
    for further details.
@@ -607,6 +626,46 @@ The ENTER options are;
    Is similar to PRDI but calculates the sum of the center of
    geometry (or center of mass with keyword MASS) velocities of a given
    prototype set.
+
+*  OMSC ETA real
+
+   The series computes the cumulative Onsager-Machlup score
+   (:ref:`Onsager-Machlup score <dims_onsager_Machlup_score>`).
+   ETA is the friction coefficient of the dynamics (in 1/ps). As
+   a first guess one may use the value used for the Langevin dynamics
+   ('FBETA').
+
+   OMSC can only be used as the single time series in a CORREL
+   command. In particular, it is incompatible with RMS because they both
+   use the same reference array for different things (RMS stores the
+   comparison structure, OMSC the previous frame to compute velocities
+   X(t) - X(t-1).)
+
+   Output:
+   The standard output (at PRNLEV 3 or higher) consists of lines
+
+   ::
+
+     OMSCORE> step-score normalized-cumulative-score
+
+   The OM score for the first step is calculated and used to normalize
+   all following scores. The numbers can become rather large and using
+   the normalized score avoids using LONG in the output. Otherwise the
+   output format overflows and only ******** would be printed.
+
+   With the CORREL WRITE command, the normalized-cumulative-score for N-1
+   steps is written to an CORREL output file. The first step contains the
+   normalization factor s(t=0). You may have to postprocess the file
+   (using for instance awk) after having written the output file
+   omscore.dat with CORREL's WRITE name DUMB TIME ...:
+
+   ::
+
+     awk 'NR == 1 {s0 = $2}; {t=$1; s=s0*$2; print t," ",s}' \
+         omscore.dat > omscore_nn.dat
+
+   Note that it only makes sense to compare OM-scores for trajectories of
+   the same system and of the same length.
 
 
 .. _correl_trajectory:
@@ -682,7 +741,7 @@ the time series. The name "CORR" will cause the edit to occur on the
 correlation function.
 
 The following may be specified for a time series;
-   
+
 =============== ============================================================
 INDEx integer   May be specified to modify X,Y, or Z (1,2,3 resp)
                 of a vector time series. Otherwise, all are modified.
@@ -690,22 +749,22 @@ INDEx integer   May be specified to modify X,Y, or Z (1,2,3 resp)
                 time series, where a value of 1 represents the selected
                 time series. A value of 5 will cause the edit operation
                 to modify the fourth time series from the specified.
-          
+
 CLASs integer   May be used to specify a class code (consult source).
-          
+
 TOTAl integer   The total number of valid steps may be altered, but
                 none of the values are modified. By setting this
                 value to zero, the time series is then ready again
                 for the next TRAJectory command.
-          
+
 SKIP integer    May be specified to reset the SKIP value. This may be
                 useful after reading an external time series.
-          
+
 DELTa real      May be specified to modify the basic time step. The
                 actual time step for a series is (SKIP*DELTA).
-          
+
 OFFSet real     The time of the first element in the time series.
-          
+
 VECCod integer  User may specify a vector code. This may be useful
                 in merging 3 separate time series into a vector
                 time series (or the reverse). In fact any number of
@@ -713,13 +772,13 @@ VECCod integer  User may specify a vector code. This may be useful
                 For example, if a table with 5 time series is desired,
                 setting VECCOD to 5 for the first one and the writing
                 this time series will output all 5.
-          
-          
+
+
 VALUe real      This allows the user to modify the series utility
                 value. Its function depends on the Class code.
                 This value is currently used for (USER, GYRAtion,
                 DENSity, MODE, and TIME)
-          
+
 SECOndary int   The secondary class code may be modified (consult source).
 =============== ============================================================
 
@@ -740,70 +799,70 @@ The keyword ordering must be followed exactly.
 
 =================== ===================================================================
 DAVErage            subtracts the average of the time series from all elements.
-                    
+
 NORMal              normalizes the vectorial time series.
                     (i.e. creates the unit vector by dividing all elements for
                     a given value of t by :math:`r(t) = \sqrt{x^2 + y^2 + z^2}` ).
-                    
+
 SQUAre              squares all the elements
-                    
+
 COS                 obtains the cosine of all elements.
-                    
+
 ACOS                obtains the arc-cosine of all elements.
-                    
+
 COS2                calculates 3*cos**2 - 1 for all elements.
-                    
+
 AVERage integer     calculates the average for every <integer> consecutive
                     points and increases the time interval by a factor of
                     <integer>. Note: NTOT is divided by <integer>.
-                    
+
 SQRT                obtains square root for all elements.
                     Negative elements are set to -SQRT(-q(t)).
-                    
+
 FLUCt name          The Q(t) remains unchanged.
                     A second (b) time series must be specified.
                     The zero time fluctuations are computed and printed
                     out.  The following variables are computed:
-                    
+
                     * A = :math:`\langle Q_a(t) \cdot Q_b(t) \rangle`
                     * B = :math:`\sqrt {\langle Q_a(t)^2 \rangle}`
                     * C = :math:`\sqrt {\langle Q_b(t)^2 \rangle}`
                     * D = :math:`A/(B*C)`
-                    
+
 DINItial            subtracts the value of the first element from all elements.
                     Q(t) = Q(t) - Q(1)
-                    
+
 DELN integer        Q(I) = Q(I) - <Q(I)> I FROM 1 TO N, FROM N+1 TO N+N ETC.
                     (untested).
-                    
+
 OSC                 counts the number of oscillations in Q(t) / unit time step.
                     The Q(t) remains unchanged.
-                    
-                    
+
+
 COPY name           This copies the second time series to the first. NTOT
                     of the first is set to that of the second. If FIRSt or LAST is
                     specified, a subset (I=FIRST,,,LAST, with a total of
                     FIRST-LAST+1 points) of the second series is copied.
                     Defaults for FIRSt and LAST are 1 and NTOT of the second
                     series.
-                    
+
 ADD name            Q(t) = Q(t) + Q2(t); add the second time series to the first
-                    
+
 RATIo name          Q(t) = Q(t) / Q2(t)
-                    
+
 CROSsprod name      :math:`Q(t) = Q(t) \times Q2(t)`; the 3D crossproduct of the two
                     3D vectors formed by the selected and named time series
-                    
+
 DOTProd name        ::
 
-                      Q(T) = x-comp of Q(T)= Q(T) . Q2(T) 
+                      Q(T) = x-comp of Q(T)= Q(T) . Q2(T)
                              x-comp of Q2(T) angle in degrees between the two vectors
                       NOTE! Modifies Q2 as well as Q
                       to get just the x-comp you may then edit the selected series:
                       EDIT series VECCOD 1
-                    
+
 KMULt name          Q(t) = Q(t) * Q2(t)
-                    
+
 PROB integer        give the probability to find a specific value of the
                     time series. <integer> subdivisions of the time series
                     are considered so that there are integer+1 values.
@@ -812,57 +871,57 @@ HIST min max nbins  Q(ibin) = Fraction of Q(t) values within ibin
                     This command replaces a time series with a
                     histogram of the time series divided into "nbins" with
                     a range from "min" to "max".  The histogram values sum to 1.
-                
+
 POLY integer        fit time series to polynomial. The order should
 [REPLace]           be in the range of 0 to 10.
-[WEIGh name]        
+[WEIGh name]
                     * Order 0 will provide just the average,
                     * Order 1 will fit the time series to a straight line.
                     * Order 2 will fit to a quadratic function.
-                    
+
                     The REPLace option will replace the time series with
                     fitted one.  The WEIGht option will wait all data
                     by the values in a second time series.
-                    
+
 CONTinuous real     Q(t) = Q(t) + n(t) , where n(t) is an integer such that
                     the ABS(Q(t)-Q(t-1))<=real
-                    
-                    The default value is 180.0, which is appropriate for 
+
+                    The default value is 180.0, which is appropriate for
                     making a dihedral time series continuous.  A different
                     positive value may be selected (such as a box size...).
-                    
+
 LOG                 Q(t) = LOG(Q(t))
-                    
+
 EXP                 Q(t) = EXP(Q(t))
-                    
+
 IPOWer integer      Q(t) = Q(t) ** integer
-                    
+
 MULT real           Q(t) = Q(t) * <real>
-                    
+
 DIVI real           Q(t) = Q(t) / <real>
-                    
+
 SHIFt real          Q(t) = Q(t) + <real>
-                    
+
 DMIN                Q(t) = Q(t) - QMIN, QMIN being the minimum of the time series.
-                    
+
 ABS                 Q(t) = ABS(Q(t))
-                    
+
 DIVFirst            Q(t) = Q(t) / Q(1)
-                    
+
 DIVMax              Q(t) = Q(t)/ ABS(Q(t) with max norm)
-                    
+
 INTEgrate           Q(t) = Integral(0-t) [ Q(t) dt ]
-                    
+
 MOVIng integer      Q(t) = Q(t) = < Q(ti) >(ti=t-integer+1,t) (t)
                     At each time, computed the moving average of the last
                     <integer> points.  It <integer> is zero or negative, the
                     moving average is taken over all the preceding points.
-                    
+
 TEST real           Q(t) = COS ( 2 * PI * <real> / NTOT )
-                    
+
 ZERO                Q(t) = 0
                     This option zeroes the specified time series.
-                    
+
 DERIvative          Q(t) = (Q(t+dt)-Q(t))/dt, the last point is set to the one
                     before last
 =================== ===================================================================
@@ -892,27 +951,27 @@ PRODuct         This option (default) generates a correlation function that is t
 DIFFerence      The difference option is an alternative of the product option
                 and it generates a function that is useful in calculating
                 diffusion constants (slope at long tau).
-                
+
                 :math:`C(\tau) = \langle (Q_1(t) - Q_2(t+\tau))^2 \rangle`
 
 FFT             This option is to calculate the correlation function using the FFT
                 method.  There are certain limitations on the prime factors
                 in the total number of points.
-                
+
 DIRECT          This option is to calculate the correlation function using the
                 direct multiplication method.
-                
+
 P1              This option gives the direct correlation function, <Qa(0).Qb(t)>.
                 If Qa and Qb are unit vectors, then this is also the first
                 order Legendre Polynomial
-                
+
 P2              This is to obtain the correlation function of second order Legendre
                 Polynomial, (3 <[Qa(0).Qb(t)]**2> - 1)/2.  For all applications
                 that I can think of, Qa and Qb will be unit vectors. For P2, LTC = 0
                 and NORM = 1
-                
+
 NLTC            no long tail correction.
-                
+
 LTC             long tail correction (subtracts <Qa>**2 if autocorrelation,
                 <Qa>*<Qb> if cross correlation.  There is no LTC for P2
                 so NLTC and LTC give same result.)
@@ -922,20 +981,20 @@ LTC             long tail correction (subtracts <Qa>**2 if autocorrelation,
                 they are not centered about the mean, this correction causes
                 the C.F. to be a less accurate calculation of fluctuations from
                 the mean, i.e.
-                
+
                 .. math::
-                
+
                    \langle Q_a(0) \cdot Q_b(t) \rangle - \mathrm{LTC}
                         =& \langle Q_a(0) \cdot Q_b(t) \rangle -
                            \langle Q_a \rangle \langle Q_b \rangle \\
                         =& \langle \Delta Q_a(0) \cdot \Delta Q_b(t) \rangle
-                                
+
 NONORM          Correlations are not normalized. This is useful for adding
                 correlations computed in different trajectories.
                 (P2 is not normalized)
-                
+
                 The correlation functions are normalized unless NONORM is specified.
-                
+
 XNORm           Use this value if not zero as normalization factor (multiplies all
                 values in correlation function). Overrides NONORM setting.
 
@@ -964,35 +1023,35 @@ C(t) = (c(t) - ltc)/N
 ltc and Normalization factors, N, are:
 
 *  LTC, autocorrelation:
-   
+
    .. math::
-      
+
       \mathrm{LTC} &= \begin{cases}
          \langle Q_a \rangle ^2 &\; \text {for P1} \\
          0 &\; \text{for P2}
          \end{cases} \\
       N &= C(0) - \mathrm{LTC} \\
-        &= \langle Q_a^2 \rangle - \mathrm{LTC} 
+        &= \langle Q_a^2 \rangle - \mathrm{LTC}
 
 *  LTC, cross-correlations:
 
    .. math::
-   
+
       \mathrm{LTC} &= \langle Q_a \rangle \langle Q_b \rangle \\
       N &= \sqrt{ (\langle Q_a^2 \rangle - \langle Q_a \rangle ^2) (\langle Q_b^2 \rangle - \langle Q_b \rangle ^2) }
-      
-      
+
+
 *  NLTC, autocorrelation:
 
    .. math::
-   
+
       \mathrm{LTC} &= 0 \\
       N &= C(0)
-      
+
 *  NLTC, cross-correlations:
 
    .. math::
-   
+
       \mathrm{LTC} &= 0 \\
       N &= \sqrt{ \langle Q_a^2 \rangle \langle Q_b \rangle ^2}
 
@@ -1017,16 +1076,16 @@ Clustering Time Series Data
 
 This command clusters time series data obtained within the CORREL
 facility.  The time series must first be defined using CORREL's ENTEr
-command and the data read in via TRAJ or READ.  The CLUSter command 
-clusters these data into groups with similar time series values, with 
+command and the data read in via TRAJ or READ.  The CLUSter command
+clusters these data into groups with similar time series values, with
 each cluster being defined by a "cluster center".  The cluster centers are
-output to UNICluster, and a list of time points and assigned clusters is 
+output to UNICluster, and a list of time points and assigned clusters is
 given in the cluster membership file (UNIMember).
 
-For example, if you want to find similar conformations of a peptide 
-using dihedral angles, you would first define the set of dihedral angles to 
-be considered, say angle(1) -> angle(M), as M time series.  If the time series 
-were each N time steps long, then you would be clustering N "patterns", with 
+For example, if you want to find similar conformations of a peptide
+using dihedral angles, you would first define the set of dihedral angles to
+be considered, say angle(1) -> angle(M), as M time series.  If the time series
+were each N time steps long, then you would be clustering N "patterns", with
 each pattern M "features" long.
 
 Consecutive time series are clustered.  If the first time series
@@ -1044,7 +1103,7 @@ changed to the number of time series to be clustered:
        TRAJ ... (or READ ...)
        CLUSTER ts1 ...
    END
-   
+
 Alternatively, NFEAture M can be specified in the CLUSter command line.
 Note that vector time series count as three features.
 
@@ -1052,20 +1111,20 @@ Note that vector time series count as three features.
 The Clustering Algorithm
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-ART-2' is a step-wise optimal clustering algorithm based on a 
-self-organizing neural net (Carpenter & Grossberg, 1987; Pao, 1989; 
-Karpen et al., 1993).  The algorithm optimizes cluster assignment subject 
-to a constraint on cluster radius, such that no member of a cluster is more 
-than a specified distance from the cluster center.  This optimization is 
-carried out as an iterative minimization procedure that minimizes the 
+ART-2' is a step-wise optimal clustering algorithm based on a
+self-organizing neural net (Carpenter & Grossberg, 1987; Pao, 1989;
+Karpen et al., 1993).  The algorithm optimizes cluster assignment subject
+to a constraint on cluster radius, such that no member of a cluster is more
+than a specified distance from the cluster center.  This optimization is
+carried out as an iterative minimization procedure that minimizes the
 Euclidean distance between the cluster center and its members.
 
-A self-organizing net is created with each output node representing 
-a cluster.  The number of pattern features is equal to the number of input 
-nodes.  The weights of the connections between the input layer (layer i) 
+A self-organizing net is created with each output node representing
+a cluster.  The number of pattern features is equal to the number of input
+nodes.  The weights of the connections between the input layer (layer i)
 and the output layer (layer j) are denoted by b(j,i).  For each cluster j,
-b(j,i), i = 1, nfeature, is the cluster center.  To create the net (which is 
-synonomous to learning the classification scheme or cluster centers) the 
+b(j,i), i = 1, nfeature, is the cluster center.  To create the net (which is
+synonomous to learning the classification scheme or cluster centers) the
 following algorithm is implemented:
 
 1. To initialize the network, assign b(1,i) equal to the first
@@ -1077,7 +1136,7 @@ following algorithm is implemented:
 
    rms(j,k) = sqrt[sum [(b(j,i)-tq(k,i))**2] for i = 1, nfeature]
 
-3. Find cluster j such that rms(j,k) < rms(i,k) for all i<>j.  If 
+3. Find cluster j such that rms(j,k) < rms(i,k) for all i<>j.  If
    rms(j,k) <= Threshold, then update b(j,i):
 
    b(j,i) = ((m-1)*b(j,i) + tq(k,i))/m,
@@ -1088,7 +1147,7 @@ following algorithm is implemented:
 
 4. If rms > Threshold for all prior cluster centers (j=1,numclusters),
    then create a new cluster center by increasing the number of
-   output nodes by one, and assign the weights b(numclusters,i) of 
+   output nodes by one, and assign the weights b(numclusters,i) of
    this node the value of the pattern tq(k,i).
 
 5. Repeat 2.-4. until all patterns have been input.
@@ -1097,31 +1156,31 @@ following algorithm is implemented:
    the difference between them is less than MAXError, then halt
    clustering.
 
-7. If the difference between the sets of cluster centers is greater 
-   than MAXError, then use the new set of cluster centers as the 
+7. If the difference between the sets of cluster centers is greater
+   than MAXError, then use the new set of cluster centers as the
    starting cluster centers, and repeat steps 2.-6.  Else, clustering
    is complete.
 
-Note that the cluster centers currently being calculated in step 3 
-are only used for the comparison in step 2 during the first 
-iteration with no initial cluster centers.  Otherwise, the centers 
-calculated in the previous iteration (or read from UNIInit) are 
-used in the comparison in step 2.  Hence, in the initial "learning" 
+Note that the cluster centers currently being calculated in step 3
+are only used for the comparison in step 2 during the first
+iteration with no initial cluster centers.  Otherwise, the centers
+calculated in the previous iteration (or read from UNIInit) are
+used in the comparison in step 2.  Hence, in the initial "learning"
 phase, cluster centers are recalculated as each new member is added.
-In subsequent "refining" phases, cluster centers are not updated 
+In subsequent "refining" phases, cluster centers are not updated
 until all conformations are read in and assigned.
 
 References:
 
-1) Carpenter, G. A., & Grossberg, S. 1987. ART 2: Self-organization of stable 
+1) Carpenter, G. A., & Grossberg, S. 1987. ART 2: Self-organization of stable
    category recognition codes for analog input patterns. Appl. Optics  26:4919-
    4930.
 
 2) Pao, Y.-H. 1989. Adaptive Pattern Recognition and Neural Networks, Addison-
    Wesley, New York.
 
-3) Karpen, M. E., Tobias, D. T., & Brooks III, C. L. 1993. Statistical 
-   clustering techniques for analysis of long molecular dynamics trajectories.  
+3) Karpen, M. E., Tobias, D. T., & Brooks III, C. L. 1993. Statistical
+   clustering techniques for analysis of long molecular dynamics trajectories.
    I: Analysis of 2.2 ns trajectories of YPGDV. Biochemistry  32:412-420.
 
 
@@ -1138,49 +1197,49 @@ CLUSter Parameters
                             [ STOP <int> ] [ ANGLE ]
 
 
-1.  time-series-name: The name of the first time series (as defined by 
+1.  time-series-name: The name of the first time series (as defined by
     the ENTE command) to be clustered.
-   
-2.  RADIus: Maximum radius of cluster.  The rms cutoff or threshold for 
+
+2.  RADIus: Maximum radius of cluster.  The rms cutoff or threshold for
     assignment to a cluster.
-   
+
 3.  MAXCluster:  Maximum number of clusters (default = 50).
-   
-4.  MAXIteration:  The maximum number of iterations allowed.  If the 
-    clustering has not converged by this number of iterations, all 
+
+4.  MAXIteration:  The maximum number of iterations allowed.  If the
+    clustering has not converged by this number of iterations, all
     clusters are output (default = 20).
-   
-5.  MAXError:  If the rms difference between the position of the cluster 
-    centers for the last two iterations is less than maxerror, the system 
+
+5.  MAXError:  If the rms difference between the position of the cluster
+    centers for the last two iterations is less than maxerror, the system
     is considered converged and the clustering is halted (default = 0.001).
-   
-6.  NFEAture:  This variable gives the number of features in the input 
-    pattern, that is, the number of time series to be clustered at a time.  
+
+6.  NFEAture:  This variable gives the number of features in the input
+    pattern, that is, the number of time series to be clustered at a time.
     The default is the veccod parameter associated with 'time-series-name'.
     NFEATure time series are clustered, starting with 'time-series-name'
-    and continuing with the next nfeature-1 series specified in subsequent 
+    and continuing with the next nfeature-1 series specified in subsequent
     'ENTE' commands (default = veccod of time-series-name).
-   
-7.  UNICluster:  The unit number of the output cluster file.  If UNIC = -1 
+
+7.  UNICluster:  The unit number of the output cluster file.  If UNIC = -1
     (the default), the cluster parameters are output to the standard output.
-   
-8.  UNIMember:  The unit number of the output membership file.  This file 
-    lists each time point and the cluster(s) associated with the specified 
+
+8.  UNIMember:  The unit number of the output membership file.  This file
+    lists each time point and the cluster(s) associated with the specified
     time series at that time point.  If UNIM = -1 (the default), the
     membership list is not output.
-   
-9.  UNIInit:  The unit number of the file with the initial cluster centers. 
+
+9.  UNIInit:  The unit number of the file with the initial cluster centers.
     If UNII = -1 (the default), no initial cluster centers are specified.
 
-10. CSTEp:  This variable gives the spacing between time series in the 
-    input vector.  For each timepoint k, the set of patterns clustered is 
+10. CSTEp:  This variable gives the spacing between time series in the
+    input vector.  For each timepoint k, the set of patterns clustered is
     tq(k,1) -> tq(k,nfeature), tq(k,1 + cstep) -> tq(k,nfeature + cstep),
     ...,tq(k,nserie - nfeature + 1) -> tq(k,nserie) (default = nfeature).
 
-11. BEGIn:  Indicates frame in time series where clustering begins 
+11. BEGIn:  Indicates frame in time series where clustering begins
     (default = 1).
 
-12. STOP:  Indicates the frame in the time series where clustering ends 
+12. STOP:  Indicates the frame in the time series where clustering ends
     (default = minimum length (TOTAl in SHOW) of time series).
 
 13. ANGLe:  A logical flag which when true specifies angle data is to be
@@ -1191,30 +1250,30 @@ Caveats
 ^^^^^^^
 
 The clustering algorithm is initial-guess dependent, i.e., it is
-dependent on the input order of the patterns.  The order of presentation 
-in CLUSter is simply the consecutive frames of the time series.  To check 
-for stable clustering, cluster centers can be calculated from time series 
-with the time frames randomized.  This is not currently implemented in 
-CHARMM, so the user will have to write a set of time series to a file 
+dependent on the input order of the patterns.  The order of presentation
+in CLUSter is simply the consecutive frames of the time series.  To check
+for stable clustering, cluster centers can be calculated from time series
+with the time frames randomized.  This is not currently implemented in
+CHARMM, so the user will have to write a set of time series to a file
 and then randomize row position outside of CHARMM.
 
-It is relatively straight forward to compare features derived from 
+It is relatively straight forward to compare features derived from
 similar measures (i.e., time series with the same "class codes", for
-example all DIHE/GEOM).  In some applications it may be desired to "mix" 
-units in the pattern, for example, cluster a set of time series derived 
-from both atomic positions and energies.  How best to compare "apples & 
+example all DIHE/GEOM).  In some applications it may be desired to "mix"
+units in the pattern, for example, cluster a set of time series derived
+from both atomic positions and energies.  How best to compare "apples &
 oranges" is a problem from measurement theory, and is application-specific.
-Normalizing the variables such that they have unit variance is one 
-possibility, and this can be done by 1) determining the standard deviation 
-of the time series (FLUC given by the SHOW command), and 2) using this 
-value in the MANTim DIVI command.  Since only differences between features 
-are used in the clustering algorithm, shifting the time series to zero 
+Normalizing the variables such that they have unit variance is one
+possibility, and this can be done by 1) determining the standard deviation
+of the time series (FLUC given by the SHOW command), and 2) using this
+value in the MANTim DIVI command.  Since only differences between features
+are used in the clustering algorithm, shifting the time series to zero
 mean is not necessary.
 
 Duda & Hart have a good discussion of the issues involved in
 clustering and normalization:
 
-Duda, R. O., & Hart, P. E., Pattern Classification and Scene Analysis, 
+Duda, R. O., & Hart, P. E., Pattern Classification and Scene Analysis,
 Wiley, New York, pp. (1973).
 
 
@@ -1228,13 +1287,13 @@ The following data are output to UNIC for each cluster:
 * Cumulative No. of Members - The total number of patterns within the
   cluster radius.  This can be higher than the No. of Members due
   to patterns being within the maximum radius of more than one cluster.
-* Standard Deviation of Patterns within Cluster - 
-  For cluster j with the number of features = Nfeature, this is 
+* Standard Deviation of Patterns within Cluster -
+  For cluster j with the number of features = Nfeature, this is
   sqrt(sum((tq(k,i) - b(j,i))**2)/Nfeature*N(j)) where the sum is
   over i = 1, Nfeature and over all k such that tq(k) is a member
-  of j.  N(j) = the number of members in cluster j.  Note that 
+  of j.  N(j) = the number of members in cluster j.  Note that
   b(j,i) = <tq(k,i)> (averaged over k in cluster j).
-* Maximum Distance - the longest distance between the cluster center and 
+* Maximum Distance - the longest distance between the cluster center and
   an assigned pattern, normalized by sqrt(Nfeature).
 * Cluster Centers - (b(j,i), i = 1, Nfeature)
 
@@ -1245,7 +1304,7 @@ The following data are output to UNIM:
 * Time series index of first time series in pattern
 * Distance of pattern from cluster center, normalized by sqrt(Nfeature)
 
-  
+
 .. _correl_io:
  
 Input/Output of time series and correlation functions
@@ -1254,7 +1313,7 @@ Input/Output of time series and correlation functions
 1) The SHOW command
 
    ::
-   
+
               { ALL                     }
       SHOW    { time-series-name        }
               { CORRelation-function    }
@@ -1286,7 +1345,7 @@ Input/Output of time series and correlation functions
 3) The WRITe command
 
    ::
-   
+
               { ALL                     }              { [FILE]        }
       WRITe   { time-series-name        }  unit-spec   { CARD          }
               { CORRelation-function    }              { PLOT          }
@@ -1304,11 +1363,11 @@ Input/Output of time series and correlation functions
    The DUMB options will simply write out the values with no title
    or header to a card file, one value to a line. If the TIME option is
    specified, the time value will precede the time series values (as needed
-   for an X-Y plot). If the time series is a vector type, then all component 
-   values will be given on each line. Unless LONG (see miscom.doc) is in effect 
+   for an X-Y plot). If the time series is a vector type, then all component
+   values will be given on each line. Unless LONG (see miscom.doc) is in effect
    the output is limited to 8 values/line.  DUMB option is useful for making plot
    files, or for feeding the data to other programs.
-   
+
    With the EDIT command, a user may merge 3 separate sequential
    time series into a vector time series (or the reverse). In fact any number
    of time series may be grouped together with this option.  For example,
@@ -1361,8 +1420,8 @@ Example (1)
 
 Example (2)
 ^^^^^^^^^^^
-           
-::                          
+
+::
 
    CORREL MAXSERIES 2 MAXTIMESTEPS 500 MAXATOMS 10
    ENTER PHI  TORSION MAIN 27 C  MAIN 28 N  MAIN 28 CA  MAIN 28 C  GEOMETRY
@@ -1386,7 +1445,7 @@ Example (2)
 * Makes a binary file of C(t).
 * Makes a binary PLT2 file for plotting
 
-Example (3) 
+Example (3)
 ^^^^^^^^^^^
 
 Fluorescence Depolarization, for example

@@ -1,12 +1,12 @@
 .. py:module:: crystal
 
-####################################
+====================================
 Calculation on Crystals using CHARMM
-####################################
+====================================
 
-The crystal section within CHARMM allows calculations on crystals to be performed. 
-It is possible to build a crystal with any space group symmetry, to optimize its 
-lattice parameters and molecular doordinates and to carry out a vibrational analysis 
+The crystal section within CHARMM allows calculations on crystals to be performed.
+It is possible to build a crystal with any space group symmetry, to optimize its
+lattice parameters and molecular doordinates and to carry out a vibrational analysis
 using the options.
 
 .. index:: crystal; syntax
@@ -18,28 +18,28 @@ Syntax
 ::
 
    CRYStal  [BUILd_crystal] [CUTOff real] [NOPErations int]
-   
+
             [DEFIne xtltype a b c alpha beta gamma]
-   
+
             [FREE]
-   
-            [PHONon] [NKPOints int] 
+
+            [PHONon] [NKPOints int]
                      [KVECtor real real real TO real real real]
-   
+
             [VIBRation]
-   
+
             [READ] [CARD UNIT int]
                    [PHONons UNIT int]
-   
+
             [PRINt]
-            [PRINt] [PHONons] [FACT real] [MODE int THRU int] 
+            [PRINt] [PHONons] [FACT real] [MODE int THRU int]
                                           [KPTS int TO int]
-   
+
             [WRITe] [CARD UNIT int]
                     [PHONons UNIT int]
                     [VIBRations] [MODE int THRU int] [UNIT int]
-   
-   
+
+
    xtltype ::=    { CUBIc          }
                   { TETRagonal     }
                   { ORTHorhombic   }
@@ -51,7 +51,7 @@ Syntax
                   { RHDO           }
 
    a b c alpha beta gamma ::= (six real numbers)
-   
+
 The crystal module is an extension of the image facility
 within the CHARMM program.  All crystal commands are invoked by the
 keyword CRYStal.  The next word on the command line can be one of the
@@ -79,14 +79,14 @@ Crystal Build
 
 A crystal of any desired symmetry can be constructed by repeatedly applying a
 small number of transformations to an asymmetric collection of atoms (called here
-the primary atoms). The transformations include the primitive lattice translations 
-*A*, *B* and *C* which are common to all crystals and a set of additional transformations, 
+the primary atoms). The transformations include the primitive lattice translations
+*A*, *B* and *C* which are common to all crystals and a set of additional transformations,
 *T*, which determines the space group symmetry.
 
-The Build command will generate, given *T*, a data structure of all those transformations 
-which produce images lying within a user-specified cutoff distance of the primary atoms. 
-The data structure can then be used by CHARMM to represent the complete crystal of the 
-system in subsequent calculations. The symmetry operations, *T*, are read from the lines 
+The Build command will generate, given *T*, a data structure of all those transformations
+which produce images lying within a user-specified cutoff distance of the primary atoms.
+The data structure can then be used by CHARMM to represent the complete crystal of the
+system in subsequent calculations. The symmetry operations, *T*, are read from the lines
 following the ``CRYStal BUILd`` command.
 
 The syntax of the commmand is :
@@ -98,31 +98,31 @@ The syntax of the commmand is :
 
 .. index:: crystal; cutoff, keyword; cutoff
 
-The ``CUTOff`` parameter is used to determine the images which are included in the 
+The ``CUTOff`` parameter is used to determine the images which are included in the
 transformation list. All those images which are within the cutoff distance are included in the list.
 
 .. Note::
    The distance test is done based on the atoms that are currently present and their symmetric representation.
-   
-To generate a crystal file from a box with a single atom at the center, the cutoff value 
-will nee to be larger than the box dimensions.  If the box is filled with water and only 
-nearest neighbor cells are desired, then the cutoff distance should be comparable to the 
-``CUTIm`` value (see :ref:`Image Updates <images_update>` ) or the ``CUTNB`` value (see 
-:ref:`NBONDS Syntax <nbonds_syntax>`). There is no limit to the number of transformations 
-included in the lists as they are allocated dynamically, but having too many will slow the 
+
+To generate a crystal file from a box with a single atom at the center, the cutoff value
+will nee to be larger than the box dimensions.  If the box is filled with water and only
+nearest neighbor cells are desired, then the cutoff distance should be comparable to the
+``CUTIm`` value (see :ref:`Image Updates <images_update>` ) or the ``CUTNB`` value (see
+:ref:`NBONDS Syntax <nbonds_syntax>`). There is no limit to the number of transformations
+included in the lists as they are allocated dynamically, but having too many will slow the
 image update step.
 
-The crystal symmetry operations are input in standard crystallographic notation. The 
-identity is assumed to be present so that (X, Y, Z) need not be specified (in fact, 
-it is an error to do so). For example, a P1 crystal is defined by the identity operation 
+The crystal symmetry operations are input in standard crystallographic notation. The
+identity is assumed to be present so that (X, Y, Z) need not be specified (in fact,
+it is an error to do so). For example, a P1 crystal is defined by the identity operation
 and so the input would be
 
-:: 
+::
 
    CRYStal BUILd .... NOPEr 0
 
 whilst a P21 crystal would need the following input lines :
-                          
+
 ::
 
    CRYStal BUILd .... NOPEr 1
@@ -137,9 +137,9 @@ A P212121 crystal is specified by NOPEr 3
    (-X,Y+1/2,-Z+1/2)
    (-X+1/2,-Y,Z+1/2)
 
-It should be noted that in those cases where the atoms in the asymmetric unit have 
-internal symmetry or in which a molecule is sited upon a symmetry point within the unit 
-cell not all symmetry transformations for the crystal need to be input. Some will be 
+It should be noted that in those cases where the atoms in the asymmetric unit have
+internal symmetry or in which a molecule is sited upon a symmetry point within the unit
+cell not all symmetry transformations for the crystal need to be input. Some will be
 redundant. It is up to the user to check for these cases and modify the input accordingly.
 
 .. index:: crystal; define
@@ -165,7 +165,7 @@ are listed below along with any restrictions on the lattice parameters:
       | (example:  50.0 50.0 50.0 90.0 90.0 90.0 )
       | (volume = a**3)
       | (degrees of freedom = 1)
-   
+
    :chm:`TETRagonal`
       | a = b and alpha = beta = gamma = 90.0 degrees.
       | (example:  50.0 50.0 40.0 90.0 90.0 90.0 )
@@ -204,7 +204,7 @@ are listed below along with any restrictions on the lattice parameters:
       | (degrees of freedom = 2)
 
    :chm:`OCTAhedral` (a.k.a truncated octahedron)
-      | a = b = c, alpha = beta = gamma = 109.4712206344907  
+      | a = b = c, alpha = beta = gamma = 109.4712206344907
       | (example:  40.0 40.0 40.0 109.471220634 109.471220634 109.471220634 )
       | (volume = 4*sqrt(3))/9 * a**3 )
       | (truncated cube length = a * sqrt(4/3) )
@@ -355,11 +355,11 @@ values of the wavevector that are stored are written automatically.
 
 The ``Crystal Write Vibration`` command writes out the eigenvalues and
 eigenvectors from a vibration calculation. The modes to be written are
-given by the ``Mode .. Thru ..`` clause. 
+given by the ``Mode .. Thru ..`` clause.
 
 All ``Write`` commands require that the Fortran stream number be given
 after the Unit keyword and a CHARMM title may be specified on the
-following lines. 
+following lines.
 
 The structure of the phonon and vibration files for a crystal may
 be found by looking at the routines ``WRITDC`` and ``XFRQW2`` respectively
@@ -409,13 +409,13 @@ L-Alanine. Briefly the jobs are:
    the experimental values for the lattice parameters.
 
 2. :download:`XTL_ALA2.INP </_downloads/testcases/xtlala1.inp>`
-      
+
    A crystal image file is generated for the crystal
    using a value of 10.0 Angstroms for the crystal
    cutoff.
 
 3. :download:`XTL_ALA3.INP </_downloads/testcases/xtlala1.inp>`
-      
+
    A coordinate and lattice minimization are performed
    for the crystal. The crystal image file from the
    previous job is used and the optimized coordinates
@@ -429,7 +429,7 @@ L-Alanine. Briefly the jobs are:
    the subsequent input files.
 
 4. :download:`XTL_ALA4.INP </_downloads/testcases/xtlala1.inp>`
-      
+
    For subsequent calculations a coordinate file that
    contains the coordinates of all atoms (four
    molecules of L-alanine) is generated. A crystal
@@ -472,6 +472,104 @@ L-Alanine. Briefly the jobs are:
    do the same for the vibrations it would be necessary
    to use the appropriate :doc:`VIBRAN <vibran>` commands in another
    job.
+
+
+Advanced example: Applying P21 Symmetry to Interfacial Systems
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A slightly more novel application of crystal symmetry is the use of
+P21 symmetry for systems with planar interfaces, notably lipid bilayers
+and related multiphase systems.  The general idea is that the simulation
+cell is an asymmetric unit, replicated through rotational symmetry such
+that the interface becomes one continuous surface.  A tetragonal unit
+cell is required, and the interfaces must be in the XY plane and
+symmetric wrt. the X=0,Y=0 plane.
+
+The initial coordinate transform needed is straighforward, but the result
+must be carefully minimized before use; the molecules in contact at the
+AC and BC faces of the prism are completely changed by the rotational
+symmetry.  Assuming that a standard tetragonal prism has been set up,
+the interconversion P1 ==> P21 can be accomplished via:
+
+::
+
+   ! COMPUTE NEW SIZE
+   calc a = sqrt(2) * ?XTLA
+   calc a4 = 0.25 * @A
+   set c = ?XTLC
+   ! CHANGE BOX ORIENTATION, PLACEMENT
+   coor rotat zdir 1.0 phi 45.0
+   coor trans xdir @A4
+   ! ESTABLISH NEW P21 SYMMETRY, AND APPLY IMAGE UPDATE
+   crystal free
+   crystal define tetra @A @A @C 90. 90. 90.
+   crystal build noper 1 cutoff 30.
+   (-X,Y+1/2,-Z)
+   image byres sele .not. segid a .or. segid b end xcen @A4 ! EXCLUDE PROTEIN
+   update cutim 15.
+
+and the reverse transformation P21 ==> P1 can be done by:
+
+::
+
+  ! SETUP FOR SYMMETRY CHANGE; REPOSITION COORDS
+  calc a ?XTLA / sqrt(2.)
+  set c ?XTLC
+  calc a4 0.25 * ?XTLA
+  coor tran xdir -@A4
+  coor rota zdir 1. phi -45.
+  ! ESTABLISH NEW P1 SYMMETRY, AND APPLY IMAGE UPDATE
+  crystal free
+  crystal define tetra @A @A @C 90. 90. 90.
+  crystal build noper 0 cutoff 30.
+  image byres sele .not. segid a .or. segid b end ! EXCLUDE PROTEIN
+  update cutim 15.
+
+One approach to dealing with the changed molecular interactions for the AC
+and BC faces is a staged reduction of the A and B edge lengths (where A=B
+for the tetragonal prism).  For lipid bilayer systems, it can also be
+prudent to restrain the headgroup conformations during the minimization.
+The following illustrates the use of CONS IC DIHE during a staged
+reduction of the box size:
+
+::
+
+  ! QUICK IC TABLE FOR GLYCEROL BASED TORSIONS
+  ic generate sele segid LPD end
+  ic keep sele atom LPD * C+ end ! LIPID C1, C2, C3
+  ic delete sele type hydrogen end
+  cons ic dihe 1000.
+  ! P1 MINIMIZATION LOOP; INCREDIBLE SHRINKING BOX
+  calc mxa @A + 4. + 2. + 1. + 0.5
+  set m 8
+  label minloop
+  ! NEW SYMMETRY WITH AVG CELL CONSTANTS, UPDATE APPLIED
+  crystal free
+  crystal define tetragonal @MXA @MXA @C 90. 90. 90.
+  crystal build noper 0 cutoff 30.
+  calc A4 0.25 * @MXA
+  image byres sele .not. segid a .or. segid b end xcen @A4 ! EXCLUDE PROTEIN
+  ! MINIMIZE; SHORT SD, THEN ABNR
+  mini sd nstep 50 nprint 5 -
+      inbfrq 10 atom vatom cutnb 14.0 ctofnb 12. cdie eps 1. -
+      ctonnb 8. vswitch cutim 14.0 imgfrq 10 wmin 0.5 -
+      ewald pmew fftx 80 ffty 80 fftz 80  kappa .34 spline order 6
+  mini abnr nstep 200 nprint 10
+  ! SIZE REDUCTION AND LOOP TEST
+  calc mxa = @MXA - ( @M * 0.5 )
+  calc m = @M / 2
+  if m .ge. 1 goto minloop
+
+Finally, for use with NPT simulations where the A=B edges can change,
+the P21XCEN keyword (:doc:`pressure`) keyword enables automatic
+adjustment of the image centering XCEN value to be 0.25*A as the edge
+values change during the course of dynamics.
+
+Simulations of Membranes and Other Interfacial Systems Using P21
+and Pc Periodic Boundary Conditions
+EA Dolan, RM Venable, RW Pastor, and BR Brooks
+Biophys. J. 82:2317-2325 (2002)
+
 
 .. _implementation:
 
@@ -606,7 +704,7 @@ Two examples of a crystal file are:
    End
 
 
-:: 
+::
 
    * Crystal file for a P212121 crystal.
    *
@@ -627,7 +725,7 @@ Two examples of a crystal file are:
             3       0   -1    0
             4       0    0   -1
   End
-  
+
 
 Second Derivative Calculations and the Use of Symmetry
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

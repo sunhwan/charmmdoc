@@ -1,8 +1,8 @@
 .. py:module:: io
 
-####################################
+=====================
 Input-Output Commands
-####################################
+=====================
 
 The commands described here are used for reading and writing
 data structures used in the main part of CHARMM. Some of data structures
@@ -23,7 +23,7 @@ The precise format of all these files is described only in the
 source code as that serves as the only definitive, accurate, and up to
 date description of these formats. The description of the data
 structures provides pointers to the subroutines which should be
-consulted, see :ref:`Data Structure <usage_data>`.
+consulted, see :ref:`Data Structure <usage_data_structure>`.
 
 .. index:: read; syntax
 .. _io_read_syntax:
@@ -104,28 +104,28 @@ This command provides convenient way to transform a system in PDB file
 format into new CHARMM segments with given coordinates.  When read in segments
 from a PDB file, one can specify :chm:`BUILd` to generate all atom connectivities and
 atom types. If there are missing atoms in the PDB file, one can specify :chm:`SETUp`
-to generate an internal coordinate table of the segments to be used to 
+to generate an internal coordinate table of the segments to be used to
 generate the coordinates of those missing atoms.  Each chain in the PDB file
-will form a new segment named as the given :chm:`SEGId` followed by its segment 
+will form a new segment named as the given :chm:`SEGId` followed by its segment
 number. These generated segments are well qualified CHARMM segments and
-can be used for atom based simulation. This is a very convenient way to 
+can be used for atom based simulation. This is a very convenient way to
 generate simulation systems from PDB files. However, It requires that all
 residue and atom names in the input file are consistent with that in the
 CHARMM RTF file.
 
-For example: 
+For example:
 
 ::
 
           open read unit 10 card name 1b5s.pdb
           read segid b5s PDB build setup unit 10
-          
+
 This command can be used to create a new segment from either a
 PDB file (PDB), a CHARMM coordinate file (:chm:`CARD`), or a free format coordinate
-file (:chm:`FREE`). If :chm:`BUILd`  option is not specified, the generated 
-segment contains only atoms listed in the input PDB file but no atomic 
-connectivities are generated.  Such a segment can be used to generate a map 
-object needed in the :doc:`EMAP module <emap>`. With this command, a map 
+file (:chm:`FREE`). If :chm:`BUILd`  option is not specified, the generated
+segment contains only atoms listed in the input PDB file but no atomic
+connectivities are generated.  Such a segment can be used to generate a map
+object needed in the :doc:`EMAP module <emap>`. With this command, a map
 object can be quickly converted from a PDB structure.
 
 
@@ -149,7 +149,7 @@ The form of the title is defined in the syntactic glossary,
 
 .. note::
 
-   :ref:`Syntactic Glossary <usage_syn>` The number of
+   :ref:`Syntactic Glossary <usage_syntactic_glossary>` The number of
    residues is specified on the line following the title in free field
    format. If the number of residues you specify is less than zero,
    CHARMM will read residues until it encounters a blank line or end of
@@ -158,7 +158,7 @@ The form of the title is defined in the syntactic glossary,
    you specify is zero, you will get a warning message as one common
    error is to forget the number entirely. In this case, the first
    residue name will be consumed as the number and converted to zero.
-   
+
 The residue names are specified as separate words, each no
 longer than 4 characters, on as many lines as are required for all the
 residues. This sequence may be placed immediately following the READ
@@ -249,9 +249,9 @@ as follows:
 
 * Normal format for less than 100000 atoms and PSF IDs with less than
   five characters
-   
+
   ::
-   
+
          title
          NATOM (I5)
          ATOMNO RESNO   RES  TYPE  X     Y     Z   SEGID RESID Weighting
@@ -259,15 +259,15 @@ as follows:
 
 * Expanded format for more than 100000 atoms (up to 10**10) and with
   up to 8 character PSF IDs. (versions c31a1 and later)
-  
+
   ::
-  
+
          title
          NATOM (I10)
          ATOMNO RESNO   RES  TYPE  X     Y     Z   SEGID RESID Weighting
            I10   I10 2X A8 2X A8       3F20.10     2X A8 2X A8 F20.10
 
-The title is a title for the coordinates, see :ref:`Syntactic Glossary <usage_syn>`,
+The title is a title for the coordinates, see :ref:`Syntactic Glossary <usage_syntactic_glossary>`,
 for details. Next comes the number of coordinates. If this number is zero or too large,
 the entire file will be read. Finally, there is one line for each coordinate.
 
@@ -327,7 +327,7 @@ command provides a more general way to initialize coordinates.
 The :chm:`READ COOR DYNR` variant reads a full coordinate set from a dynamics
 restart file. It **REQUIRES** a matching PSF and allows no selections or
 other manipulations. A restart file (usually) contains three sets of
-atom data, and you chose which one to read in with keywords: 
+atom data, and you chose which one to read in with keywords:
 
    ======   ================================================================
    CURR     the current coordinates
@@ -340,7 +340,7 @@ atom data, and you chose which one to read in with keywords:
    The restart file written after a crash may be slightly different,
    at present (c28a2) it contains the previous coordinates instead of velocities.
 
-The :chm:`READ COOR TARG` and :chm:`READ COOR TAR2` commands read in the coordinates of the 
+The :chm:`READ COOR TARG` and :chm:`READ COOR TAR2` commands read in the coordinates of the
 target for Targeted Molecular Dynamics (see :doc:`TMD <tmd>`)
 
 
@@ -366,7 +366,7 @@ default specifications for the file format.
    =======  ================================================================
    CHARMM   setup standard CHARMM format (default)
    PDB      setup brookhaven format
-   AMBER    setup standard AMBER  format 
+   AMBER    setup standard AMBER  format
    UNKNown  setup null format (everything must be specified)
    =======  ================================================================
 
@@ -391,9 +391,9 @@ The following commands specify how input lines should be considered.
 
 ::
 
-   PICK  start length  string    ! choose only line that match one or more of these 
-   EXCL  start length  string    ! exclude any line that contains one of these 
-   TITL  start length  string    ! add any line containing one of these to the title 
+   PICK  start length  string    ! choose only line that match one or more of these
+   EXCL  start length  string    ! exclude any line that contains one of these
+   TITL  start length  string    ! add any line containing one of these to the title
 
 The following commands specify character translation upon reading the file.
 
@@ -464,7 +464,7 @@ with a keyword line and followed by data lines read free field:
         CMAP
          atom atom atom atom atom atom atom atom resolution
          <...cmap data...>
-         
+
         NBONd or NONB  [nonbond-defaults]
          atom* polarizability  e  vdW_radius -
               [1-4 polarizability  e  vdW_radius]
@@ -481,16 +481,16 @@ with a keyword line and followed by data lines read free field:
 
             FLUC
              atom chi_value zeta_value prin_integer chma_value
-         
+
             KAPPa
-             atom atom atom atom atom atom force_constant 
-         
+             atom atom atom atom atom atom force_constant
+
             LCH2
-             atom atom atom atom atom force_constant 
-         
+             atom atom atom atom atom force_constant
+
             14TG
              atom atom atom atom trans_const gauche_const
-         
+
 
         PRINt [ON ]
               [OFF]
@@ -551,13 +551,13 @@ Only positive values of 1,2,3,4,5 and 6 are allowed for the vector, parallel
 vector and cray routines. Slow and scalar routines can use any positive
 integer and thus dihedral constrains can be of any periodicity.
 
-Reference angle 0.0 and 180.0 degree correspond to minimum in staggered 
+Reference angle 0.0 and 180.0 degree correspond to minimum in staggered
 and eclipsed respectively. Any reference angle is allowed. The value
 180 should be preferred over -180 since it is parsed faster and more
 accurately. When the periodicity is given as zero, for OTHER THAN THE
 FIRST dihedral in a multiple dihedral set, then a the amplitude is a
 constant added to the energy. This is needed to effect the
-Ryckaert-Bellemans potential for hydrocarbons (see below). 
+Ryckaert-Bellemans potential for hydrocarbons (see below).
 
 The normal dihedral energy equation is:
 
@@ -593,7 +593,7 @@ If the second number is negative, it is used as Emin, and
 ::
 
         Emin(ij)=-sqrt(Emin(i)*Emin(j)).
-        
+
 If the second number is positive, it is used as Neff, and the Slater Kirkwood
 formula is used to compute Emin(ij).
 
@@ -638,7 +638,7 @@ J. P. Ryckaert and A. Bellemans, Disc. Farad. Soc. 66,  95 (1978).
 
    PHI
    ! Ryckaert Bellemans has trans = 0.0
-   ! since cos is an even function cos(-phi)=cos(phi), invert the 
+   ! since cos is an even function cos(-phi)=cos(phi), invert the
    ! sign of the coefficients with odd power of cos(phi)
    CH3E CH2E CH2E CH3E   0.470467 5   0.0
    CH3E CH2E CH2E CH3E   0.783947 4   0.0
@@ -886,18 +886,18 @@ A small sample RTF card file follows:
    The use of improper dihedrals for the PSF is unrelated
    to the use of improper dihedrals for the internal coordinate tables.
 
-   :: 
-   
+   ::
+
                          L
       PSF usage:         |
                          |
                          I
                         / \
                        /   \
-                 -----J---- K------ 
+                 -----J---- K------
 
 
-      IC table usage: 
+      IC table usage:
 
                     I      L
                      \    /
@@ -910,8 +910,8 @@ A small sample RTF card file follows:
 Note that for PSF usage the first atom is the central atom,
 and the last atom is the atom to be restrained relative to
 the axis defined by the middle pair of atoms.  For the IC table
-usage, the central atom is in the third position, but the 
-axis is again defined by the middle pair of atoms. 
+usage, the central atom is in the third position, but the
+axis is again defined by the middle pair of atoms.
 
 
 Reading data other than the sequence or coordinates
@@ -997,8 +997,8 @@ specifies that a file is to written in formatted form.  For the
 coordinate and internal coordinate file, CARD is the default.  The
 coordinate option PDB gives a file in Protein Data Bank format, with
 just the ATOM records; the MODEL N option writes a PDB file in the NMR-style
-multiple coordinate set format (note that for this to work the file has to 
-be specified as UNIT <int>, not as NAME <string>): 
+multiple coordinate set format (note that for this to work the file has to
+be specified as UNIT <int>, not as NAME <string>):
 
 ============================= ============================================================
 MODEL 0 (or no MODEL keyword) just write standard PDB file
@@ -1008,16 +1008,16 @@ MODEL N (N>1)                 appends just coordinates for MODEL N  (MODEL N, co
                               TER, ENDMDL)
 MODEL N (N<0)                 appends last coordinate set, and END (MODEL \|N\|, coor,
                               TER, ENDMDL, END)
-============================= ============================================================                              
+============================= ============================================================
 
 Keyword FIRSt forces writing of title even if N.NE.1, LAST forces
-writing of END line. 
+writing of END line.
 
 The XPLOr option of WRITe PSF produces an XPLOR style PSF file (atom
-names are used instead of atom numbers) 
+names are used instead of atom numbers)
 
 The selection of "PSF 0" in the WRITe CONS only works with PERT and
-writes data for the lambda=0 PSF. 
+writes data for the lambda=0 PSF.
 
 A set of title lines must follow the WRIT command. This title
 will be written at the start of the file and serves to document the
@@ -1079,7 +1079,7 @@ For hydrogen bonds, ANAL gives a geometrical and energy analysis
 of the hydrogen bonds. Representing the hydrogen bond as
 A2-A1-X-H....Y-, the distances X-Y, H-Y, the angle (180 - <X-H-Y ), the
 dihedral angle A2-A1-X-H and the hydrogen bond energy contribution are
-listed. A more versatile hbond analysis facility is provided by 
+listed. A more versatile hbond analysis facility is provided by
 COOR HBOND (see :doc:`corman`).
 
 

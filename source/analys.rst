@@ -1,4 +1,4 @@
-.. py:module:: analysis
+.. py:module:: analys
 
 =================
 Analysis Commands
@@ -12,7 +12,7 @@ can produce a detailed printout of structural and energy term
 contributions for selected atoms
 
 
-.. _analysis_description:
+.. _analys_description:
 
 Description of the ANALysis Command
 -----------------------------------
@@ -43,7 +43,7 @@ Description of the ANALysis Command
                        Otherwise, write data to the output file.
 
 
-.. _analysis_energy:
+.. _analys_energy:
 
 Energy term option of the ANALysis Command
 ------------------------------------------
@@ -64,13 +64,13 @@ as extended electrostatics, will not be included.  The command:
 ::
 
         SCALar ECONT STATistics
-        
+
 can be used to check the total energy and the command
 
 ::
 
         SCALar EPCONT ....
-        
+
 can be used to examine atom contributions to energy differences for PERT.
 
 The ANALysis TERM command will cause all selected energy terms to be

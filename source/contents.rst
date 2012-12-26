@@ -63,7 +63,7 @@ CHARMM documentation contents
   .. toctree::
      :maxdepth: 1
 
-     analysis
+     analys
      correl
      dynamc
      fourd

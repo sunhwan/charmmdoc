@@ -11,9 +11,9 @@ New Drude Oscillator Format
    and  Edward Harder          (eharder@uchicago.edu)
    and  Alex MacKerell Jr.     (alex@outerbanks.umaryland.edu)
 
-As of July 2007 the old "Drude Oscillator Command" and "ANISOTROPY 
-command" (see below) used to generate the Drude polarizable model will 
-be replaced by a new format that encodes the Drude model from the RTF.  
+As of July 2007 the old "Drude Oscillator Command" and "ANISOTROPY
+command" (see below) used to generate the Drude polarizable model will
+be replaced by a new format that encodes the Drude model from the RTF.
 
 In the present implementation the drude particles are
 generated for all atoms for which polarizabilities (ie. via ALPHA) are
@@ -25,11 +25,11 @@ addition of lone pairs to selected atoms at the RTF level.  These
 enhancements allow for all the information for the polarizable drude
 force field to be included in the RTF and parameter files.
 
-For each atom with a specified polarizability, a "Drude oscillator" 
-is created by attaching to the atom an additional particle 
-(using a fictitious chemical bond of length zero and of force constant 
-'KDRUDE = k/2').  Each Drude particle is given a mass and a charge, 
-taken from the mass and the charge of its atom (so that the total mass 
+For each atom with a specified polarizability, a "Drude oscillator"
+is created by attaching to the atom an additional particle
+(using a fictitious chemical bond of length zero and of force constant
+'KDRUDE = k/2').  Each Drude particle is given a mass and a charge,
+taken from the mass and the charge of its atom (so that the total mass
 and charge are conserved for the "atom-Drude" pair).
 
 As a whole, each "atom-Drude" pair has a charge 'Q', unchanged from
@@ -44,29 +44,29 @@ into charges 'q', assuming a force constant 'k = 2*KDRUDE'.
 
 See J. Chem. Phys. 119, 3025-3039 (2003) for more details.
 
-In this implementation of the Drude oscillator, the force constant of the 
-spring is a diagonal rank-2 tensor with components KDRUDE. This leads to 
+In this implementation of the Drude oscillator, the force constant of the
+spring is a diagonal rank-2 tensor with components KDRUDE. This leads to
 an isotropic atomic polarizability, 'alpha = alpha_{11} = alpha_{22}
-= alpha_{33} = q**2/k'. The ANISOTROPY command modifies the components of 
-the Drude force constant tensor allowing for anisotropic atomic 
+= alpha_{33} = q**2/k'. The ANISOTROPY command modifies the components of
+the Drude force constant tensor allowing for anisotropic atomic
 polarizabilites.
 
 See J. Chem. Theory Comput. 2, 1587-1597 (2006) for more details.
 
-The non-bonded lists are constructed such that, if the "real" atoms are 
+The non-bonded lists are constructed such that, if the "real" atoms are
 in a 1-2, 1-3, or 1-4 relationship, their corresponding Drude particles
-will also be in a 1-2, 1-3, or 1-4 relationship, respectively. 
- 
+will also be in a 1-2, 1-3, or 1-4 relationship, respectively.
+
 The bonded interactions are modified to allow 1-2 and 1-3 screened
 dipole-dipole interactions, as proposed by Thole [see Chem.Phys. 59,
 341 (1981)].  If two atoms were not "seeing" each others in the
 non-polarizable force field, their dipoles (and only their dipoles,
 not their net partial charges) will "see" each others in the
-polarizable force field.  The screening function strength is modulated 
+polarizable force field.  The screening function strength is modulated
 by a parameter "a" that has been generalized to depend on the atom
-type associated with the interacting pair of Drude oscillators 
-(i.e. a = a_i + a_j).   These variable thole parameters "a_i" are 
-encoded in the RTF through the THOLE command. 
+type associated with the interacting pair of Drude oscillators
+(i.e. a = a_i + a_j).   These variable thole parameters "a_i" are
+encoded in the RTF through the THOLE command.
 
 .. _drude_description:
 
@@ -77,13 +77,13 @@ Description of new DRUDE model RTF
 
    A) The AUTOGENERATE command now includes a flag for the drude
       particles.  This should be specified at the beginning of the RTF.
-      
+
       ::
 
          AUTO ANGLES DIHE DRUDE
 
    B) MASS statements must be included for Drude particle types.
-   
+
       ::
 
          MASS   104 DRUD      0.00000 DD ! drude particle
@@ -96,7 +96,7 @@ Description of new DRUDE model RTF
       following would be needed in the RTF
 
       ::
-      
+
          i)   MASS   153 DOH2      0.00000 DD ! water Drude
          ii)  ATOM   OH2  ODW      0.00000 ALPHA -0.97825258 TYPE DOH2
          iii) (NONBOND section)    D*       0.0   -0.0000    0.0000
@@ -113,12 +113,12 @@ Description of new DRUDE model RTF
       polarizable and a drude particle is assigned to it upon generation of
       the molecule.  An atom based Thole scale factor may also be specified
       via the "THOLE" keyword.  If the THOLE term is missing, a default
-      value of 1.3 is assigned to that atom. This corresponds to a parameter 
-      a = a_i + a_j = 2.6 which is the THOLE parameter in the old Drude 
+      value of 1.3 is assigned to that atom. This corresponds to a parameter
+      a = a_i + a_j = 2.6 which is the THOLE parameter in the old Drude
       command syntax.
 
       ::
-      
+
          ATOM C    C      0.630  ALPHA  -1.104  THOLE 1.073
 
    D) Specific drude types for a polarizable atom may be specified as
@@ -126,7 +126,7 @@ Description of new DRUDE model RTF
       more details.
 
       ::
-      
+
          ATOM C    C      0.630  ALPHA  -1.104  TYPE DC
 
    E) Lone pairs may now be set in the RTF using a syntax similar to the
@@ -136,7 +136,7 @@ Description of new DRUDE model RTF
       specification is simplied as shown in the following example.
 
       ::
-      
+
          LONEPAIR relative LPA O  C  CL distance 0.3 angle 91.0  dihe 0.0
          LONEPAIR relative LPB O  C  N  distance 0.3 angle 91.0  dihe 0.0
 
@@ -151,7 +151,7 @@ Description of new DRUDE model RTF
       example follows
 
       ::
-      
+
          ANISOTROPY  O    C   CL     N  A11 0.697 A22 1.219
 
 2) Items in the Parameter file
@@ -160,15 +160,24 @@ Description of new DRUDE model RTF
       the bond parameters.  The term must be included for all drude types
       included in the model.  The wildcard terms can be overwritten by putting
       chemical type specific bond paramters following the wild card term.
-      
+
       ::
-      
+
          DRUD X     500.000     0.0000
          DRUD O     487.740     0.0000
 
    B) NONBOND parameters must be included for all drude types. In
       addition, NBFIX terms for the drudes may be included as needed (see 1A
       above).
+
+   C) Nonbond pair Thole screening interaction. The TCUT assign a radius within
+      all NB Thole interaction are counted. The 'aij' typically is assigned by the
+      user. A default value 1.2 can also be used.
+
+      ::
+
+        THOLE TCUT 5.0  MAXNBTHOLE 50000
+        CL SODD  @aij
 
 3) Command Line Items
 
@@ -178,6 +187,16 @@ A) A "DRUDE" flag must included with the generate command to specify
    mass in AMU.  The default value for the drude mass is XXXX.
 
    generate NMA first none last none setup warn DRUDE DMASS 0.4
+
+
+Description of Extended PSF format for CHARMM and NAMD
+------------------------------------------------------
+
+New extended  format PSF is designed  for Drude model. The default format is
+for CHARMM and xplor format is for NAMD. The PSF explicitly provides Thole,
+Polarizability, lone pair and anisotropic information for CHARMM/NAMD PSF reader.
+Generation of Drude models based on nonpolarizable model is also extended to
+polypeptides and proteins (including generation of disu bond and patch).
 
 
 Drude Oscillator Command
@@ -254,11 +273,11 @@ non-polarizable force field, their dipoles (and only their dipoles,
 not their net partial charges) will "see" each others in the
 polarizable force field.
 
-In this implementation of the Drude oscillator, the force constant of the 
-spring is a diagonal rank-2 tensor with components KDRUDE. This leads to 
+In this implementation of the Drude oscillator, the force constant of the
+spring is a diagonal rank-2 tensor with components KDRUDE. This leads to
 an isotropic atomic polarizability, 'alpha = alpha_{11} = alpha_{22}
-= alpha_{33} = q**2/k'. The ANISOTROPY command modifies the components of 
-the Drude force constant tensor allowing for anisotropic atomic 
+= alpha_{33} = q**2/k'. The ANISOTROPY command modifies the components of
+the Drude force constant tensor allowing for anisotropic atomic
 polarizabilites.
 
 
@@ -301,9 +320,9 @@ Description of the DRUDE command
                        the parameter file.  Any nonzero value will
                        override the parameter file.
 
-   VTHOLE              Uses variable thole parameters for dipole-dipole 
-                       interactions. 
- 
+   VTHOLE              Uses variable thole parameters for dipole-dipole
+                       interactions.
+
    THOLE       2.6     The screening factor for dipole-dipole interactions
                        between atoms excluded from the non-bonded
                        interactions.  To have no dipole-dipole
@@ -324,16 +343,16 @@ Description of the DRUDE command
 
    The atomic polarizabilities (in Angst**3) are read from the WMAIN
    array:
-   
+
    ::
-   
+
        alpha = abs(WMAIN)
 
    The charge on every Drude particle is computed using the following
    formula:
-   
+
    ::
-   
+
        q = sqrt( 2*KDRUDE * alpha / CCELEC ) * sign(WMAIN)
 
    The charges are given the signs of the WMAIN values.  As long as
@@ -353,35 +372,35 @@ Description of the DRUDE command
    on by default.  To turn the interactions off, set THOLE to zero.
 
    The default constant THOLE of 2.6 can be replaced by variable thole
-   parameters using the VTHOLE keyword on the DRUDE command line.  
-   The THOLE parameter between oscillators I and J is given by 
-   THOLE = THOLEI + THOLEJ.  The THOLEI parameters for each atom are fit 
-   along with the charges against ab initio data.  Values of THOLEI must 
+   parameters using the VTHOLE keyword on the DRUDE command line.
+   The THOLE parameter between oscillators I and J is given by
+   THOLE = THOLEI + THOLEJ.  The THOLEI parameters for each atom are fit
+   along with the charges against ab initio data.  Values of THOLEI must
    be given in the WCOMP array for all Drude oscillator containing atoms
-   prior to the DRUDE command.  
+   prior to the DRUDE command.
 
    Because the dipole are explicitly made of two charges, the screened
    dipole-dipole interaction between two polarizable atoms (that is, two
    "atom-Drude" pairs) is actually the sum of the following four screened
    charge-charge interactions:
-   
+
    ::
-   
+
        ('q1' on Drude 1) - ('q2' on Drude 2)
        ('q1' on Drude 1) - ('-q2' on atom 2)
        ('-q1' on atom 1) - ('q2' on Drude 2)
        ('-q1' on atom 1) - ('-q2' on atom 2)
 
    The screened charge-charge interaction has the form:
-   
+
    .. math::
-      
+
       U(r_{12}) = \mathrm{CCELEC} * q_1 * q_2 * \frac{S(u_{12})}{r_{12}}
-       
+
    where 'u12' is the normalized distance:
-   
+
    .. math::
-   
+
       u_{12} = r_{12} * \frac{ \mathrm{THOLE} }{ ( \alpha_1 * \alpha_2 )^\frac{1}{6} }
 
    'S' is a screening function defined by the SHAPE parameter:
@@ -399,7 +418,7 @@ Description of the DRUDE command
 
    Two "atom-Drude" pairs have dipole-dipole interactions if the
    following conditions are met:
-   
+
    1. The THOLE parameter is nonzero.
    2. In the non-polarizable force field, the two atoms where
       in the nonbonded exclusion list.
@@ -447,7 +466,7 @@ Effect on the topology and parameters
    two bonded atoms A1 and A2, with Drude particles DA1 and DA2
 
    ::
-   
+
        DA1      DA2
         |        |
         A1 ----- A2
@@ -483,7 +502,7 @@ To be aware of when using the DRUDE command
    The preferred call to SHAKE is:
 
    ::
-   
+
       COOR COPY COMP
       SHAKE BONH PARAM TOLERANCE 10E-9 -
             NOFAST -
@@ -495,7 +514,7 @@ To be aware of when using the DRUDE command
    Treat this sequence of commands a single command:
 
    ::
-   
+
        DRUDE RESET
        DELETE ATOMS SELECT TYPE D* END
 
@@ -510,7 +529,7 @@ To be aware of when using the DRUDE command
    name:
 
    ::
-   
+
       C210 --> DC21
       C211 --> DC21
 
@@ -531,14 +550,14 @@ Usage examples of the DRUDE command
    files, a standard benzene molecule is generated:
 
    ::
-   
+
       READ SEQUENCE BENZ 1
       GENERATE BENZ SETUP FIRST NONE LAST NONE
 
    The polarizabilities on all carbon atoms are set to 1.5 Angst**3:
 
    ::
-   
+
       SCALAR WMAIN SET +1.5 SELECT .NOT. TYPE H* END
       DRUDE SELECT .NOT. TYPE H* END
 
@@ -549,7 +568,7 @@ Usage examples of the DRUDE command
    particles when reading the topology:
 
    ::
-   
+
       OPEN READ CARD UNIT 1 NAME @TOPPAR/top_all22_drude.inp
       READ RTF CARD APPEND UNIT 1
 
@@ -557,31 +576,31 @@ Usage examples of the DRUDE command
    the additional bond parameters should be appended to the parameters:
 
    ::
-   
+
       OPEN READ CARD UNIT 1 NAME @TOPPAR/par_all22_drude.inp
       READ PARAM CARD APPEND UNIT 1
 
    The structure is minimized:
 
    ::
-   
+
       MINI SD STEP 0.001 NSTEP 1000 NPRINT 100
 
    Since benzene is a nonpolar molecule, the Drude particles are not
    significantly moved from their heavy atoms.  To find the induced
    atomic dipoles for a given structure, one should use ``CONS FIX SELECT
    .NOT. TYPE D* END`` before calling MINI.
-   
+
    The molecular polarizability is obtained using the VIBRAN command with
    the DIPOLES keyword:
-   
+
    ::
-   
+
        VIBRAN
        DIAGONALIZE
        PRINT NORMAL VECTORS DIPOLES SELECT ALL END
        END
-   
+
    The total polarizability is an anisotropic tensor similar to the
    experimental results for benzene [J.Chem.Phys. 95, 5873 (1991)].  The
    strong anisotropy comes from the 1-2 and 1-3 dipole-dipole
@@ -591,34 +610,34 @@ Usage examples of the DRUDE command
 2) SWM4-DP water
    (see test/c30test/swm4.inp)
 
-   See J. Chem. Phys. 119, 5185-5197 (2003) and Chem. Phys. Lett. 418, 
+   See J. Chem. Phys. 119, 5185-5197 (2003) and Chem. Phys. Lett. 418,
    245-249 (2005) for a complete description of the model.
    After reading the topology and parameter files, the model is built as
    following:
 
    ::
-     
+
       READ SEQUENCE SWM4 ...
       GENERATE WAT SETUP NOANGLE NODIHEDRAL
-     
+
       READ COOR CARD ...
-     
+
       SET ALPHAO = 1.042520
       SET DOM    = 0.238080
-     
+
       SCALAR WMAIN SET @ALPHAO SELECT ( SEGID WAT .AND. TYPE OH2 ) END
       DRUDE SELECT ( SEGID WAT .AND. TYPE OH2 ) END
-     
+
       COOR COPY COMP
       SHAKE BONH PARAM TOLERANCE 1.0E-9 -
             NOFAST -
             SELECT ( SEGID WAT .AND. .NOT. TYPE D* ) END -
             SELECT ( SEGID WAT .AND. .NOT. TYPE D* ) END
-     
+
       LONEPAIR BISECTOR DIST @DOM ANGLE 0.0 DIHE 0.0 -
-               SELECT ATOM WAT * OM END  SELECT ATOM WAT * OH2 END - 
+               SELECT ATOM WAT * OM END  SELECT ATOM WAT * OH2 END -
                SELECT ATOM WAT * H1 END  SELECT ATOM WAT * H2  END
-     
+
 
    The molecular dynamics for polarizable water is explained in
    :doc:`vv2`.
@@ -631,11 +650,11 @@ ANISOTROPY Command
    by   Edward Harder        (eharder@uchicago.edu)
    and  Benoit Roux          (roux@uchicago.edu)
 
-In the above implementation of the Drude oscillator, the force constant 
-of the spring is a diagonal rank-2 tensor with components KDRUDE. This 
-leads to an isotropic atomic polarizability, 'alpha = alpha_{11} = 
-alpha_{22} = alpha_{33} = q**2/k'. The ANISOTROPY command modifies the 
-components of the Drude force constant tensor allowing for anisotropic 
+In the above implementation of the Drude oscillator, the force constant
+of the spring is a diagonal rank-2 tensor with components KDRUDE. This
+leads to an isotropic atomic polarizability, 'alpha = alpha_{11} =
+alpha_{22} = alpha_{33} = q**2/k'. The ANISOTROPY command modifies the
+components of the Drude force constant tensor allowing for anisotropic
 atomic polarizabilites.
 
 Syntax of the ANISOTROPY command
@@ -656,39 +675,39 @@ Description of the ANISOTROPY command
    =======  ========   ===============================================
    Keyword  Default    Purpose
    =======  ========   ===============================================
-   K11,      KDRUDE    Components of the force constant tensor 
+   K11,      KDRUDE    Components of the force constant tensor
    K22,                (in kcal/mol/Angst**2).  The default value
-   K33,                is the KDRUDE parameter assigned from the DRUDE      
+   K33,                is the KDRUDE parameter assigned from the DRUDE
                        command.
 
-   VERBOSE             Prints atoms involved in selection and 
-                       components of the force constant tensor.  
+   VERBOSE             Prints atoms involved in selection and
+                       components of the force constant tensor.
    =======  ========   ===============================================
 
 1) K11, K22, K33
 
    K11, K22, K33 are the components of the force constant tensor
-   (in kcal/mol/Angst**2).  The directions 1, 2 and 3 are defined in the 
-   molecular reference frame using atom selections that follow the 
-   assignment of these variables.  The first atom selection contains the 
-   anisotropic Drude oscillator.  The vector connecting the first atom to 
-   the second atom selection defines the 1 direction.  The vector between 
-   the 3rd and 4th atom selections defines the 2 direction.  The 3 direction 
-   is orthogonal to 1 and 2.  The charge on the Drude for anisotropic 
+   (in kcal/mol/Angst**2).  The directions 1, 2 and 3 are defined in the
+   molecular reference frame using atom selections that follow the
+   assignment of these variables.  The first atom selection contains the
+   anisotropic Drude oscillator.  The vector connecting the first atom to
+   the second atom selection defines the 1 direction.  The vector between
+   the 3rd and 4th atom selections defines the 2 direction.  The 3 direction
+   is orthogonal to 1 and 2.  The charge on the Drude for anisotropic
    oscillators is:
 
    ::
-   
+
       q = sqrt( 2*K33 * alpha / CCELEC ) * sign(WMAIN)
 
 
 To be aware of when using the ANISOTROPY command
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1) Call the ANISOTROPY command after the rest of the charge model 
+1) Call the ANISOTROPY command after the rest of the charge model
    has been built (i.e. DRUDE and LONEPAIR)
 
-   Otherwise, inconsitencies in the particle charges and intended 
+   Otherwise, inconsitencies in the particle charges and intended
    polarizabilites may result.
 
 Usage examples of the ANISOTROPY command
@@ -697,16 +716,47 @@ Usage examples of the ANISOTROPY command
 1) Polarizable NMA
 
    ::
-   
+
       ANISOTROPY -
       K11 700 K22 400 K33 450 select segid NMA .and. type O show end -
                               select segid NMA .and. type C show end -
                               select segid NMA .and. type CL show end -
                               select segid NMA .and. type N show end  VERBOSE
 
-   The atomic polarizability of the carbonyl oxygen in NMA is made 
-   anisotropic.  The 1 direction is parallel to the carbonyl bond. 
+   The atomic polarizability of the carbonyl oxygen in NMA is made
+   anisotropic.  The 1 direction is parallel to the carbonyl bond.
    The 2 direction is parallel to the vector between the CL carbon
-   and nitrogen.  The 3 direction is normal to the plane spanned by 
+   and nitrogen.  The 3 direction is normal to the plane spanned by
    1 and 2.
+
+
+Syntax of the DrudeHardWall command
+-----------------------------------
+
+::
+
+  DrudeHardWall L_WALL real
+
+Example:
+
+::
+
+  DrudeHardWall L_WALL 0.2
+  ! set the hard wall at 0.2 Angstrom
+
+  DrudeHardWall L_WALL 0.0
+  ! turn off the hard wall when L_WALL equals 0.0
+
+Description of the DrudeHardWall command:
+
+When drudes go too far away from nucleus, simulations could be very
+unstable. Introducing hard wall constraints on the length of drude
+bonds is a possible way to avoid such instability. In each MD step,
+the length of drude bonds are checked and compared with "L_WALL".
+When the length of drude bond is larger than "L_WALL", the relative
+velocities along bond vector are flipped and scaled down according to
+the temperature of drude bond. The displacement relative to "L_WALL"
+is flipped and scaled down according to new velocities along bond
+vector to make sure drude bond is not longer than "L_WALL".
+
 

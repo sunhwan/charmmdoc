@@ -1,8 +1,8 @@
 .. py:module:: miscom
 
-######################
+======================
 Miscellaneous Commands
-######################
+======================
 
 The commands described in this section are generally more
 simple in nature than those of previous sections. Some are perhaps
@@ -14,9 +14,9 @@ obsolete, but included for the sake of completeness.
 Syntax of miscellaneous commands
 --------------------------------
 
-* File handling:
+File handling:
 
-  :: 
+::
 
    OPEN    UNIT integer NAME filename [WRITe ]   [UNFORMatted]
                                       [READ  ]   [FILE]
@@ -31,7 +31,7 @@ Syntax of miscellaneous commands
 
    REWInd  UNIT integer
 
-   REWFalse ! do not allow rewinds during trajectory I/O 
+   REWFalse ! do not allow rewinds during trajectory I/O
    REWTrue  ! allow rewinds during trajectory I/O
 
    INQUire ! get a list of open files and their qualifiers, only from CHARMM
@@ -47,7 +47,7 @@ Syntax of miscellaneous commands
 
 ---------------------------------------------------------------------------
 
-   ::
+::
 
       DEFIne  keyname  SELE atom_selection END
 
@@ -60,15 +60,16 @@ Syntax of miscellaneous commands
       PREF               ! Print out pref.dat keywords that were used during
                          !     compilation of running executable
 
-      [ECHU [integer]]   ! Print remainder of commandline to OUTU or to file open on 
+      [ECHU [integer]]   ! Print remainder of commandline to OUTU or to file open on
       ECHO ....          ! the unit specified with ECHU integer. Just ECHU resets
                          ! echo-unit to OUTU.
-                      
----------------------------------------------------------------------------
 
-* Title manipulation:
 
-  ::
+----
+
+Title manipulation:
+
+::
 
    TITLe  [COPY]           ! Specify the main "write" title
 
@@ -76,11 +77,11 @@ Syntax of miscellaneous commands
                            ! closing the file and without initial "*"s.
                            ! ***** (only from main command parser)
 
----------------------------------------------------------------------------
+----
 
-* Control levels:
+Control levels:
 
-  ::
+::
 
    TIME  {integer}      ! Specify the timing level for performance evaluation
          {NOW    }      ! Show current time.
@@ -113,13 +114,14 @@ Syntax of miscellaneous commands
    LONG                 ! specify long line output (<256 characters)
    SHORT                ! specify short line output (<80 characters)
 
+
+----
+
 .. index:: miscom; quick
 
----------------------------------------------------------------------------
+Quick and simple structure analysis:
 
-* Quick and simple structure analysis:
-
-  ::
+::
 
    QUICK { repeat(atom-spec [COMP] ) } ! one atom     - position and projection
    Q                                   ! two atoms    - distance
@@ -134,43 +136,43 @@ Syntax of miscellaneous commands
                       { atom-number ***           }
 
 
-  If only one atom is specified its position will be printed as well as
-  its relationship to the previously defined axis (if any).
-  (e.g. :ref:`COOR AXIS <corman_axis>` command).
-  
-  If the keyword ":chm:`COMP`" immediately follows an atom specification
-  (or atom selection), then the comparison coordinate value(s) will be used
-  for that atom only.
-  
-  If atom selections involving multiple atoms are specified, the center
-  of geometry or center of mass of each atom selection will be used as the
-  coordinate for the analysis. Note that if mass weighting is used, the
-  keyword MASS must immediately follow the associated atom selection.
-  
-  .. note::
-     This is the old syntax.  It may be used only if ALL atoms are specified
-     in this manner (simple integers) and no :chm:`COMP` feature is allowed.
-  
-  The QUICK command sets the following substitution paramters
-  (for use subsequent commands);
-  
-  ::
-  
+If only one atom is specified its position will be printed as well as
+its relationship to the previously defined axis (if any).
+(e.g. :ref:`COOR AXIS <corman_coor_axis>` command).
+
+If the keyword ":chm:`COMP`" immediately follows an atom specification
+(or atom selection), then the comparison coordinate value(s) will be used
+for that atom only.
+
+If atom selections involving multiple atoms are specified, the center
+of geometry or center of mass of each atom selection will be used as the
+coordinate for the analysis. Note that if mass weighting is used, the
+keyword MASS must immediately follow the associated atom selection.
+
+.. note::
+   This is the old syntax.  It may be used only if ALL atoms are specified
+   in this manner (simple integers) and no :chm:`COMP` feature is allowed.
+
+The QUICK command sets the following substitution paramters
+(for use subsequent commands);
+
+::
+
       one   atom  specified - @XVAL, @YVAL, @ZVAL
       two   atoms specified - @DIST
       three atoms specified - @THET
       four  atoms specified - @PHI
-  
-  Some examples:
-  
-  ::
-  
+
+Some examples:
+
+::
+
      --- bond distance using atom selections ------------
             quick sele atom aseg 53 HN end sele atom aseg 53 N end
      --- Angle using atom selections ------------
             quick sele atom aseg 53 HN end -
                   sele atom aseg 53 N end  -
-                  sele atom aseg 53 CA  end 
+                  sele atom aseg 53 CA  end
      --- Dihedral using atom selections ------------
             quick sele segi buta .and. type C4 end  -
                   sele segi buta .and. type C3 end -
@@ -190,26 +192,26 @@ Syntax of miscellaneous commands
             quick sele segid A end MASS sele segid B end MASS
      --- distance between an atom and its comparison coordinate value-----
             quick sele atom aseg 53 HN end sele atom aseg 53 HN end COMP
- 
+
 ---------------------------------------------------------------------------
 
-* RANDom and IRANdom specifications:
+RANDom and IRANdom specifications:
 
-  ::
+::
 
    RANDom  OLDRandom
            CLCG
            UNIForm         [SCALe scale]  [OFFSet offset]  [ASIN]   [ISEEd  iseed]
-           GAUSsian sigma                                  [ACOS] 
+           GAUSsian sigma                                  [ACOS]
 
-   IRANdom                 [SERIes int]  [SETUp]  [BEGInt int]  [ENDInt int]  
-                           [SEED int] 
+   IRANdom                 [SERIes int]  [SETUp]  [BEGInt int]  [ENDInt int]
+                           [SEED int]
 
 ---------------------------------------------------------------------------
 
-* Run control:
+Run control:
 
-  ::
+::
 
    Command line sustitutions:
 
@@ -218,7 +220,7 @@ Syntax of miscellaneous commands
    CALC parameter arithmetic_expression      ! Evaluate an arithmetic expression
 
    command  ........ @parameter ........     ! use a parameter in a command
-   command  ........ @?parameter ........    ! existance of parameter 
+   command  ........ @?parameter ........    ! existance of parameter
 
    command  ........ ?energy-term ........   ! use an energy value in a command
 
@@ -270,8 +272,8 @@ Syntax of miscellaneous commands
 
 ---------------------------------------------------------------------------
 
-  :: 
-  
+::
+
    MMQM [atom-selection] [UNIT integer] [NCHAr integer]
                                         ! Write selected QM atoms together
    GAUSSIAN_HEADER                      ! with the rest of atoms as charges
@@ -281,15 +283,15 @@ Syntax of miscellaneous commands
    <optional gaussian general basis set specification or other input>
    END
 
-  NCHAr specifies the number of characters of the atom type that will be output. 
-  The default is one (NCHAr=1) such that, for example, for that atom type HG1, 
-  only the character H will be printed in the output file.
+NCHAr specifies the number of characters of the atom type that will be output.
+The default is one (NCHAr=1) such that, for example, for that atom type HG1,
+only the character H will be printed in the output file.
 
-  If CHARMM is compiled with Q-Chem then MMQM is slightly modified to function
-  as a Q-Chem input writer instead of Gaussian. The modified routine should be
-  called in the following way.
-  
-  ::
+If CHARMM is compiled with Q-Chem then MMQM is slightly modified to function
+as a Q-Chem input writer instead of Gaussian. The modified routine should be
+called in the following way.
+
+::
 
    MMQM [atom-selection] [UNIT integer]
    $rem section
@@ -304,8 +306,8 @@ Syntax of miscellaneous commands
 
 * DEADline commands:
 
-  :: 
-  
+  ::
+
    DEADline [CPU real] [CLOCk real]                 ! Time limits for job
 
    [SYNTAX ATLImit]
@@ -314,22 +316,23 @@ Syntax of miscellaneous commands
 
 ---------------------------------------------------------------------------
 
-  ::
-  
+::
+
    For assignment:
    parameter::= string containing alphanumeric or non-alphanumeric characters
    (no white-space (blanks or tabs)
    For substitution:
    parameter::= string-containing- alphanumeric-characters
    parameter::= {string containing lphanumeric or non-alphanumeric characters}
-        
+
    energy-term::= see *note eterm:(chmdoc/energy.doc)Skipe.
-   
----------------------------------------------------------------------------
+
+
+----
 
 * Convex ONLY:
 
-  ::
+::
 
    SPECIfy  specify-keywords
 
@@ -339,8 +342,6 @@ Syntax of miscellaneous commands
                          NOFLush |
                          NBFActor  real-nonbond-memory-factor |
                          FNBL { ON | OFF }
-
-
 
 Purpose of the various miscellaneous commands
 ---------------------------------------------
@@ -353,7 +354,7 @@ Purpose of the various miscellaneous commands
    of a run. The APPEnd keyword causes output to be appended to the
    output file; useful if you want to get back to your normal output
    file without sacrificing the first part of it.
-   
+
    The case of filenames opened for WRITE access may be specified with
    the LOWEr or UPPEr commands.
 
@@ -375,19 +376,19 @@ Purpose of the various miscellaneous commands
    calculations. The only input value is the unit number to transfer to.
    In place of a unit number, a file may be specified. Stream files
    must be card format and should begin with a title.
-   
+
    Arguments may be set by the stream command.  Arguments must
    not contain any blanks (or other delimiting characters).  They
    are assigned to the variable IN1, :/RAIN2, IN3, etc..  The command;
 
    ::
-   
+
       STREam filename  arg1  arg2  arg3  arg4
 
    is functionally equivalent to;
 
    ::
-   
+
       SET IN1 arg1
       SET IN2 arg2
       SET IN3 arg3
@@ -401,8 +402,6 @@ Purpose of the various miscellaneous commands
    The return command causes the input of command sequence
    to return to the stream that called the current stream. Streams
    may be nested to up to 20 calls. There are no parameters for this command
-
----------------------------------------------------------------------------
 
 6) The DEFIne command
 
@@ -424,23 +423,23 @@ Purpose of the various miscellaneous commands
    The STOP command causes the program to terminate and to
    ignore all command that follow this command. This is useful for
    making temporary modifications to input files.
-   
+
    .. note::
-   
+
       This command is only available from the main program.
 
 9)  The USER command, see :ref:`Interface <usage_interface>`.
 
 10) The PREF command will prting out the pref.dat keywords that were
     used in the current executable. The purpose is to allow the user
-    to probe the executable about whether the feature(s) that are 
+    to probe the executable about whether the feature(s) that are
     desired were in fact compiled into the executable and whether
     one can expect certain features to work. Currently these are the
     keywords that will be checked for and printed. If keywords other
     than the following were used, they will not be detected or printed.
 
     ::
-    
+
       ACE ADUMB AIX370 ALLIANT ALPHA ALPHAMP AMBER APOLLO ARDENT
       ASPENER BANBA BLOCK BUFFERED CADPAC CFF CHARMMRATE CM5 CMPI
       COMMEASURE CONCURR CONVEX CRAY CRAYVEC CRAY_1DFFT CSPP
@@ -460,11 +459,9 @@ Purpose of the various miscellaneous commands
       SGIMP SGMD SHAPES SHMEM SINGLE SOCKET SOFTVDW T3D T3E TERRA
       TIMESTAMP TNPACK TRAVEL TSM UNICOS UNIX UNUSED VAX VECTOR
       XDISPLAY XLARGE XSMALL YAMMP
-      
-    See also :ref:`subst` for variable substitutions for detecting
-    the keywords.
 
----------------------------------------------------------------------------
+    See also :doc:`subst` for variable substitutions for detecting
+    the keywords.
 
 11) The TITle command is used to modify TITLEA which is used whenever
     a file is written. This title is normally filled only in the
@@ -472,8 +469,6 @@ Purpose of the various miscellaneous commands
     the TITLEB (the title from the most recently read file) is
     copied to TITLEA. Otherwise, a valid title specification should
     follow this command.
-
----------------------------------------------------------------------------
 
 12) The TIMEr command sets the value of TIMER in COMMON /TIMER/ to the
     specified value.  This variable is used to time different functions
@@ -523,8 +518,6 @@ Purpose of the various miscellaneous commands
     be issued and the slow routines will be substituted.  Also, there is less
     error checking for the fast routines. See :ref:`fast <energy_fast>`.
 
----------------------------------------------------------------------------
-
 16) The SET command sets up a command line parameter.  The command line
     parameters will be substituted into the command line by the
     command line reader when it encounters the symbol "@".
@@ -551,19 +544,19 @@ Purpose of the various miscellaneous commands
     0 if not. This is useful (in conjunction with the IF command) for setting
     defaults. (Note that @? takes precedence over any of the built-in parameters
     such as ?ENER etc. --- it is parsed first).
-    
-    :: 
 
-      SET outfile = myjob 
+    ::
+
+      SET outfile = myjob
       OPEN UNIT 1 WRITE CARD NAME @outfile.dat
 
     In the above example the token is delimited by the "." in the filename
     and the value "myjob" is substituted in place of "@outfile", resulting
     in an unit 1 being attached to the file "myjob.dat".
-    To protect a token from surrounding alphanumerics, use brackets, 
-    
-    :: 
-    
+    To protect a token from surrounding alphanumerics, use brackets,
+
+    ::
+
        OPEN UNIT 1 WRITE CARD NAME @{outfile}today.dat
        File name becomes "myjobtoday.dat".
 
@@ -576,37 +569,35 @@ Purpose of the various miscellaneous commands
        DYNA VERLET FINALT = @{max-temp} ... etc...
 
     For backwards compatibility, get token, check in table, if not present,
-    then drop back to first character of token and check again. 
+    then drop back to first character of token and check again.
     Substitute appropriately.
 
-    :: 
-    
+    ::
+
        SET 1 rdie
        OPEN UNIT 1 WRITE CARD NAME @15.dat
-       
+
     will result in a file named rdie5.dat
 
     To test the presence of a token in the parameter table use the @? operator.
     If the token is present, the value substituted is 1, if not 0.
     This is useful for setting defaults:
-    
+
     ::
-    
-       if @?{max-temp} .eq. 0 set max-temp 300. 
+
+       if @?{max-temp} .eq. 0 set max-temp 300.
 
     At present the parameter table is dimensioned as follows:
-    
+
     ============================ ===
     Maximum number of parameters 256
     Maximum token length          32
     Maximum value length         128
     ============================ ===
-    
-    For current sizes use command SHOW PARAmeters VERBose (see below).
-    
----------------------------------------------------------------------------
 
-17) The SHOW command prints the available command line substitution 
+    For current sizes use command SHOW PARAmeters VERBose (see below).
+
+17) The SHOW command prints the available command line substitution
     parameters.
 
     SHOW by itself or with BUILtin keyword prints the parameters set internally
@@ -617,11 +608,11 @@ Purpose of the various miscellaneous commands
 
 18) The IF command will optionally execute a command based on the
     value of the parameter used. Example;
-    
+
     ::
-    
+
        IF 1 GT 25.0  PRINT COOR
-       
+
     The "EQ" and "NE" operations only compare strings. Thus the string
     "2.00" would not be equal to "2.0" with these conditions. The options
     requesting a value, do a value comparison.
@@ -636,59 +627,56 @@ Purpose of the various miscellaneous commands
 20) The LABEL command does nothing except mark the presence of a label
     (up to 20 characters in length) to be used by the GOTO command.
 
----------------------------------------------------------------------------
-
 21) The INCRement command will modify the selected parameter. If a value
     is not specified, then a value of 1.0 will be used. Example
-    
+
     ::
-    
+
        INCR 1 BY 2.0
 
 22) The DECRement command is identical to the INCRement command except
     that a subtraction is done. The purpose of this command is to allow
     the subtraction of parameters. For example, the sequence;
-    
+
     ::
-    
+
         SET 1 ?ENER
         DECR 1 BY ?HARM
         WRITE TITLE UNIT 30
         * @1
         *
-        
+
     will compute the total energy less the constraint energy and write it
     to a file.
 
 23) The FORMat command allows the user to specify the format for
     ALL subsequent calls to ENCODF. This can be used to format the output
     of titles or other internal strings. Here are some examples;
-    
+
     ================  =========================================================
-    FORMat (I5)       - All values will be integers. Good for looping and such.
-    FORMat (F12.4)    - Just what it says.
-    FORMat            - Reverts to current scheme for ENCODF (1PG14.6) followed
+    FORMat (I5)       All values will be integers. Good for looping and such.
+    FORMat (F12.4)    Just what it says.
+    FORMat            Reverts to current scheme for ENCODF (1PG14.6) followed
                       by trimmimg
-    FORMat (A12)      - Won't work...
+    FORMat (A12)      Won't work...
     ================  =========================================================
 
     If an integer format is used, the real value will be rounded to the
     nearest integer. The parenthesis are required around the format specified.
     If several different formats are needed, then the FORMat command should
     precede each different required usage.
-    
+
     .. note::
-   
+
       Not all string manipulation commands call ENCODF.  The SET command
       does not.  The INCRement command does, so the sequence;
-      
+
       ::
-      
+
           FORMat   (f10.5)     ! specify the format
           INCRement  a  by 0.0 ! apply the format to variable "a"
-          
+
       may be used to format a particular variable without modifying its value.
----------------------------------------------------------------------------
 
 24) The TRIM command allows a substring of a parameter to replace the
     same parameter. The FROM value determines the first character to be kept
@@ -696,18 +684,16 @@ Purpose of the various miscellaneous commands
     character to be kept (last nonblank character). If a TO value that is larger
     than the length of the current parameter is used, blanks will be padded at
     the end.
-    
+
     Preceding blanks may be added by;
-    
+
     ::
-    
+
           SET 5           ! set parameter five to the null string
           TRIM 5 to 10    ! convert parameter five to a string with 10 blanks
           SET 6 @5@6      ! add these 10 blanks to parameter six
 
     This command may be used for general formatting.
-
----------------------------------------------------------------------------
 
 25) The DEADline command sets CPU and/or clock-time limits. These
     limits are checked in DCNTRL,ECNTRL, and GAUSHS (the parameter-fitting
@@ -767,7 +753,7 @@ Purpose of the various miscellaneous commands
     sessions when one has forgotten which FORTRAN units are already assigned.
     The command won't work if the files are assigned outside of CHARMM.
 
-29) Random number generation.  
+29) Random number generation.
 
     1) RANDom command.   The expression  ?RAND  will have a random number
        substituted for it during command line evaluation.  The default is to provide
@@ -776,12 +762,12 @@ Purpose of the various miscellaneous commands
        The only required keyword is the distribution type, which must be second; for a
        GAUSsian distribution, a value for sigma is required; the default mean is 0.0.
 
-       :: 
-       
+       ::
+
          RANDom  OLDRandom
          CLCG
          UNIForm         [SCALe scale]  [OFFSet offset]  [ASIN]   [ISEEd  iseed]
-         GAUSsian sigma                                  [ACOS] 
+         GAUSsian sigma                                  [ACOS]
 
        Additional keywords:
 
@@ -794,7 +780,7 @@ Purpose of the various miscellaneous commands
        ================  ========================================================
 
        Examples:
-       
+
        ::
 
           RANDOM GAUSS 0.2 SCALE 10.0   !     gaussian  mean of 0.0 with a sigma of 2.
@@ -804,7 +790,7 @@ Purpose of the various miscellaneous commands
           RAND UNIF ISEED 7734          !     uniform   new random seed
 
       Subsequent use of ?RAND will substitute a number from the appropriate
-      distribution. 
+      distribution.
 
       Note that OLDRandom subcommand sets OLDRNG, which runs "old" random
       number generator instead of "new" CLCG method. CLCG unsets OLDRNG,
@@ -817,18 +803,18 @@ Purpose of the various miscellaneous commands
       number, and an integer seed are specified. E.g.
 
       ::
-      
+
          IRAND SERIES 1 SETUp BEGI 1 ENDI 18  SEED 2346
          IRAND SERIES 2 SETUp BEGI 1 ENDI 402 SEED 4028987
 
       The random integers for each series are then generated with the commands
-      
+
       ::
-      
+
          IRAND SERIES 1
          IRAND SERIES 2
 
-      The ?iran expression accesses the last random integer generated. 
+      The ?iran expression accesses the last random integer generated.
 
       The purpose of the multiple series feature is at least two-fold. First, it
       allows users to generate random numbers easily from many different
@@ -858,7 +844,7 @@ Purpose of the various miscellaneous commands
     testcase calc.inp for examples.
 
     .. note::
-    
+
        All transcedental functions work in natural units (not degrees).
 
 ---------------------------------------------------------------------------
@@ -875,7 +861,7 @@ Purpose of the various miscellaneous commands
     example. Charges are taken from RTF.
 
     ::
-    
+
       MMQM [atom-selection] [UNIT integer]
       GAUSSIAN_HEADER
       # 6-31g** charge scf=direct mp2=fulldirect gen
@@ -884,18 +870,18 @@ Purpose of the various miscellaneous commands
       <optional gaussian general basis set specification or other input>
       END
 
-   
+
    a) Example using MMQM to write Q-Chem input file:
 
       ::
-      
+
          MMQM [atom-selection] [UNIT integer]
          $rem
          .... add all rem variables ....
          $end
 
          $molecule
-         0 1 
+         0 1
          QCHEM_MOLECULE
          $end
 
@@ -907,10 +893,10 @@ Purpose of the various miscellaneous commands
 
 ---------------------------------------------------------------------------
 
-32) SPECIfy  specify-keywords             !  Convex ONLY 
+32) SPECIfy  specify-keywords             !  Convex ONLY
 
     ::
-    
+
        specify-keywords ::=
                             PARAllel [NCPU integer-number-of-cpus] |
                             FLUSh |
@@ -919,7 +905,7 @@ Purpose of the various miscellaneous commands
                             FNBL { ON | OFF }
 
     description:
-    
+
     1. PARAllel - Tells CHARMm to run parallel (where possible). The optional
        NCPU keyword specifies the maximum number of processors to use.  If
        a number is specified that is greater than the maximum allowed for the

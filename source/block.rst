@@ -11,20 +11,21 @@ This has a number of applications, and specific commands to carry out
 free energy simulations with a component analysis scheme have been
 implemented. The lambda-dynamics, an alternative way of performing
 free energy calculations and screening binding molecules, has also been
-implemented.  Subcommands related to BLOCK will be described here.  To 
-see how to output the results of a dynamics run, please see DYNAMICS 
-documentation (keywords are IUNLDM, NSAVL, and LDTITLE).  
-Please refer to :doc:`pdetail` for detailed description of the lambda 
-dynamics and its implementation.   
+implemented.  Subcommands related to :chm:`BLOCK` will be described here.  To
+see how to output the results of a dynamics run, please see :doc:`dynamc`
+documentation (keywords are :chm:`IUNLDM`, :chm:`NSAVL`, and :chm:`LDTITLE`).
+Please refer to :doc:`pdetail` for detailed description of the lambda
+dynamics and its implementation.
 
-BLOCK was recently modified so that it works with the IMAGE
+:chm:`BLOCK` was recently modified so that it works with the :chm:`IMAGE`
 module of CHARMM.  As some changes to the documentation were necessary
 anyways, it was decided to also improve the existing documentation.
-The Syntax and Function section below are relatively unchanged; the
-added documentation is in the Hints section (READ IT if you are using
-BLOCK for the first time!).  Comments/suggestions to
-boresch@tammy.harvard.edu.
+The :ref:`Syntax and Function <block_syntax>` section below are relatively unchanged;
+the added documentation is in the :ref:`Hints <block_hints>` section (READ IT if you are using
+BLOCK for the first time!).  Comments/suggestions to boresch@tammy.harvard.edu.
 
+BLOCK was modified so that it works with the Ewald (simple and PME)
+method of CHARMM. The Syntax and Function of BLOCK module are unchanged.
 
 .. _block_syntax:
 
@@ -68,7 +69,7 @@ Syntax of BLOCK commands
         FIRSt int [NUNIT int] [BEGIn int] [STOP int] [SKIP int]
         [IHBF int] [INBF int] [IMGF] int
 
-   AVERage {DISTance int int} 
+   AVERage {DISTance int int}
            {STRUcture}
         [PERT] [TEMPerature real] [OLDLambda real] [NEWLambda real] -
         FIRSt int [NUNIT int] [BEGIn int] [STOP int] [SKIP int]
@@ -85,7 +86,7 @@ Syntax of BLOCK commands
 
    LDRStart
 
-   LDWRite IUNL int NSAVL int  
+   LDWRite IUNL int NSAVL int
 
    RMLAmbda {internal_energy_spec}
               internal_energy_spec ::== BOND THETa|ANGLe PHI|DIHEd IMPHi|IMPR
@@ -93,7 +94,7 @@ Syntax of BLOCK commands
 
    UNSAve
 
-   QLDM
+   QLDM  [THETa]
 
    QLMC  [MCTEmperature real] [FREQ int] [MCSTep int] [MAX real]
 
@@ -105,11 +106,19 @@ Syntax of BLOCK commands
 
    MCLEar
 
+   MSLD int_1 int_2 ... int_nblocks { FNEXponential [real] }
+                                 { FNSIn }
+                                 { F2Exponential }
+                                 { F2Sin }
+                 ! note: int_1 must be 0, block 1 = environment = Site 0
+
+   MSMAtrix
+
    LANG [TEMP real]
 
    RSTP int real
    " Dual-topology Softcore"
-   [PSSP]        ! use soft core potentials for interactions in between 
+   [PSSP]        ! use soft core potentials for interactions in between
                  ! blocks.  This option is remembered. With
                  ! the PSSP keyword, two parameters, ALAM and DLAM can
                  ! be set.
@@ -125,48 +134,60 @@ Syntax of BLOCK commands
 
    MCLAmd int LAMD0 real LAMD1 real ....... LAMD[int-1] real
 
+   HYBH real                     ! HYBrid Hamiltonan module (HYBH).
+
+   OUTH int                      ! HYBH
+
+   TSTH real [<update-spec>]     ! HYBH
+
+   PRIN                          ! HYBH
+
+   PRDH                          ! HYBH
+
+   CLHH                          ! HYBH
+
    END
 
 
 .. _block_function:
 
-1) BLOCk [int] enters the block facility.  The optional integer is
+1) ``BLOCk [int]`` enters the block facility.  The optional integer is
    only read when the block structure is initialized (usually the first
    call to block of a run) to specify the number of blocks for space
    allocation.  If not specified, the default of three is assumed.
 
-2) END exits the block facility.  The assignment of blocks, the
+2) ``END`` exits the block facility.  The assignment of blocks, the
    coefficient weighting of the energy function, the force/noforce
    option, etc.  remain in place.  For the terms of the energy function
-   that are supported, each call to ENERGY (either directly or through
-   MINIMIZE, DYNAMICS, etc.  commands) results in an energy and force
+   that are supported, each call to :doc:`ENERGY <energy>` (either directly or through
+   :doc:`MINIMIZE <minimiz>`, :doc:`DYNAMICS <dynamc>`, etc.  commands) results in an energy and force
    weighted as specified.  The matrix of interaction coefficients is
    printed upon exiting.
 
-3) CALL removes the atoms specified by "atom-selection" from their
+3) ``CALL`` removes the atoms specified by ``atom-selection`` from their
    current block and assigns them to the block number specified by the
    integer.  Initially all atoms are assigned to block 1.  If atoms are
    removed from any block other than block 1, a warning message is
    issued.  If blocks are assigned such that some energy terms (theta,
    phi, or imphi) are interactions between more than two blocks, a
-   warning is issued when the END command is encountered.  (Take such
+   warning is issued when the ``END`` command is encountered.  (Take such
    warnings seriously; this is a severe error and indicates that
-   something is wrong.  However, the problem might be not the CALL
+   something is wrong.  However, the problem might be not the ``CALL``
    statement (or the atom selection) itself; quite possibly your hybrid
    molecule was generated improperly)
 
-4) LAMBda sets the value of lambda to "real".  This command is only
+4) ``LAMBda`` sets the value of lambda to "real".  This command is only
    valid when there are three blocks active.  Otherwise multiple COEF
    commands may be used to set the interaction coefficients manually.
-   
+
    ::
-   
-      LAMBda x                 
-      
+
+      LAMBda x
+
    is equivalent to (let y=1.0-x)
-   
+
    ::
-   
+
       COEF 1 1 1.0
       COEF 1 2 y
       COEF 1 3 x
@@ -174,92 +195,94 @@ Syntax of BLOCK commands
       COEF 2 3 0.0
       COEF 3 3 x
 
-5) COEF sets the interaction coefficient between two blocks (represented
+5) ``COEF`` sets the interaction coefficient between two blocks (represented
    by the integers) to a value (the real number).  When the block facility
    is invoked, all of the atoms are initially assigned to block 1 and all
    interaction coefficients are set to one.  The required real value
    (first specified) scales all energy terms expect those specific terms
    which are named with alternative corresponding scale factors.
 
-   The name "VDWA" and "VDWR" correspond to the Attractive and Repulsive
+   The name :chm:`VDWA` and :chm:`VDWR` correspond to the Attractive and Repulsive
    terms in the Lennard-Jones potential respectively. That is they allow
-   one to independently scale the attractive (r^(6)) and repulsive terms (r^(12))
+   one to independently scale the attractive (:math:`r^6`) and repulsive terms (:math:`r^{12}`)
    independently.
 
-6) NOFOrce specifies that in subsequent energy calculations, the
+6) ``NOFOrce`` specifies that in subsequent energy calculations, the
    forces are not required.  This is economical when using the
-   post-processing commands (FREE,EAVG,COMP).  Forces may be turned back
-   on with the FORCe command; this is necessary before running
-   minimizations and dynamics if there was a prior NOFO command.
+   post-processing commands (:chm:`FREE`, :chm:`EAVG`, :chm:`COMP`).
+   Forces may be turned back on with the :chm:`FORCe` command; this is
+   necessary before running minimizations and dynamics if there was a
+   prior :chm:`NOFO` command.
 
-7) FREE calculates a free energy change using simple exponential
+7) ``FREE`` calculates a free energy change using simple exponential
    averaging, i.e. the "exponential formula".  If the old and new lambdas
-   (OLDL,NEWL) are specified (can only be done when three blocks are
+   (:chm:`OLDL`, :chm:`NEWL`) are specified (can only be done when three blocks are
    active), the perturbation energy is calculated for these values (i.e.
-   FREE gives you the free energy difference between NEWLambda and
+   :chm:`FREE` gives you the free energy difference between NEWLambda and
    OLDLambda via perturbation from the lambda value at which your
    trajectory was calculated.  If not, the current coefficient matrix is
-   used (FREE should be used with three blocks, and the use of OLDL and
-   NEWL is recommended).  FIRSt_unit, NUNIt, BEGIn, STOP, and SKIP
-   specify the trajectory/ies that is/are to be read (for a further
-   description see the TRAJ command elsewhere in the CHARMM
-   documentation).  TEMPerature defaults to 300 K and gives the
-   temperature value to be used in k_B*T.  CONTinuous specifies the
+   used (:chm:`FREE` should be used with three blocks, and the use of :chm:`OLDL` and
+   :chm:`NEWL` is recommended).  :chm:`FIRSt_unit`, :chm:`NUNIt`, :chm:`BEGIn`, :chm:`STOP`,
+   and :chm:`SKIP` specify the trajectory/ies that is/are to be read (for a further
+   description see the :chm:`TRAJ` command elsewhere in the CHARMM
+   documentation).  :chm:`TEMPerature` defaults to 300 K and gives the
+   temperature value to be used in :math:`k_B T`. :chm:`CONTinuous` specifies the
    interval for writing cumulative free energies.  A negative value
    causes binned (rather than cumulative average) values to be written.
    Be careful to make sure that you use correct non-bonded lists (see the
    hints section!)
 
-8) INITialize is called automatically when the BLOCK facility is
+8) ``INITialize`` is called automatically when the BLOCK facility is
    first entered and may also be called manually at some other point.
    All atoms are assigned to block one and all interaction coefficients
    are set to their initial value.
 
-9) CLEAr removes all traces of the use of the BLOCK facility.  The
-   next command should generally be END, and then CHARMM will operate
+9) ``CLEAr`` removes all traces of the use of the BLOCK facility.  The
+   next command should generally be :chm:`END`, and then CHARMM will operate
    as if BLOCK had not ever been called.
 
-10) EAVG The average value of the potential energy during a simulation
-    can be calculated with the EAVG (Energy_AVeraGe) command.  The parsing
+10) ``EAVG`` The average value of the potential energy during a simulation
+    can be calculated with the :chm:`EAVG` (Energy_AVeraGe) command.  The parsing
     is very much like the FREE command above.  The most frequent use of
     this command is to calculate the average value of dV/dlambda during
     the course of a simulation for use in thermodynamic integration.
-    CONTinuous specifies the interval for writing cumulative free
+    :chm:`CONTinuous` specifies the interval for writing cumulative free
     energies.  A negative value causes binned (rather than cumulative
     average) values to be written.  Be careful to make sure that you use
     correct non-bonded lists (see the hints section!)  The command accepts
-    the OLDL / NEWL option, similarly to FREE, but for EAVG it is
-    recommended to set up the interaction matrix (using COEF commands)
-    yourself -- see the hints section.
+    the :chm:`OLDL` / :chm:`NEWL` option, similarly to :chm:`FREE`, but for
+    :chm:`EAVG` it is recommended to set up the interaction matrix (using
+    :chm:`COEF` commands) yourself -- see the hints section.
 
-11) [COMP] The COMP module is essentially a modified version of the
-    EAVG module which aside from calculating <dU/dl> = <U_1 - U_0> at a
-    given value of lambda l(i) will also give you expectation values of
-    this quantity at l(i+-1), l(i+-2) etc. based on perturbation theory.
-    COMP requires 4 blocks.  Put the usual WT (reactant) in block 2 and
+11) ``[COMP]`` The :chm:`COMP` module is essentially a modified version of the
+    EAVG module which aside from calculating :math:`\left< dU/dl \right>  = \left< U_1 - U_0 \right>`
+    at a given value of :math:`\lambda_i` will also give you expectation values of
+    this quantity at :math:`\lambda_{i\pm1}`, :math:`\lambda_{i\pm2}`, etc. based on perturbation theory.
+    :chm:`COMP` requires 4 blocks.  Put the usual WT (reactant) in block 2 and
     MUT (product) in block 3.  Put the portion of the environment whose
     contribution to the free energy change is desired into block 4 (this
     can be everything else, or just a subset) (Note that the same can be
-    achieved easily with the EAVG command) You have to set up your own
-    coefficient matrix.  Much of the parsing is like the EAVG command.
-    CONT is not supported.  Two special subcommands (required) are DELL
-    and NDEL.  The normal output of COMP is <U_1 - U_0> evaluated at the
-    lambda of the simulation.  However, COMP also evaluates the same
-    ensemble averages perturbed to lambda = lambda +/-
-    {0,1,2,...NDEL}*DELL.  This (sometimes) helps the quadrature in
-    thermodynamic integration.  Note that NDEL must be at least 1, and
-    DELL should not be zero.  (You have to specify these values; the
+    achieved easily with the :chm:`EAVG` command) You have to set up your own
+    coefficient matrix.  Much of the parsing is like the :chm:`EAVG` command.
+    :chm:`CONT` is not supported.  Two special subcommands (required) are DELL
+    and :chm:`NDEL`.  The normal output of COMP is :math:`\left< U_1 - U_0 \right>`
+    evaluated at the lambda of the simulation.  However, :chm:`COMP` also evaluates the same
+    ensemble averages perturbed to ``lambda = lambda +/-
+    {0,1,2,...NDEL}*DELL``.  This (sometimes) helps the quadrature in
+    thermodynamic integration.  Note that :chm:`NDEL` must be at least 1, and
+    :chm:`DELL` should not be zero.  (You have to specify these values; the
     default values will lead to an invalid input, i.e. you bomb...) Be
     careful to make sure that you use correct non-bonded lists (see the
-    hints section!)  A word of warning: If your initial ensemble average
+    :ref:`hints <block_hints>` section!)  A word of warning: If your initial ensemble average
     (at the lambda of the simulation) is not well converged, then your
     perturbed values are most likely random numbers.  The approach taken
-    by COMP is theoretically sound, but it should only be applied if
-    convergence has been established!  The output format of COMP is
-    somewhat messy: COMP first prints <dU/dl> = <U_1 - U_0> at lambda = 
+    by :chm:`COMP` is theoretically sound, but it should only be applied if
+    convergence has been established!  The output format of :chm:`COMP` is
+    somewhat messy: :chm:`COMP` first prints :math:`\left< dU/dl \right>  = \left< U_1 - U_0 \right>`
+    at lambda =
 
     ::
-    
+
 		 lambda - NDEL*DELL
                  lambda - (NDEL-1)*DELL
                  ...
@@ -270,23 +293,23 @@ Syntax of BLOCK commands
 
     then it prints an average (integral) value over these results.  The
     meaning of this last value is unclear to me.  In earlier versions of
-    this documentation, COMP has been recommended over EAVG.  In my
-    experience the opposite is true.  There is little COMP can do which
+    this documentation, :chm:`COMP` has been recommended over :chm:`EAVG`.  In my
+    experience the opposite is true.  There is little :chm:`COMP` can do which
     you can't do with EAVG (aside from obtaining expectation values for
-    dU/dl).  (Maybe the unclear output of the COMP module is the main
-    reason why I don't like it).
+    :math:`\left< dU/dl \right>`).  (Maybe the unclear output of the :chm:`COMP`
+    module is the main reason why I don't like it).
 
-12) [AVER] The AVERage command is used to extract ensemble average
+12) ``[AVER]`` The :chm:`AVERage` command is used to extract ensemble average
     structural properties from a dynamics simulation.  Features in this
     implementation allow averages taken over ensembles that are perturbed
     from that which the simulation corresponds to.  This is particularly
     useful for calculating the average structure expected at lambda=0.0
     from a simulation run at lambda=0.1, for example.  One may calculate
-    average structures [STRUcture] and average distances [DISTance int
+    average structures ``[STRUcture]`` and average distances ``[DISTance int
     int; where the two integers are the atom numbers between which the
-    average distance is requested], currently.  The PERT keyword indicates
+    average distance is requested]``, currently.  The :chm:`PERT` keyword indicates
     that a perturbed ensemble from the dynamics trajectory is desired,
-    with TEMPerature giving the temperature to use in the exponential for
+    with :chm:`TEMPerature` giving the temperature to use in the exponential for
     the perturbation (defaults to 300 K), OLDLambda and NEWLambda are the
     lambdas for which the simulation was run and for which the ensemble is
     requested, respectively (only valid if three blocks are active; if
@@ -295,52 +318,52 @@ Syntax of BLOCK commands
     to specify the trajectory.  NOTE: TO THE BEST OF MY KNOWLEDGE THIS
     COMMAND HAS NOT BE MAINTAINED (so you are on your own if you use it!)
 
-13) LDINitialize specifies input parameters for running lambda 
-    dynamics.  It sets up the value of lambda**2, the velocity of 
-    the lambda, its mass and reference free energy (or biasing potential). 
-    E.g, the following input lines set up 
-    parameters for the third lambda with [lambda(3)]**2 = 0.4, 
-    lambdaV(3) = 0.0, lambdaM(3) = 20.0, and lambdaF(3)=5.0 (note that lambdaF(1) 
+13) ``LDINitialize`` specifies input parameters for running lambda
+    dynamics.  It sets up the value of ``lambda**2``, the velocity of
+    the lambda, its mass and reference free energy (or biasing potential).
+    E.g, the following input lines set up
+    parameters for the third lambda with ``[lambda(3)]**2 = 0.4``,
+    ``lambdaV(3) = 0.0``, ``lambdaM(3) = 20.0``, and ``lambdaF(3)=5.0`` (note that ``lambdaF(1)``
     should always be set to zero).
-    
+
     ::
 
       LDIN 3   0.4   0.0   20.0   5.0
 
-    For more details, see Node Hints, section "lambda-dynamics simulations". 
+    For more details, see :ref:`block_hints_lambda_dynamics`.
 
-14) LDMAtrix will automatically map the input lambda**2 values onto the 
-    coefficient matrix of the interaction energies (and forces) between 
-    blocks.  
+14) LDMAtrix will automatically map the input lambda**2 values onto the
+    coefficient matrix of the interaction energies (and forces) between
+    blocks.
 
 15) LDBI provides an option on applying biasing potentials on lambda
     variables. The integer value specifies the total number of biasing
     potentials to be used. E.g,
 
     ::
-    
-      LDBI 3 
+
+      LDBI 3
 
     will include total of 3 biasing potentials in the simulation.
 
-16) LDBV sets up the specific form of the biasing potentials. At the 
-    moment, the functional form is of power law and allows three different 
+16) LDBV sets up the specific form of the biasing potentials. At the
+    moment, the functional form is of power law and allows three different
     classes (for details see "the actual simulations"). The input format is
-    
+
     ::
-    
+
       LDBV INDEX  I   J  CLASS  REF  CFORCE NPOWER
 
     e.g.
 
     ::
-    
+
       LDBV   2    2   3    3    0.0   50.0   4
 
     will assign the second biasing potential acting between lambda(2) and
     lambda(3). The potential form belongs to the third class with reference
     value of zero, the force constant of 50 kcal/mol and the power of four.
- 
+
 17) LDRStart is used to restart the lambda dynamics runs.
 
 18) LDWRite specifies the FORTRAN output unit No. and the frequency
@@ -351,22 +374,22 @@ Syntax of BLOCK commands
 19) RMBOnd and RMANgle are used when no scaling of bond and angle energy
     terms is desired.
 
-20) RMLA is used when no scaling of bond, angle, proper torsion, and 
+20) RMLA is used when no scaling of bond, angle, proper torsion, and
     improper torsion terms are desired. This option always works with block module.
     The keywords: "RMBOnd" and "RMANgle" work only in lambda-dynamics.
 
     COEF command can work in the same way when lambda-dynamics or hybrid-MC/MD are
     not used.
-    
-    e.g. 
-    
+
+    e.g.
+
     "RMLA BOND" = "COEF real BOND 1.0"
 
 21) SAVE saves the decomposed-energy file for post processing in the TSM
     module. This command gives a choice for free energy calculation with
     block module to get free energy without saving the trajectory file.
     The condition and the name for the decomposed-energy file can be defined
-    in the dynamics module. (see dynamic.doc, keyword: IBLC, NBLC)  
+    in the dynamics module. (see dynamic.doc, keyword: IBLC, NBLC)
 
 22) UNSAve removes the traces of the use of SAVE command shown above.
 
@@ -374,9 +397,9 @@ Syntax of BLOCK commands
 the lambda-dynamics option only when QLMC turns off.
 
 24) QLMC turns on hybrid-MC/MD option. If QLMC option is on, LDIN commands
-    do not activate the QLDM option. 
+    do not activate the QLDM option.
 
-    In this version, we do not re-assign the velocity of the atoms when 
+    In this version, we do not re-assign the velocity of the atoms when
     chemical variables (lambda) are changed by MC method. Therefore, the kinetic
     terms suddenly change into the different phase space. The stochastic dynamics
     may diminish such artificial effects and help to reach the canonical ensemble.
@@ -384,9 +407,9 @@ the lambda-dynamics option only when QLMC turns off.
     QLMC command should specify conditions for hybrid-MC/MD.
 
     e.g.
-    
+
     ::
-    
+
       QLMC MCTEmperature 300.0 FREQ 10 MCST 5 MAX 0.9
 
     IN the above example, the temperature used for sampling the chemical space
@@ -395,30 +418,30 @@ the lambda-dynamics option only when QLMC turns off.
     are examined; the scale factor (lambda^2) for the selected ligand is assigned
     to 0.9 and the rest of ligands (L-1) have the scale factor 0.1/(L-1).
     Different temperature can be defined in the lambda-dynamics and hybrid MC-MD
-    for atomic variables and chemical variables. 
- 
+    for atomic variables and chemical variables.
+
 25) MCIN allows the intermediate states in which only two ligands have non-zero
     lambda values in hybrid-MC/MD method.
 
     e.g. (Three ligands system)
 
     ::
-    
+
        MCIN 5 0.0 0.25 0.5 0.75 1.0
 
     5 means that each ligand may have one these five scalings:
-    
+
     ::
-    
+
        0.0, 0.25, 0.5, 0.75, and 1.0.
 
     In this condition, CHARMM recognizes the following chemical states:
-    
-    +----------+-------------------+    
+
+    +----------+-------------------+
     |          |   (SCALE FACTOR)  |
-    |          +------+-----+------+                  
+    |          +------+-----+------+
     | STATE NO.| LIG_A|LIG_B|LIG_C |
-    +----------+------+-----+------+    
+    +----------+------+-----+------+
     |   1      | 1.0  |0.0  |0.0   |
     +----------+------+-----+------+
     |   2      | 0.0  |1.0  |0.0   |
@@ -428,11 +451,11 @@ the lambda-dynamics option only when QLMC turns off.
     |   4      | 0.25 |0.75 |0.0   |
     +----------+------+-----+------+
     |   5      | 0.75 |0.25 |0.0   |
-    +----------+------+-----+------+    
+    +----------+------+-----+------+
     |   6      | 0.25 |0.0  |0.75  |
-    +----------+------+-----+------+    
+    +----------+------+-----+------+
     |   7      | 0.75 |0.0  |0.25  |
-    +----------+------+-----+------+    
+    +----------+------+-----+------+
     |   8      | 0.0  |0.25 |0.75  |
     +----------+------+-----+------+
     |   9      | 0.0  |0.75 |0.25  |
@@ -448,25 +471,25 @@ the lambda-dynamics option only when QLMC turns off.
     movement. It allows intermediate states in which more than two ligands
     can have non-zero lambda values in hybrid-MC/MD method. "MCDI" requires the
     uniform interval for the definitions of the intermediate states.
-    Step size must satisfy: 
-    
+    Step size must satisfy:
+
     ::
-    
+
       Stepsize = 1.0/integer.
-            
+
     Example: Three ligands system
 
     ::
-    
-      MCDI 0.25   ! 0.25 shows the step size to move in lambda chemical movement. 
+
+      MCDI 0.25   ! 0.25 shows the step size to move in lambda chemical movement.
 
     In this condition, CHARMM recognizes next chemical states.
-    
-    +----------+-------------------+    
+
+    +----------+-------------------+
     |          |   (SCALE FACTOR)  |
-    |          +------+-----+------+                  
+    |          +------+-----+------+
     | STATE NO.| LIG_A|LIG_B|LIG_C |
-    +----------+------+-----+------+    
+    +----------+------+-----+------+
     |   1      | 1.0  |0.0  |0.0   |
     +----------+------+-----+------+
     |   2      | 0.0  |1.0  |0.0   |
@@ -476,11 +499,11 @@ the lambda-dynamics option only when QLMC turns off.
     |   4      | 0.25 |0.75 |0.0   |
     +----------+------+-----+------+
     |   5      | 0.75 |0.25 |0.0   |
-    +----------+------+-----+------+    
+    +----------+------+-----+------+
     |   6      | 0.25 |0.0  |0.75  |
-    +----------+------+-----+------+    
+    +----------+------+-----+------+
     |   7      | 0.75 |0.0  |0.25  |
-    +----------+------+-----+------+    
+    +----------+------+-----+------+
     |   8      | 0.0  |0.25 |0.75  |
     +----------+------+-----+------+
     |   9      | 0.0  |0.75 |0.25  |
@@ -497,9 +520,9 @@ the lambda-dynamics option only when QLMC turns off.
     +----------+------+-----+------+
     |  15*     | 0.5  |0.25 |0.25  |
     +----------+------+-----+------+
-    
 
-    It is possible for MCDI to produce a state in which  three ligands take 
+
+    It is possible for MCDI to produce a state in which  three ligands take
     non-zero lambda values as shown with the asterisk (states 13, 14 and 15).
     "MCDI" seems to be more general, but "MCIN" allows non-uniform
     intervals. Thus, small step sizes can be assigned near end points.
@@ -512,7 +535,7 @@ the lambda-dynamics option only when QLMC turns off.
 
 28) MCLEar removes the traces of the use of QLMC command shown above.
     BLOCK CLEAr command also removes the all traces of the use of QLMC.
-    MCLEar removes the traces of QLMC, while BLOCK CLEar removes all traces of the 
+    MCLEar removes the traces of QLMC, while BLOCK CLEar removes all traces of the
     BLOCK module.
 
 29) LANG turns on the interaction between lambda variable and langevin
@@ -528,46 +551,46 @@ the lambda-dynamics option only when QLMC turns off.
     states.  The type of the restraining potential used with RSTP is;
 
     ::
-    
+
       R = alpha *(1 - lambda^2)*  ( V - F )
        i                    i        i   i
 
     It disappears when this ligands is in bound state (lambda=1).
 
     e.g.
-    
+
     ::
-    
+
       REST 3 0.3
-      
+
     3 means the type of the restraining potential; 0.3 shows the alpha value.
 
     There are three types for the restraining potential.
-    
+
     * Type 1 Both environmental atoms and the ligands feel the restraining potential.
       Umbrella sampling technique is used to remove the bias effect coming
       from the restraining potential.
-      
+
     * Type 2 The fixed average structure of the environmental atoms are assigned into
       Block 2. The restraining potential was calculated Ri is defined as a
       function of the fixed environmental atoms and the ligands.
       When the system is flexible and the difference between the real
       coordinates of the environmental atoms and fixed average coordinates
       are considerably large, the convergence tends to slow.
-      
+
     * Type 3 When the environmental atoms form the specific structure and vibrated
       around the minimum, the fixed average structure of the environmental
       atoms are similar to those of the real time coordinates.
       Therefore, the force coming from the restraining potential can be
       approximated zero as an average.  If such a condition is satisfied,
       the environmental atoms can be ignored the force coming from the
-      restraining potential and the ligands only feel the restraining 
+      restraining potential and the ligands only feel the restraining
       potential.This approximation may have a problem when we handle the
       unstructured system like gas or liquid.
 
     The utility program, post_ldm_mcmd.exe is prepared for calculating the free
     energy differenes both without or with the restraining potential in
-    lambda-dynamics or hybrid-MC/MD method. 
+    lambda-dynamics or hybrid-MC/MD method.
 
     This program is saved in "support/post_analysis".
 
@@ -588,6 +611,172 @@ the lambda-dynamics option only when QLMC turns off.
     facility for the flexible usage of the simulated scaling method. Here, [int]
     is to define the number of lambda values. LAMD0 is the first lambda value,
     LAMD1 is the second one, ...., LAMD[int-1] is the last one.
+
+33) HYBH , HYBrid_Hamiltonian module. Implementation of the truncation
+    scheme described in "Ensemble Variance in Free Energy Calculations by
+    Thermodynamic Integration: Theory, Optimal "Alchemical" Path, and
+    Practical Solutions", A.Blondel (2004) J.Comp.Chem 25, 985-993.
+    Details on the method should be sought therein. In brief, the
+    implementation is based on dual topology (although single topology
+    could be used under some conditions), the bonded terms (bond, angle
+    and Urey-Bradly) are kept unchanged, dihedral and impropers are
+    modified according to simple quadratic scheme (w_product=(3.l+1).l/4),
+    and electrostatic and van der Waals are treated together with a
+    truncation scheme reminiscent of soft-core vdw to minimize the
+    numerical fluctuations of the integrant (hence Optimal "Alchemical"
+    Path). Ewald sums and correction terms associated appeared soft
+    enough to be treated according to linear scaling of the charges,
+    allowing direct analytical calculation of dEwald/dl. A benefit of the
+    method, in addition to the fact that the integrant has limited
+    numerical fluctuations, is that it also produce a linear evolution of
+    the integrant along lambda (or l) in regular cases.
+
+    The implementation attempts to supports most of non-bonds, image
+    and Ewald sums options and warnings are made. Slow routines are not
+    currently supported. However, it is advised to test the results when
+    new combination of options are used. CMAP is not currently supported.
+
+    Associated commands are called from within the BLOCk module and are:
+
+    * ``HBYH real``: Switchs the module on and sets the lambda parameter.
+      Due to the theoretical properties of the method, evenly spaced
+      values should be sufficient (eg. l=(2i-1)/20). The product part
+      (bloc 3) is weighted according to l as explained above, and the
+      reactant part (bloc 2) is weighted according to (1-l) as explained
+      above.
+
+    * ``OUTH int``: Sets the output unit for the dE/dl terms.
+
+    * ``TSTH real [<update-spec>]``: Sets dl and tests the derivatives (dE/dl)
+      by finite differences (E(l+dl)-E(l-dl))/2/dl. None zero components
+      of the energy are printed.
+
+    * ``PRIN``: Prints dE/dl with the usual ENERGY printing format.
+
+    * ``PRDH``: Writes dE/dlambda components to outh unit. Replaces the
+      automatic writting performed during dynamics, for example, when
+      re-reading a trajectory for post-processing.
+
+      The current form of the output is formatted, two line per dynamic step.
+
+      ::
+
+        R l dDIHEr dIMDIHEr dVDWr dELECr dEWKSUMr dEWSELFr d(EWEXCL+EWQCOR+EWUTIL)r
+        P l dDIHEp dIMDIHEp dVDWp dELECp dEWKSUMp dEWSELFp d(EWEXCL+EWQCOR+EWUTIL)p
+        Format: (a1,1x,f6.4,7(1x,1pg24.16e2))
+
+    * ``CLHH``: Clears the data structure for truncation scheme and switchs off
+      the module without changing the rest of the block setup. Note, the
+      BLOCk/CLEAr command also switchs off the module.
+
+    No analysis routine is currently supplied as careful convergence
+    analysis should be undertaken. It is advised that additions of the
+    terms be made at least in real*8 format as truncation errors might
+    be significant otherwise.
+
+    Testcases c35test/block_hybh.inp & block_hybh_ew.inp are provided.
+
+34) MSLD invokes Multi-Site lambda-dynamics. The integers which follow
+    the keyword indicate the "Site" to which atoms within each block are
+    assigned. The first block must be assigned to Site 0 (the "environment"
+    atoms). Currently, QLDM THETA must be specified prior to invoking MSLD.
+
+    Several different functional forms of lambda have been implemented. The
+    default functional form is FNEX 5.5. (Note: these functions are for
+    lambdas associated with all blocks except for block 1--ie. the environment
+    atoms at site 0.)
+
+    i) n-block normalized exponential: FNEX [c]
+
+       ::
+
+         num(Site_a,sub_i) = exp(c*sin(theta(Site_a,sub_i))
+
+
+         lam(Site_a,sub_i) =    num(Site_a,sub_i)
+                             -------------------------
+                               ----
+                               \
+                               /    num(Site_a,sub_j)
+                               ----
+                               all j
+
+    ii) n-block normalized sin: FNSI
+
+        ::
+
+          num(Site_a,sub_i) = sin(theta(Site_a,sub_i))^2
+
+          lam(Site_a,sub_i) =    num(Site_a,sub_i)
+                              -----------------------------
+                                ----
+                                \
+                                /    num(Site_a,sub_j)
+                                ----
+                               all j
+
+    iii) 2-block exponential: F2EX  (based on the logistic function)
+
+         ::
+
+           lam(Site_a,sub_1) = exp(theta(Site_a)) / [ 1.0 + exp(theta(Site_a)) ]
+
+           lam(Site_a,sub_2) = 1.0 / [ 1.0 + exp(theta(Site_a)) ]
+
+    iv) 2-block sin: F2SI   (based on constant pH-MD and theta-dynamics)
+
+        ::
+
+          lam(Site_a,sub_1) = sin(theta(Site_a))^2
+
+          lam(Site_a,sub_2) = 1.0 - sin(theta(Site_a))^2
+
+    The MSMA keyword is the Multi-Site lambda-dynamics equivalent to the
+    LDMAtrix command and will automatically map the input lambda values
+    onto the coefficient matrix of the interaction energies (and forces)
+    between blocks.
+
+    Assuming that groups of atoms have already been defined to correspond to
+    "site1sub1" etc., here is an example of a Multi-Site lambda-dynamics
+    setup in an input file.
+
+    ::
+
+      BLOCK 7
+          Call 2 sele site1sub1 end
+          Call 3 sele site1sub2 end
+          Call 4 sele site2sub1 end
+          Call 5 sele site2sub2 end
+          Call 6 sele site2sub3 end
+          Call 7 sele site2sub4 end
+          qldm theta
+          lang temp 310.0
+          ldin 1 1.0  0.0  12.0  0.0 5.0
+          ldin 2 0.50 0.0  12.0  0.0 5.0
+          ldin 3 0.50 0.0  12.0  3.2 5.0
+          ldin 4 0.30 0.0  12.0  0.0 5.0
+          ldin 5 0.40 0.0  12.0 -0.5 5.0
+          ldin 6 0.15 0.0  12.0  8.5 5.0
+          ldin 7 0.15 0.0  12.0 15.1 5.0
+          rmla bond thet
+          msld 0 1 1 2 2 2 2 fnex 5.5
+          msma
+      END
+
+    After this setup, minimizations and dynamics can be invoked as usual. MSLD
+    is currently only compatible with the default dynamics routine (leapfrog
+    Verlet) and can be used with Langevin dynamics (LANG) using the LEAP
+    integrator.
+
+    Analysis of the generated lambda trajectories can be performed using
+    options in the trajectory command for multiple blocks at one or two Sites
+    (see TRAJ LAMB in dynamc.doc). For hybrid molecules that have multiple
+    blocks at more than two Sites, we suggest running the TRAJ LAMB command
+    with the "print" option to write out lambda and theta values at each step.
+
+    Currently, Multi-Site lambda-dynamics is compatible with LDBI and
+    LDBV. However, the LDBV defined biases are not yet taken into
+    account in the TRAJ analysis routine.
 
 
 .. _block_hints:
@@ -634,7 +823,7 @@ which looks something like
             H2 = {   }       \H6
                /  C1M --- OG
                /            \HG1
-            H3 
+            H3
 
 
 (and there is water.)
@@ -665,7 +854,7 @@ The steps involved to start running dynamics are as follows:
     The following script fragment will do the trick:
 
     ::
-    
+
    	block 3
    	call 2 sele <reactant> end
    	call 3 sele <product> end
@@ -685,14 +874,14 @@ The steps involved to start running dynamics are as follows:
     as step (3)) in every input file).  Enter block again, e.g.
 
     ::
-    
+
    	block
    	lamb 0.1
    	end
 
     From now on interactions between the 3 blocks will be scaled according
     to the following matrix (lambda = l = 0.1 ==> 1-l = 0.9):
-    
+
     =====  === === ====
     block   1   2   3
     =====  === === ====
@@ -757,10 +946,10 @@ from the trajectories you generated in step (i)
     (a) Efficiency: In none of the post-processing routines do you need
         the interactions between particles that belong to the environment;
         therefore you should avoid calculating them.  This can be done easily
-        by specifying 
+        by specifying
 
         ::
-        
+
 	       cons fix sele <environment> end
 
         Note that this is not necessary, but it will reduce the CPU time
@@ -782,9 +971,9 @@ from the trajectories you generated in step (i)
         CHARMM script looks approximately as follows:
 
         ::
-        
+
          	!set up system (psf, initial coordinates)
-         	block 
+         	block
          	!partition system
          	end
          	cons fix sele <environment> end
@@ -808,7 +997,7 @@ from the trajectories you generated in step (i)
         necessary)  The above scheme now looks like:
 
         ::
-        
+
          	!set up system (psf, initial coordinates)
          	block
          	!partition system
@@ -838,24 +1027,24 @@ from the trajectories you generated in step (i)
     wide sampling), i.e.
 
     ::
-    
+
       A(0.0)-A(0.1) = -k_B*T*ln <exp[-(U(l=0.0)-U(l=0.1))/kT]>_(l=0.1)
 
     or
 
     ::
-    
+
       A(0.2)-A(0.0) = -k_B*T*ln <exp[-(U(l=0.2)-U(l=0.0))/kT]>_(l=0.1)
 
     You should set up your system with 3 blocks and the usual environment,
     reactant and product partitions.  Before entering block to issue the
-    free command, you have to open the trajectory/ies.  
+    free command, you have to open the trajectory/ies.
 
     ::
-    
+
    	! all the stuff shown above for non-bond lists
    	open file unit 10 read name dat01.trj
-   	block 
+   	block
    	free oldl 0.1 newl 0.0 first 10 nunit 1 [temp 300. -
    		inbf 1 imgf 1]
    	end
@@ -863,7 +1052,7 @@ from the trajectories you generated in step (i)
     or, for double wide sampling, the free line would be replaced by
 
     ::
-    
+
    	free oldl 0.0 newl 0.2 first 10 nunit 1 [temp 300. -
    		inbf 1 imgf 1]
 
@@ -886,7 +1075,7 @@ from the trajectories you generated in step (i)
 
     Note that trajectories are not rewound after use; i.e. before any
     subsequent FREE (or EAVG,COMP) command you have to rewind (or reopen)
-    them!  
+    them!
 
     Once you have all the free energy pieces you need, you simply add them
     up to obtain the free energy difference (beware of sign errors
@@ -899,7 +1088,7 @@ from the trajectories you generated in step (i)
     function, i.e.
 
     ::
-    
+
 	   V(l) = V0 + (1-l)*V_reac + l*V_prod,
 
     where V0 contains all the intra-environment terms, V_reac are the
@@ -909,17 +1098,17 @@ from the trajectories you generated in step (i)
     function we have
 
     ::
-    
+
 	   dV/dl = V_prod - V_reac
 
     It's very easy to obtain this quantity from EAVG.  Use 3 blocks,
     partition the system as before.
 
     ::
-    
+
    	! all the stuff shown above for non-bond lists
    	open file unit 10 read name dat01.trj
-   	block 
+   	block
    	coef 1 1  0.
    	coef 1 2 -1.
    	coef 2 2 -1.
@@ -933,7 +1122,7 @@ from the trajectories you generated in step (i)
     in the trajectory according to the following (symmetric) matrix
 
     ::
-    
+
 	     0.0
        -1.0  -1.0
         1.0   0.0  1.0;
@@ -946,7 +1135,7 @@ from the trajectories you generated in step (i)
     case you would have
 
     ::
-    
+
 	   dA = 0.2 * (dV(0.1)+dV(0.3)+...+dV(0.9)),
 
     where dV(0.1) = <V_prod - V_reac>_(l=0.1), etc.
@@ -958,7 +1147,7 @@ from the trajectories you generated in step (i)
     a slightly different coefficient matrix, i.e.
 
     ::
-    
+
    	coef 1 1  0.
    	coef 1 2 -1.
    	coef 2 2  0.
@@ -970,7 +1159,7 @@ from the trajectories you generated in step (i)
     more blocks (m > 3) to extract only a subset of interactions, e.g.
 
     ::
-    
+
    	block 1: environment - x
    	block 2: reactant
    	block 3: product
@@ -982,12 +1171,12 @@ from the trajectories you generated in step (i)
     Using EAVG with an appropriate coefficient matrix, e.g.
 
     ::
-    
+
    	coef 1 1  0.
    	coef 1 2  0.
    	coef 1 3  0.
-   	coef 1 4  0. 
-   	coef 2 2  0. 
+   	coef 1 4  0.
+   	coef 2 2  0.
    	coef 2 3  0.
    	coef 2 4 -1.
    	coef 3 3  0.
@@ -1010,7 +1199,7 @@ from the trajectories you generated in step (i)
     to do this, the system needs to be partitioned as follows
 
     ::
-    
+
    	block 1: --
    	block 2: reactant
    	block 3: product
@@ -1021,15 +1210,15 @@ from the trajectories you generated in step (i)
     additional values via perturbation (see Bruce Tidor's thesis).  Using
 
     ::
-    
+
    	! all the stuff shown above for non-bond lists
    	open file unit 10 read name dat01.trj
-   	block 
+   	block
    	coef 1 1  0.
    	coef 1 2  0.
    	coef 1 3  0.
-   	coef 1 4  0. 
-   	coef 2 2 -1. 
+   	coef 1 4  0.
+   	coef 2 2 -1.
    	coef 2 3  0.
    	coef 2 4 -1.
    	coef 3 3  1.
@@ -1044,7 +1233,7 @@ from the trajectories you generated in step (i)
     obtain dA as
 
     ::
-    
+
 	   dA = 0.06667 * (dV'(0.03334)+dV(0.1)+...+dV'(0.96667)),
 
     where dV(0.1) = <V_prod - V_reac>_(l=0.1), etc. and the ' indicates
@@ -1059,80 +1248,82 @@ from the trajectories you generated in step (i)
     defaults (if you don't specify ndel/dell) lead to an invalid input
     (This should be fixed...)
 
+.. _block_hints_lambda_dynamics:
+
 (iii) Lambda-dynamics simulations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In an efforts to make the transition from using previous subcommands 
-to running the lambda dynamics as smoothly as possible, we purposely 
-parallel new syntax after the COEF subcommand.  There are 
+In an efforts to make the transition from using previous subcommands
+to running the lambda dynamics as smoothly as possible, we purposely
+parallel new syntax after the COEF subcommand.  There are
 total of eight new keywords for setting up new dynamics.  They are
 classified according to their functionality.
 
 (a) LDINitialize and LDMAtrix
 
     These two keywords are basic commands for starting the lambda
-    dynamics run.  The correct use of them is tied together with the BLOCK 
+    dynamics run.  The correct use of them is tied together with the BLOCK
     and CALL commands.  Using the same example as the one given in "the
     actual simulations", the input script fragment will be as following:
 
     ::
-    
+
         block 3
         call 2 sele <reactant> end
         call 3 sele <product> end
         LDIN 1    1.0    0.0    20.0    0.0
         LDIN 2    0.9    0.0    20.0	0.0
         LDIN 3    0.1    0.0    20.0	0.0
-        LDMA               
+        LDMA
 	     end
 
-    Here, the LDINitialize command models after the COEF command with 
+    Here, the LDINitialize command models after the COEF command with
     the format
 
     ::
-    
+
         LDIN  INDEX   LAMBDA**2   LAMBDAV   LAMBDAM   LAMBDAF
 
-    Several comments are in order.  First, notice that [lambda(1)**2] 
-    = 1.0 and [lambda(2)]**2 + [lambda(3)]**2 = 1.0.  They are quite 
-    similar to the inputs of COEF subcommand.  However, since one 
-    index instead of a pair is required here,  only diagonal elements 
-    of the interaction coefficient matrix are specified.  To fill up 
-    the matrix, LDMA is provided to finish the job automatically.  
-    In general, if there is total of N blocks, the first one is 
-    by default assumed to be the region where nothing changes.  
+    Several comments are in order.  First, notice that [lambda(1)**2]
+    = 1.0 and [lambda(2)]**2 + [lambda(3)]**2 = 1.0.  They are quite
+    similar to the inputs of COEF subcommand.  However, since one
+    index instead of a pair is required here,  only diagonal elements
+    of the interaction coefficient matrix are specified.  To fill up
+    the matrix, LDMA is provided to finish the job automatically.
+    In general, if there is total of N blocks, the first one is
+    by default assumed to be the region where nothing changes.
     Therefore, [lambda(1)**2] = 1.0 is always true. The condition
 
     .. math::
        :label: 1
-       
-       \sum_{i=2}^N \lambda(i)^2 = 1.0
-       
 
-    has to be satisfied for the partion of the system Hamiltonian. 
-    Due to some technical reasons in our implementation (details 
-    see :doc:`pdetail`), we have used [lambda(i)**2] instead of lambda(i) 
-    in our partion of the system Hamiltonian.  Next, to make sure the above 
-    condition is met at any given simulation step, we have also enforced a 
+       \sum_{i=2}^N \lambda(i)^2 = 1.0
+
+
+    has to be satisfied for the partion of the system Hamiltonian.
+    Due to some technical reasons in our implementation (details
+    see :doc:`pdetail`), we have used [lambda(i)**2] instead of lambda(i)
+    in our partion of the system Hamiltonian.  Next, to make sure the above
+    condition is met at any given simulation step, we have also enforced a
     condition containing velocities of the lambda variables
 
     .. math::
        :label: 2
-       
+
        \sum_{i=2}^N \lambda(i)*\lambda_V(i) = 0.0
 
     We used lambdaV(i) = 0.0 in the above script just to simplify the
-    input.  As far as the mass parameter lambdaM is concerned, the minimum 
-    requirement is that the value of mass has to be chosen such that the 
-    time step (or frequency) of lambda variables is consistent with that 
-    used for spatial coordinates x, y, z.  Since the lambda variable is 
-    introduced into the system by using extended Lagrangian, 
-    considerations gone into the similar quantities, such as the 
-    adjustable parameter Q in a Nose thermostat are applicable to the 
-    choice of lambdaM.  Some crude estimation can be made by examining 
-    the derivative of the system Hamiltonian with respect to the 
-    lambda, the curvature (simple harmonic approximation) or energy 
-    difference between two end-point states (0 and 1).  Our experience 
+    input.  As far as the mass parameter lambdaM is concerned, the minimum
+    requirement is that the value of mass has to be chosen such that the
+    time step (or frequency) of lambda variables is consistent with that
+    used for spatial coordinates x, y, z.  Since the lambda variable is
+    introduced into the system by using extended Lagrangian,
+    considerations gone into the similar quantities, such as the
+    adjustable parameter Q in a Nose thermostat are applicable to the
+    choice of lambdaM.  Some crude estimation can be made by examining
+    the derivative of the system Hamiltonian with respect to the
+    lambda, the curvature (simple harmonic approximation) or energy
+    difference between two end-point states (0 and 1).  Our experience
     has indicated that a conservative choice of the mass, i.e. a little
     bit heavier mass than that of the crude estimate, serves us well
     so far.
@@ -1142,53 +1333,53 @@ classified according to their functionality.
     ligands in the unbound state. Such calculations can identify ligands
     with favorable binding free energy and a ranking of the ligands can be
     obtained from the probability of each ligand in the lambda=1 state;
-    (2) In precise free energy calculations, LAMBDAF corresponds to the best 
+    (2) In precise free energy calculations, LAMBDAF corresponds to the best
     estimate of free energy from previous calculations. Therefore the
     estimate of free energy can be improved iteratively.
 
- 
+
 (b) LDBI and LDBV
 
     In order to provide better control over simulation efficiency and
-    sampling space, an option of applying biasing (or umbrella) 
-    potentials is furnished.  LDBI specifies how many biasing 
-    potentials will be applied and LDBV supplies all the details.  
+    sampling space, an option of applying biasing (or umbrella)
+    potentials is furnished.  LDBI specifies how many biasing
+    potentials will be applied and LDBV supplies all the details.
     The general input format is
-    
+
     ::
 
        LDBV INDEX  I   J  CLASS  REF  CFORCE NPOWER
 
 
-    Let us look at the following script  
-    
+    Let us look at the following script
+
     ::
 
        block
-       LDBI   3     
+       LDBI   3
        LDBV   1    2   2    1    0.2   40.0   2
        LDBV   2    3   3    2    0.6   50.0   2
        LDBV   3    2   3    3    0.0   20.0   2
        end
 
     It states that there is total of 3 biasing potentials. The first one
-    (INDEX = 1) is acting on lambda(2) itself (I = J = 2), the second one 
-    on lambda(3) and the third one is coupling lambda(2) and lambda(3) 
-    together.  At the moment, three different classes of functional forms 
+    (INDEX = 1) is acting on lambda(2) itself (I = J = 2), the second one
+    on lambda(3) and the third one is coupling lambda(2) and lambda(3)
+    together.  At the moment, five different classes of functional forms
     are supported:
 
     CLASS 1:
-    
+
     .. math::
-    
+
        V = \begin{cases}
           \mathrm{CFORCE} \cdot (\lambda - \mathrm{REF})^\mathrm{NPOWER} , & \text{ if } \lambda < \mathrm{REF}  \\
           0, & \text{ otherwise }
        \end{cases}
 
-    
+
     CLASS 2:
-    
+
     .. math::
        V = \begin{cases}
           \mathrm{CFORCE} \cdot (\lambda - \mathrm{REF})^\mathrm{NPOWER} , & \text{ if } \lambda > \mathrm{REF}  \\
@@ -1196,27 +1387,48 @@ classified according to their functionality.
        \end{cases}
 
     CLASS 3:
-    
+
     .. math::
        V = \mathrm{CSFORCE} \cdot [\lambda(I) - \lambda(J)]^\mathrm{NPOWER}
-            
+
+    CLASS 4:
+
+    ::
+               __
+              |   CFORCE*(1.0 - ((lambda - REF)**2)/REF**2) if lambda < REF
+          V  =|
+              |   0                                         otherwise
+              |__
+
+
+    CLASS 5:
+
+    ::
+
+          V  =    CFORCE*lambda(I)
+
+    .. note::
+       the CLASS 5 biasing potential is the same as invoking the
+       biasing potential LAMBDAF in LDIN (except these biases will not
+       currently be taken into account in the TRAJ analysis routines).
+
 
 (c) LDRStart
 
     LDRStart is used only if for some reason, e.g. execution of EXIT command,
-    the logical variable QLDM for the lambda dynamics has been set to false. 
-    In this case, to restart the dynamics, LDRStart can be used to reset 
-    QLDM = .TRUE..  However, if LDIN is also being used in restarting the 
-    dynamics, it will automatically reset QLDM. Therefore, LDRS does not 
-    need to be called in this case. 
-  
+    the logical variable QLDM for the lambda dynamics has been set to false.
+    In this case, to restart the dynamics, LDRStart can be used to reset
+    QLDM = .TRUE..  However, if LDIN is also being used in restarting the
+    dynamics, it will automatically reset QLDM. Therefore, LDRS does not
+    need to be called in this case.
+
 
 (d) LDERite
 
     LDWRite provides specifications for writing out lambda dynamics, i.e.
-    the histogram of the lambda variables, the biasing potential etc.  The 
-    integer variable IUNLdm is the FORTRAN unit on which the output data 
-    (unformatted) are to be saved. The value of the integer NSAVL sets step 
+    the histogram of the lambda variables, the biasing potential etc.  The
+    integer variable IUNLdm is the FORTRAN unit on which the output data
+    (unformatted) are to be saved. The value of the integer NSAVL sets step
     frequency for writing lambda histograms.  IUNLdm is defaulted to -1 and
     NSAVL is defaulted to 0.  Both IUNLdm and NSAVl can be reset in DYNAmics
     command (Please refer to :doc:`dynamc` for details).
@@ -1224,16 +1436,171 @@ classified according to their functionality.
     the following script will set IUNLdm with unit No. 8 and NSAVL equal to 10:
 
     ::
-    
+
       LDWRite IUNL 8 NSAVL 10
 
 
 (e) RMBOnd and RMANgle
 
-    Since each energy term is scaled by lambda, RMBOnd and RMANgle can prevent 
+    Since each energy term is scaled by lambda, RMBOnd and RMANgle can prevent
     bond breaking caused by such scaling during dynamic simulations. Alternatively
     one can fix bonds (and angles) using SHAKE. But is is not always possible.
 
+(f) MSLD
+
+    Multi-Site lambda-dynamics is a generalized version of the original
+    lambda-dynamics. Greater numerical stability of the simulations
+    is acheived with the MSLD definitions of lambda which implicitly
+    satisfy the constraints a) that each lambda value varies between 0 and 1 and
+    b) that the lambda values for a given Site sum to 1 (see the functional
+    forms listed above). Any system set up for the original lambda-dynamics
+    (i.e. that has multiple blocks at only one Site) can be run using MSLD.
+    In this case, the system would be set up in BLOCK as before, but the LDMA
+    command would be replaced by the MSLD commands.
+
+    For example, the original lambda-dynamics, using the theta-dynamics option
+    (qldm test) setup would be:
+
+    ::
+
+        BLOCK 4
+            Call 2 sele site1sub1 end
+            Call 3 sele site1sub2 end
+            Call 4 sele site1sub3 end
+            qldm theta
+            lang temp 310.0
+            ldin 1 1.0  0.0  12.0  0.0 5.0
+            ldin 2 0.50 0.0  12.0  0.0 5.0
+            ldin 3 0.20 0.0  12.0  3.2 5.0
+            ldin 4 0.30 0.0  12.0 -1.0 5.0
+            rmla bond thet
+            ldma                    ! use for original lambda-dynamics
+        END
+
+    and the MSLD setup would be:
+
+    ::
+
+        BLOCK 4
+            Call 2 sele site1sub1 end
+            Call 3 sele site1sub2 end
+            Call 4 sele site1sub3 end
+            qldm theta              ! required for MSLD
+            lang temp 310.0
+            ldin 1 1.0  0.0  12.0  0.0 5.0
+            ldin 2 0.50 0.0  12.0  0.0 5.0
+            ldin 3 0.20 0.0  12.0  3.2 5.0
+            ldin 4 0.30 0.0  12.0 -1.0 5.0
+            rmla bond thet
+            msld 0 1 1 1 fnex 5.5   ! use for MSLD
+            msma                    ! use for MSLD
+        END
+
+    Lambda trajectory files written by MSLD can be analyzed by TRAJ LAMB
+    commands.  The header contains all the information required to process
+    the trajectory (e.g. number of blocks, which blocks are assigned to
+    which site etc.). The lambda trajectory files are specified in the
+    DYNAMICS commands using keywords:
+
+    ::
+
+       IUNLDM unit ! where unit corresponds to the unit number of the
+                     lambda trajectory file
+       NSAVL freq  ! where freq corresponds to the frequency of writing
+                     the lambda values
+
+    The TRAJ LAMB command will process the lambda trajectory file and print
+    out statistics related to individual sites ("single-site" statistics):
+
+    * the population of each block (population = the number
+      of snapshots in which each block(i) has lambda(i) = 1, or more
+      specifically, the number of snapshots in which each block(i) has
+      lambda(i) > threshold).
+
+    * the number of transitions at each Site (i.e. the number of times
+      the identity of the block with lambda(i) > threshold changes).
+
+    * and the relative free energies for each pair of blocks at each Site.
+      (without and with the correction for the fixed lambda biased invoked in
+      the LDIN command)
+
+    Output is provided for two threshold values (default 0.8 and 0.9) for
+    approximating lambda(i) = 1 to provide an estimate of the sensitivity of
+    the results to the specific threshold used:
+
+    ::
+
+             lambda(i) = 1, if lambda(i) > threshold
+
+    For systems with more than one site (i.e. sites at which multiple blocks
+    are modeled), a complete physical ligand is present at a given snapshot
+    when there is a block with lambda > threshold at each Site. For a given
+    system, there are a total of N(site_1) x N(site_2) x ... N(site_n)
+    possible ligands where N(i) is the number of blocks at Site i.
+
+    For systems with two sites, in addition to the general "single-site"
+    statistics, the TRAJ LAMB command will account for all combinations of
+    the blocks and print out "multi-site" statistics:
+
+    * the populations of each "ligand" for two thresholds (population =
+      the number of snapshots in which each "ligand" exists, i.e. the
+      combination of blocks corresponding to the ligand each have lambda = 1)
+
+    * the number of transitions between these ligands * the relative free
+      energies of each pair of ligands (without and with the correction for
+      the fixed lambda biased invoked in the LDIN command)
+
+    For systems with more than two sites, it is recommended that you use
+    the TRAJ LAMB PRINT command to print out the lambda values for each
+    snapshot and perform the population analysis and compute the relative
+    free energies yourself.
+
+    See TRAJ LAMB in dynamcs.doc for a complete list of options.
+    E.g.:
+
+    * To read header information only:
+
+      ::
+
+        open unit 24 read file name scratch/msld_prod.lmd
+        traj lamb query unit 24
+        close unit 24
+
+    * To process the trajectory file and print out lambda values at each
+      timestep:
+
+      ::
+
+        open unit 24 read file name scratch/msld_prod.lmd
+        traj lamb print first 24 nunit 1
+        close unit 24
+
+    While the trajectory is being processed, the following internal variables are
+    stored:
+
+    ========== =======================================================================
+    ``TMIN``   Minimum number of transitions for any site in the system
+    ``TMAX``   Maximum number of transitions for any site in the system
+    ``FPL``    Fraction of the snapshots which represent full Physical Ligands
+    ``POP#``   Population for the substituent associated with indicated BLOCK number
+               at the low threshold value (e.g. the ?pop2 contains the population for
+               substituent in BLOCK 2 given CUTLO threshold)
+    ``DDG#_#`` Relative free energy between the first and second substituents
+               listed at the low threshold value (e.g. ?ddg2_5 is the relative free
+               energy between the substituents associated with BLOCKS 2 and 5).
+    ========== =======================================================================
+
+    If for any reason you wish to suppress the storage of internal variables
+    (for example, if you have many substituents in your system and alreadyt
+    many internal variables have been stored such that processing the MSLD
+    trajectory gives a fatal error indicative of too many variables) then
+    include the keyword "nosub" in the trajectory command, i.e.:
+
+    ::
+
+       open unit 24 read file name scratch/msld_prod.lmd
+       traj lamb print first 24 nunit 1 nosub
+       close unit 24
 
 
 .. _block_limitation:
@@ -1277,19 +1644,19 @@ Dual Topology Soft Core Potential
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The new commands PSSP/NOPSsp and the optional parameters ALAM and
-DLAM control the interactions between soft core potentials and BLOCK, 
-which is essentially the same as the PSSP command in the PERT soft 
-core (see pert.doc). After you specify PSSP inside BLOCK, soft core 
-LJ and electrostatic interactions will be used inside block interactions. 
-For the atom based NBOND command (NBOND ATOM), the block coefficents 
-(lambda) of VDW and ELEC can be defined as the different values. For 
-the group based case (NBOND GROUP), they share the same lambda value 
-currently. The separation parameters for elec. and LJ interactions can 
+DLAM control the interactions between soft core potentials and BLOCK,
+which is essentially the same as the PSSP command in the PERT soft
+core (see pert.doc). After you specify PSSP inside BLOCK, soft core
+LJ and electrostatic interactions will be used inside block interactions.
+For the atom based NBOND command (NBOND ATOM), the block coefficents
+(lambda) of VDW and ELEC can be defined as the different values. For
+the group based case (NBOND GROUP), they share the same lambda value
+currently. The separation parameters for elec. and LJ interactions can
 be set with the ALAM and DLAM options, the default of 5A^2 should be
 reasonable. The option is memorized, i.e., after the first invocation
 of PSSP, all further calls of EVDW will use soft core interactions.
 To turn this off, please use the NOPSsp keyword inside BLOCK/END pair.
-So far, FAST OFF is recommended." -- New by H. Li and W. Yang 
+So far, FAST OFF is recommended." -- New by H. Li and W. Yang
 
 Adaptive Integration (ADIN) Method for Hybrid MD/MC Simulation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1316,6 +1683,18 @@ Multiplier boundary treatment. In the theta-dynamics, history dependent
 approaches can work very nicely with no danger of being trapped at the end
 points. - by Lianqing Zheng and Wei Yang
 
+Multi-Site lambda-dynamics (MSLD)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This is a more generalized lambda-dynamics method that allows
+multiple substituents on multiple Sites on a common framework to be
+evaluated simultaneously. Different functional forms of lambda have been
+implemented which inherently satisfy the constraints that each lambda
+should vary between 0 and 1 and the sum of the lambda values at a given
+Site must equal 1. This strategy reduces the need to use Lagrangian
+Multipliers and renormalization schemes and, for most systems, the timestep
+can be increased in dynamics to 2 fs when SHAKE is invoked.
+- by Jennifer L. Knight and Charles L. Brooks III
 
 .. _block_examples:
 
@@ -1330,8 +1709,8 @@ and repulsive terms in the Lennard-Jones interaction:
   ! scale the interaction parameters
   block 2
   call 2 sele segid heli end
-  coeff 1  1 0.0 ! turn off the interactions between atoms in set 1 
-  coeff 1  2 1.0 vdwa 0 vdwr 1.0 ! scaling ratio to scale interactions 
+  coeff 1  1 0.0 ! turn off the interactions between atoms in set 1
+  coeff 1  2 1.0 vdwa 0 vdwr 1.0 ! scaling ratio to scale interactions
                                  ! between protein and other atoms
   coeff 2  2 1.0 ! leave interactions within the protein unchanged
   end

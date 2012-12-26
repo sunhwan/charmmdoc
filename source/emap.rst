@@ -9,32 +9,36 @@ The EMAP module: Modeling macromolecular assemblies with map objects
    by Xiongwu Wu and Bernard R. Brooks
    Laboratory of Biophysical Chemistry, NHLBI, NIH
 
-The EMAP module is designed to manipulate map objects as well as 
+   modifications by Jon Wright and Carmay Lim
+   Institute of Biomedical Sciences,
+   Academia Sinica, Taipei, Taiwan
+
+The EMAP module is designed to manipulate map objects as well as
 interexchange between atomic objects and map objects.
 
 A map object is defined as a rectangular space with grid distributions
 of certain  properties.  A map object may have its reference atom set which
 defines the atomic structure used to transfer map to atoms or verse versa.
 
-A rigid domain is defined to represent a map at the position and 
+A rigid domain is defined to represent a map at the position and
 orientation of an atomic structure.  A rigid domain can be moved around
 as a molecular structure.  Many rigid domains can be defined for a map object.
 
 Map objects can be manipulated so as to initialization, resizing,
-addition, subtraction, reduction, and comparison.  With rigid domains, one 
-can perform fitting individual maps to a complex map, constructing complex 
+addition, subtraction, reduction, and comparison.  With rigid domains, one
+can perform fitting individual maps to a complex map, constructing complex
 structure from many components.
 
-Map object manipulation is highly efficient for large system modeling. It 
+Map object manipulation is highly efficient for large system modeling. It
 is also the necessary approach to derive structure information from electron
 microscopy experiment.
 
 Field map is defined to describe the electrostatic field generated from
-a molecule.  In addition to the density map used in electron microscopy (EM) 
-image fitting, molecular maps are defined to describe the distribution of 
-atomic properties such as partial charges, vdw cores.  Field maps and 
-molecular maps provide a convenient way to evaluate interactions between 
-map objects.  Through map energies, the structure of macromolecular 
+a molecule.  In addition to the density map used in electron microscopy (EM)
+image fitting, molecular maps are defined to describe the distribution of
+atomic properties such as partial charges, vdw cores.  Field maps and
+molecular maps provide a convenient way to evaluate interactions between
+map objects.  Through map energies, the structure of macromolecular
 assemblies can be modeled through docking or simulation approaches.
 
 .. _emap_syntax:
@@ -46,49 +50,49 @@ Syntax of EMAP Manipulation commands
 
    ! default parameter setting:
    EMAP { PARM  [RESO real] [RCUT real] -
-                [DX real] [DY real] [DZ real] [ICORE int] -  
-                [AX real] [AY real] [AZ real] [EPS real]  -  
-                [PSOLV real] [PSELE real] [PCORE int] }  
-	     
+                [DX real] [DY real] [DZ real] [ICORE int] -
+                [AX real] [AY real] [AZ real] [EPS real]  -
+                [PSOLV real] [PSELE real] [PCORE int] }
+
    ! Map file IO:
-   EMAP { READ   mapid NAME filename            }  
-        { WRITe  mapid NAME filename  [DDR|CORE]  }  
+   EMAP { READ   mapid NAME filename            }
+        { WRITe  mapid NAME filename  [DDR|CORE]  }
 
    ! Map object manipulation
-   EMAP { CORE  mapid  [CUT real] [DENSity|DDR]   }  
-        { DDR  mapid    }  
+   EMAP { CORE  mapid  [CUT real] [DENSity|DDR]   }
+        { DDR  mapid    }
         { GENErate mapid   [atom-selection] [COMParison-set]  [RESO real] -
-                  [DX real DY real DZ real] [AS existing_mapid] - 
-                  [FMAP [GRID] [AX real AY real AZ real]  } 
-        { INITialize    emapid    [BASE real]        } 
-        { REDUce  mapid  BY mapid [TO mapid]   }  
-        { REFErence  mapid  atom-selection   }  
-        { RESIze  mapid  AS mapid [GRID-only] [BOUNdary-only]  }  
-        { SCALe  mapid  BY real   }  
-        { STATistics    emapid                  } 
+                  [DX real DY real DZ real] [AS existing_mapid] -
+                  [FMAP [GRID] [AX real AY real AZ real]  }
+        { INITialize    emapid    [BASE real]        }
+        { REDUce  mapid  BY mapid [TO mapid]   }
+        { REFErence  mapid  atom-selection   }
+        { RESIze  mapid  AS mapid [GRID-only] [BOUNdary-only]  }
+        { SCALe  mapid  BY real   }
+        { STATistics    emapid                  }
 
 
    ! Rigid domain manipulation
-   EMAP { ASSIgn  mapid AS rigid [atom-selection]  }  
-        { COMPlex  RIGId rigid [RIGId mapid ...] [APPEnd] [FIX]} 
-        { PROJect rigid [ atom-selection ] }  
-        { RESTore rigid   }  
+   EMAP { ASSIgn  mapid AS rigid [atom-selection]  }
+        { COMPlex  RIGId rigid [RIGId mapid ...] [APPEnd] [FIX]}
+        { PROJect rigid [ atom-selection ] }
+        { RESTore rigid   }
         { ROTAte rigid XDIR real YDIR real ZDIR real PHI real }
-        { SAVE rigid   }  
-        { TRANslate rigid XDIR real YDIR real ZDIR real [DIST real] }  
+        { SAVE rigid   }
+        { TRANslate rigid XDIR real YDIR real ZDIR real [DIST real] }
 
    ! Rigid domain IO
-   EMAP { TRAJectory [OPEN|CLOSe] [READ|WRITe] UNIT integer [NAME filename| -  
+   EMAP { TRAJectory [OPEN|CLOSe] [READ|WRITe] UNIT integer [NAME filename| -
 
    ! Map object and rigid domain manipulation:
-   EMAP { ADD  rigid  TO mapid   }   
-        { COPY  [MAPId mapid|RIDId rigid]  TO [mapid|rigid]   }  
-        { DELEte [MAPId mapid|RIGId rigid]} 
-        { DUPLicate  [MAPId mapid|RIDId rigid]  TO [mapid|rigid]   }  
-        { PSF [MAPId mapid|RIGId rigid] [SKIP int] [RCUT real] }  
-        { QUERy  [MAPId mapid|RIDId rigid]    }  
-        { SUBStract  rigid  FROM mapid   }  
-        { SUM mapid } 
+   EMAP { ADD  rigid  TO mapid   }
+        { COPY  [MAPId mapid|RIDId rigid]  TO [mapid|rigid]   }
+        { DELEte [MAPId mapid|RIGId rigid]}
+        { DUPLicate  [MAPId mapid|RIDId rigid]  TO [mapid|rigid]   }
+        { PSF [MAPId mapid|RIGId rigid] [SKIP int] [RCUT real] }
+        { QUERy  [MAPId mapid|RIDId rigid]    }
+        { SUBStract  rigid  FROM mapid   }
+        { SUM mapid }
 
    ! Conformational evaluation:
    EMAP { CORR  [MAPId mapid|RIGId rigid] [MAPId mapid|RIGId rigid] [CORE] [DDR] }
@@ -99,6 +103,11 @@ Syntax of EMAP Manipulation commands
    EMAP { DOCK [FMAP][GTMC [SPACE]] [MANY] [TRAJectory integer] -
               [MAPId mapid] [RIGId rigid [RIGId rigid [...]]] -
               grid-properties MC-parameters Correlation-type -
+              [REX1 real] [REX2 real] [REY1 real] [REY2 real] -
+              [REZ1 real] [REZ2 real] [LGX1 real] [LGX1 real] -
+              [LGY1 real] [LGY2 real] [LGZ1 real] [LGZ1 real] -
+              [SX1 real] [SY1 real] [SZ1 real] [ANGL1 real] -
+              [SX2 real] [SY2 real] [SZ2 real] [ANGL2 real] -
    	   Fitting-criteria }
 
 
@@ -106,10 +115,10 @@ Syntax of EMAP Manipulation commands
      MC-parameters::=NCYLc int NSTEp int TEMP real  TRAN real ROTA real
      Correlation-type::=[CORE [ACORe int] [BCORe real] [CCORe real]] [DDR] [CORE]
      Fitting-criteria::=[LOOP int] [DTCO real] [CFIX real]
- 
+
    ! Rigid domain trajectory file IO:
-   EMAP { TRAJectory [OPEN|CLOSE] UNIT integer [NAME filename]  }  
-        { TRAJectory [READ|WRITE] UNIT integer RIGId integer    }  
+   EMAP { TRAJectory [OPEN|CLOSE] UNIT integer [NAME filename]  }
+        { TRAJectory [READ|WRITE] UNIT integer RIGId integer    }
 
    ________________________________________________
    ! A shortcut READ command is implmented to simplify the process of creating
@@ -127,23 +136,23 @@ Syntax of EMAP Manipulation commands
 Descriptions of the map manipulation commands
 ---------------------------------------------
 
-Map objects are created only by READ, GENErate, or DUPLicate commands. 
+Map objects are created only by READ, GENErate, or DUPLicate commands.
 Rigid domains are created only by ASSIgn or DUPLicate commands.  All of other
-commands manipulate existing map objects or rigid domains.  
+commands manipulate existing map objects or rigid domains.
 
 All rigid domains has a storage for backup purpose.  Current position and
-orientation of a rigid domain can be SAVEd to the storage and can be RESTored 
+orientation of a rigid domain can be SAVEd to the storage and can be RESTored
 from the storage.
 
 1) The PARM command
 
    The PARM command will set the default values for parameters that
    would be used in other EMAP commands.
-   
+
    ==========  =========================================================
-   RESO        Map resolution, angstroms; 
-	RCUT        the base density to tell the noise level; 
-   DX, DY, DZ  Grid interval in map objects; 
+   RESO        Map resolution, angstroms;
+	RCUT        the base density to tell the noise level;
+   DX, DY, DZ  Grid interval in map objects;
    AX, AY, AZ  Scaling lengths for reduced coordinates in field maps;
 	EPS         Dielectric constant for electrostatic interaction;
    PSOLV       Desolvation energy parameter
@@ -158,30 +167,30 @@ from the storage.
 
 3) The WRITe command
 
-   The WRITe command will write a map object to a map file.  Currectly, 
-   only CCP4 format is available. Option DDR specify the Laplacian filtered 
+   The WRITe command will write a map object to a map file.  Currectly,
+   only CCP4 format is available. Option DDR specify the Laplacian filtered
    density will be written out, and CORE specify the core indics will be
    written out.
 
 4) The CORE command
 
    The CORE command will rebuild the core indice of the map object.  Two
-   methods, density or Laplacain, can be used for the build up. CUT defines the 
+   methods, density or Laplacain, can be used for the build up. CUT defines the
    cutoff density used in the build up.
 
 5) The DDR command
 
-   The DDR command will recalculate the Laplacian of the map object. 
+   The DDR command will recalculate the Laplacian of the map object.
 
 6) The GENE command
 
    The GENErate command will generate a map object from the coordinates of
-   a selected atom set.  The default resolution is 15 angstroms but can be 
-   specified for other values. The default map gid properties is DX=DY=DZ=3 
+   a selected atom set.  The default resolution is 15 angstroms but can be
+   specified for other values. The default map gid properties is DX=DY=DZ=3
    angstroms.  The grid intervals can be specified by DX, DY, and DZ or taken from
-   other map objects by AS. The generated map object takes the atom set as its 
+   other map objects by AS. The generated map object takes the atom set as its
    reference atom set.
-   
+
    If FMAP is specified, a molecular map will be generated using atomic
    properties of the molecule.  This map contains charge distribution, electro-
    static field distribution, and vdw core distribution.  GRID option can speed
@@ -191,14 +200,14 @@ from the storage.
 
 7) The INITialize command
 
-   The INITialize command set the distribution properties of a map object 
-   to be zero, or BASE value, including core indices , throughout its space. 
+   The INITialize command set the distribution properties of a map object
+   to be zero, or BASE value, including core indices , throughout its space.
    The map object should be generated before it can be initialized.
 
 8) The REDUce command
 
    The REDUce command will reduce the first map object by the map
-   object specified after "BY".  If a mapid is specified by TO, the result 
+   object specified after "BY".  If a mapid is specified by TO, the result
    will be put to the mapid.  Otherwise, the first map object will be reduced.
 
 9) the REFErence command
@@ -211,24 +220,24 @@ from the storage.
 
     The RESIze command will change the map object to have the same grid
     properties or/and bundary properties as the other map object. Option GRID-only
-    only resizes the grid properties, and BOUNdary-only only resizes boundary 
+    only resizes the grid properties, and BOUNdary-only only resizes boundary
     properties.
 
 11) The SCALE command
 
     The SCALe command will scale the  distribution properties of the
-    map object by the real number spedified after "BY". 
+    map object by the real number spedified after "BY".
 
 12) The STATistics command
 
-    The STATistics command calculate and print the statistic  properties 
+    The STATistics command calculate and print the statistic  properties
     of the distribution properties of the map.
 
 13) The ASSIgn command
 
-    The ASSIgn command will create a rigid domain representing the map 
-    object.  If no atom is selected, a unit vector set at origin will be 
-    created for the rigid domain.   If atom-selection is given, the relative 
+    The ASSIgn command will create a rigid domain representing the map
+    object.  If no atom is selected, a unit vector set at origin will be
+    created for the rigid domain.   If atom-selection is given, the relative
     position and orientation related to the reference atom set will be generated
     for the rigid domain.  The atom-selection should have the same atom number as
     the reference atom set of the map object.  If the map has no reference atom
@@ -241,14 +250,14 @@ from the storage.
     a complex that will be built with the DOCK command.  A COMPlex command without
     APPEnd option will overwrite previous COMPlex command, while with APPEnd option
     the command will add the newly defined rigid domains to the complex.  The SEEN
-    option will enable multiple body search during the DOCK procedure, ie., this 
+    option will enable multiple body search during the DOCK procedure, ie., this
     rigid domain will be seen when docking other rigid domains.
 
 15) The PROJect command
 
     The PROJect command will generate coordinates for the selected atoms
-    based on the reference atom set and the rigid domain.  The selected atoms 
-    should have the same number of atom as the reference set.  coordinates are 
+    based on the reference atom set and the rigid domain.  The selected atoms
+    should have the same number of atom as the reference set.  coordinates are
     copied in order of selection and no check is performed.
 
 16) The RESTore command
@@ -260,8 +269,8 @@ from the storage.
 
     The ROTAte command will cause the specified rigid domain to be rotated
     about the specified axis vector through the map center. The vector
-    need not be normalized, but it must have a non zero length.  The PHI value 
-    gives the amount of rotation about this axis in degrees. 
+    need not be normalized, but it must have a non zero length.  The PHI value
+    gives the amount of rotation about this axis in degrees.
 
 18) The SAVE command
 
@@ -272,54 +281,54 @@ from the storage.
 
     The TRANslate command will cause the position of the rigid domain
     to be translated. The translation step may be specified by either X,Y, and Z
-    displacements, or by a distance along the specified vector. When no distance 
-    is specified, The XDIR,YDIR, and ZDIR values will be the step vector. If a 
+    displacements, or by a distance along the specified vector. When no distance
+    is specified, The XDIR,YDIR, and ZDIR values will be the step vector. If a
     distance may be specified, the translation will be along the vector for a
     distance of DIST.
 
 20) The TRAJectory command
 
-    The TRAJ command perform open, close, read, or write the trajectory 
-    file of a rigid domain.  The trajectory file stores the translation vector 
-    and rotation matrix, configuration energy in a assembly and conformation 
+    The TRAJ command perform open, close, read, or write the trajectory
+    file of a rigid domain.  The trajectory file stores the translation vector
+    and rotation matrix, configuration energy in a assembly and conformation
     number and search index.
-     
+
     When OPEN is specified, the file specified by NAME is opened at UNIT
     channel for accessing by the following EMAP TRAJ command.
-    
-    When WRITe is specified, the translation vector, rotation matrix, 
-    current energy (?EMENG), minimum energy (?EMENGM), and conformational 
-    number (?EMNST), and rigid domain index (?EMNSR) will be written to the 
-    UNIT channel.  These information will be read into the rigid domain if 
-    READ is specified and can be shown in CHARMM output by the varable name shown 
+
+    When WRITe is specified, the translation vector, rotation matrix,
+    current energy (?EMENG), minimum energy (?EMENGM), and conformational
+    number (?EMNST), and rigid domain index (?EMNSR) will be written to the
+    UNIT channel.  These information will be read into the rigid domain if
+    READ is specified and can be shown in CHARMM output by the varable name shown
     in above parenthese.
 
     CLOSe is used to close the UNIT channel.
 
 21) The ADD command
 
-    The ADD command will add the first map object to the map object 
+    The ADD command will add the first map object to the map object
     specified after "TO".  The first map object will not change.  The second map
-    object will change only its distribution properties, but not its grid and 
+    object will change only its distribution properties, but not its grid and
     boundary properties.
 
 22) the COPY command
 
-    The COPY command will COPY an existing object to another existingone.  
+    The COPY command will COPY an existing object to another existingone.
     Only the distribution properties of a map or the position and orientation of
     a rigid domain will be copied.
 
 23) The DELEte command
 
-    The DELEte command will delelte the specified map object or rigid 
+    The DELEte command will delelte the specified map object or rigid
     domain. They can only be deleted in a last in-first out mode by DELEte command.
-    If the last map object is deleted, all rigid domains representing the map 
-    object should be deleted first before the map object can be deleted. 
+    If the last map object is deleted, all rigid domains representing the map
+    object should be deleted first before the map object can be deleted.
 
 24) the DUPLicate command
 
     The DUPLicate command will create an identical map or rigid domain of
-    an existing object .  
+    an existing object .
 
 25) The PSF command
 
@@ -332,26 +341,26 @@ from the storage.
 
 26) The QUERy command
 
-    For map objects, the QUERy command will print out 
-    
-    * starting grid numbers (?EMMX,?EMMY,?EMMZ), 
+    For map objects, the QUERy command will print out
+
+    * starting grid numbers (?EMMX,?EMMY,?EMMZ),
     * grid numbers (?EMLX,?EMLY,?EMLZ),
     * grid intervals (?EMDX,?EMDY,?EMDZ),
     * map centers (?EMCX,?EMCY,?EMCZ),
-    * Maximum density(?EMMM), 
-    * minimum density (?EMMN), 
+    * Maximum density(?EMMM),
+    * minimum density (?EMMN),
     * number of core grids (?EMNC)
-    
-    For rigid domains, the QUERy command will print out 
-    
-    * translation vector (?EMTX,?EMTY,?EMTZ), 
+
+    For rigid domains, the QUERy command will print out
+
+    * translation vector (?EMTX,?EMTY,?EMTZ),
     * rotation matrix (?EMXX,?EMXY,?EMXZ,?EMYX,?EMYY,?EMYZ,?EMZX,?EMZY,?EMZZ)
 
 27) The SUBStract command
 
     The SUBStract command will subtract the first map object from the map
-    object specified after "FROM".  The first map object will not change.  The 
-    second map object will change only its distribution properties, but not its 
+    object specified after "FROM".  The first map object will not change.  The
+    second map object will change only its distribution properties, but not its
     grid and boundary properties.
 
 28) The SUM command
@@ -364,8 +373,8 @@ from the storage.
     The CORRelation command will compute the correlation between the two
     objects, which can be either map objects or rigid domains or mixed. Option
     CORE asks for core-weighted correlations, and DDR asks for Laplacian
-    correlations. If both options are specified, the core-weighted Laplacian 
-    correlation will be calculated.  With the CORE option, the parameters for 
+    correlations. If both options are specified, the core-weighted Laplacian
+    correlation will be calculated.  With the CORE option, the parameters for
     core-weighting, ACORE, BCORE, and CCORE can be specified.  The correlation
     result can be queried by ?EMCT
 
@@ -374,7 +383,7 @@ from the storage.
     The INTEraction command will calculate the interaction energy between
     two rigid domains and/or map objects.  These rigid domains or map objects must
     represent molecular map objects.  The interaction energies (?EMENG) consist of
-    VDW core interaction (?EMCORE), electrostatic interaction (?EMELE), 
+    VDW core interaction (?EMCORE), electrostatic interaction (?EMELE),
     desolvation energy (?EMSOLV), and contact energy (?EMCONS). ?EMENGM stores
     the minimum energy over the history of INTEraction commands.
 
@@ -383,17 +392,42 @@ from the storage.
     The DOCK command will fit the rigid domains defined by COMPlex command
     or defined in DOCK command line to a map object or to each other.  For single
     body docking, the grid-threading Monte Carlo ( GTMC) is used.  If chose MANY
-    option, many-body searching is performed.  FMAP will initiate energy-based 
+    option, many-body searching is performed.  FMAP will initiate energy-based
     searching. When FMAP is specified, the grid will be done over protein surface
     except SPACe is specified for GTMC.  TRAJ can be used to define the writing
     of rigid domain trajectory.  A trajectory file must be opened with EMAP TRAJ
     OPEN command.
 
+    Using a subset of a MAP for the GRID search is possible using the following
+    keywords:
+
+    * REX1, REX2, the min and max point in the x direction for the receptor search grid
+    * REY1, REY2, the min and max point in the y direction for the receptor search grid
+    * REZ1, REZ2, the min and max point in the z direction for the receptor search grid
+    * LGX1, LGX2, the min and max point in the x direction for the ligand search grid
+    * LGY1, LGY2, the min and max point in the y direction for the ligand search grid
+    * LGZ1, LGZ2, the min and max point in the z direction for the ligand search grid
+
+    * SX1, SX2, SZ1 The x,y,z coords for the vector from which the receptor docking angle
+      will be taken.
+    * SX2, SY2, SZ2 The x,y,z coords for the vector from which the ligand docking angle
+      will be taken
+    * ANGL1, ANGL2 The docking vector angle for the receptor and the ligand resepectively.
+
+    REX1..REZ2 and LGX1..LGZ2 defines boxes and only grid points inside these boxes are
+    used for the docking, for REX1..REZ2 a small number should be added to the
+    values returned from CHARMM using COOR STAT.
+
+    SX1..SZ1 and SX2..SZ2 allows for a vector to be defined from the origin of the MAP
+    and only grid points that are within ANGL1 or ANGL2 degrees of that vector
+    are used in a docking search. Note ANGL of 90 gives a 180 degree search (+90
+    to -90 degrees of the vector), an ANGL of 180 gives a full 360 degree search.
+
 32) The TRAJectory command
 
-    The TRAJ command manipulates the trajectory file of a rigid domain. 
+    The TRAJ command manipulates the trajectory file of a rigid domain.
     When OPEN is specified, a file is opened for a channel, while CLOSe will close
-    this channel defined by UNIT.  READ or WRITe will read in or write our the 
+    this channel defined by UNIT.  READ or WRITe will read in or write our the
     translation vector and rotational matrix of given rigid domain.
 
 33) The shortcut READ command
@@ -401,30 +435,30 @@ from the storage.
     This command provides convenient way to transform a system in PDB file
     format into new CHARMM segments with given coordinates.  When read in segments
     from a PDB file, one can specify BUILd to generate all atom connectivities and
-    atom types. If there are missing atoms in the PDB file, one can specify SETUp 
-    to generate an internal coordinate table of the segments to be used to 
+    atom types. If there are missing atoms in the PDB file, one can specify SETUp
+    to generate an internal coordinate table of the segments to be used to
     generate the coordiantes of those missing atoms.  Each chain in the PDB file
-    will form a new segment named as the given SEGId followed by its segment 
+    will form a new segment named as the given SEGId followed by its segment
     number. These generated segments are well quialified CHARMM segments and
-    can be used for atom based simulation. This is a very convenient way to 
+    can be used for atom based simulation. This is a very convenient way to
     generate simulation systems from PDB files. However, It requires that all
     residue and atom names in the input file are consistent with that in the
     CHARMM RTF file.
-    
-    For example: 
-    
+
+    For example:
+
     ::
-    
+
           open read unit 10 card name 1b5s.pdb
           read segid b5s PDB build setup unit 10
-          
+
     This command can be used to create a new segment from either a
     PDB file (PDB), a CHARMM coordinate file (CARD), or a free format coordinate
-    file (FREE). If BUILd  option is not specified, the generated 
-    segment contains only atoms listed in the input PDB file but no atomic 
-    connectivities are generated.  Such a segment can be used to generate a map 
+    file (FREE). If BUILd  option is not specified, the generated
+    segment contains only atoms listed in the input PDB file but no atomic
+    connectivities are generated.  Such a segment can be used to generate a map
     object needed in the EMAP module (see emap.doc).  With this command, a map
-    object can be quickly converted from a PDB structure.  
+    object can be quickly converted from a PDB structure.
     (See examples in this document)
 
 
@@ -449,83 +483,83 @@ Examples to use EMAP module
 
 1. Read in map file and create a map object
 
-   :: 
-   
+   ::
+
       EMAP READ map NAME "a7n.ccp4"
 
 2. Read in PDB files and create segments
 
-   :: 
-   
+   ::
+
       OPEN READ UNIT 16 CARD NAME a7na.pdb
-      READ SEGId a7na UNIT 16 
+      READ SEGId a7na UNIT 16
 
       OPEN READ UNIT 17 CARD NAME a7nb.pdb
-      READ SEGId a7nb UNIT 16 
+      READ SEGId a7nb UNIT 16
 
 3. Generate map objects from structures
 
    ::
-   
+
       EMAP GENErate mapa SELEct SEGId a7na END
       EMAP GENErate mapb SELEct SEGId a7nb END
 
 4. Assign rigid domains for fitting
 
    ::
-   
+
       EMAP ASSIgn mapa AS riga SELE SEGId a7na END
       EMAP ASSIgn mapb AS rigb SELE SEGId a7nb END
 
 5. Perform GTMC fitting with default parameters
 
    ::
-   
+
       EMAP DOCK GTMC MAPId map RIGId riga RIGId rigb
 
 6. Perform GTMC fitting with defined parameters
 
    ::
-   
+
       EMAP DOCK GTMC MAPId map RIGId riga RIGId rigb ntran 3 nrot 3   -
       ncyc 50 nstep 100 tran 15 rota 30 CORE DDR
 
 7. Perform GTMC fitting with many-body search approach
 
    ::
-   
+
       EMAP DOCK GTMC MAPId map RIGId riga RIGId rigb many ntran 2 nrot 2   -
       ncyc 50 nstep 100 tran 15 rota 30  DDR
 
 8. Project rigid domain to obtain fitted coordinates
 
    ::
-   
+
       EMAP PROJ RIGA SELE SEGI A7NA END
       EMAP PROJ RIGB SELE SEGI A7NB END
 
 9. Compare the fitting of each rigid domain
 
    ::
-   
+
       EMAP CORR MAPID MAP  RIGID RIGA DDR CORE
       EMAP CORR MAPID MAP  RIGID RIGB DDR CORE
 
 10. Generate the result map: mapn
 
     ::
-    
+
       EMAP DUPLicate MAPID map TO mapn
       EMAP INITial mapn
       EMAP ADD riga TO mapn
       EMAP ADD rigb TO mapn
       EMAP SUM mapn
 
-11. Read in a PDB file and create segments with given coordinates 
+11. Read in a PDB file and create segments with given coordinates
     and build missing coordinates
-    
+
     ::
-    
+
       OPEN READ UNIT 10 CARD NAME 1B5S.PDB
       READ SEGID B5S PDB BUILD SETUP UNIT 10
 
@@ -534,10 +568,55 @@ Examples to use EMAP module
       IC BUILD
 
 12. Dock a protein represented by rigid domain pep2 into a protein represented
-    by a molecular map pep1 based on map interactions 
-    
+    by a molecular map pep1 based on map interactions
+
     ::
-    
+
       EMAP DOCK FMAP GTMC MAPI PEP1 RIGI PEP2   -
-          NTRA 3 NROT 3 NCYC 10 NSTEP 1000 TEMP 300 
+          NTRA 3 NROT 3 NCYC 10 NSTEP 1000 TEMP 300
+
+
+13. Dock a protein represented by a rigid domain rigb into a protein represented
+    by a molecular map mapa.
+    Considering one half of the mapa for the GTMC grid for the receptor
+    and only using grid points for rigb within a predefined box.
+
+    ::
+
+      ! Get a vector for the receptor so that we can split
+      ! the docking into 2 directions and perform 2 at once on 2 cpus.
+      ! get the vectors for the binding sites
+      COOR STAT SELE RECEPTOR END
+      SET RECX ?XAVE
+      SET RECY ?YAVE
+      SET RECZ ?ZAVE
+      ! since we are using 180 degrees this vector can be anything resonable
+      CALC RECX = @RECX + 1
+      CALC RECY = @RECY + 1
+      CALC RECZ = @RECZ + 1
+
+      ! try getting the box dimensions for the Ligand
+      COOR STAT SELE LIGSUBSET END
+      SET  LGX1 = ?XMIN
+      SET  LGX2 = ?XMAX
+      SET  LGY1 = ?YMIN
+      SET  LGY2 = ?YMAX
+      SET  LGZ1 = ?ZMIN
+      SET  LGZ2 = ?ZMAX
+      CALC LGX1 = @LGX1 + 2
+      CALC LGX2 = @LGX2 + 2
+      CALC LGY1 = @LGY1 + 2
+      CALC LGY2 = @LGY2 + 2
+      CALC LGZ1 = @LGZ1 + 2
+      CALC LGZ2 = @LGZ2 + 2
+
+      ! Note ANGL1 is 90 so that we have a 180 degree search (+90 to -90)
+      ! Note ANGL2 is 180 so that we cover the entire 360 degrees
+      ! The LGX1...LGZ2 parameters will limit the grid points taken
+      EMAP DOCK FMAP GTMC MAPI MAPA RIGI RIGB TRAN 2.0 ROTA 10  -
+       NTRA 6 NROT 6 NCYC 10 NSTEP 30 TEMP 300 DTCO 1000.0 traj 1 -
+       SX1 @RECX SY1 @RECY SZ1 @RECZ ANG1 90 ANG2 180 -
+       LGX1 @LGX1 LGX2 @LGX2 LGY1 @LGY1 LGY2 @LGY2 LGZ1 @LGZ1 LGZ2 @LGZ2
+
+
 

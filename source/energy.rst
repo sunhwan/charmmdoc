@@ -17,7 +17,7 @@ Syntax for Energy Commands
 
 There are two direct energy evaluation commands. One is parsed
 through the minimization parser and the other involves a direct call
-to GETE.  See :doc:`minimiz` and 
+to GETE.  See :doc:`minimiz` and
 :ref:`interface <usage_gete>`.  In addition to getting the energy,
 the forces are also obtained.
 
@@ -30,12 +30,14 @@ The energy command is processed through the minimization parser
 ::
 
    ENERgy [ nonbond-spec ] [ hbond-spec ] [ image-spec ] [ print-spec ] [ COMP ]
-          [  INBFrq 0    ] [  IHBFrq 0  ] [  IMGFrq 0  ] [NOUPdate]
+          [ domdec-spec ] [ COMP ] [  INBFrq 0    ] [  IHBFrq 0  ]
+          [  IMGFrq 0  ] [NOUPdate] [ openmm-spec ]
 
    hbond-spec        *note Hbonds:(chmdoc/hbonds.doc).
    nonbond-spec      *note Nbonds:(chmdoc/nbonds.doc).
    image-spec        *note Images:(chmdoc/images.doc)Update.
-
+   domdec-spec       *note Domdec:(chmdoc/domdec.doc).
+   openmm-spec       *note OpenMM:(chmdoc/openmm.doc).
 
 If the COMP keyword is specified, then the comparison coordinate
 set is used, but this disables the use of the fast routines. The keyword
@@ -50,8 +52,8 @@ The command is a direct call to GETE routine.
 
 ::
 
-   GETE  [ COMP ] [ PRINt [ UNIT int ] ]
-                  [ NOPRint            ]
+  GETE  [ COMP ] [ PRINt [ UNIT int ] ] [ openmm-spec ]
+                 [ NOPRint            ]
 
 For this command to work, all list must be set up. This is best done
 through the UPDAte command. The COMP keyword will cause the comparison
@@ -64,7 +66,7 @@ The UPDAte command
 ^^^^^^^^^^^^^^^^^^
 
 The command sets up required lists for GETE.
- 
+
 ::
 
    UPDAte [ nonbond-spec ] [ hbond-spec ] [ image-spec ] [ COMP ]
@@ -127,7 +129,7 @@ Syntax:
              [ TSM  ]   [ QMEL ]  [ QMVDW]   [ ASP  ]
              [ EHARM]   [ GEO  ]  [ MDIP ]   [ STRB ]
              [ VATT ]   [ VREP ]  [ IMVREP ] [IMVATT]
-             [ OOPL ]   [ CMAP ]  [ EPOL ]
+             [ OOPL ]   [ CMAP ]  [ EPOL ]   [ CPUC ]
 
 description:
 
@@ -143,6 +145,7 @@ description:
   USER     user supplied energy (USERLINK)
   HARM     harmonic positional constraint energy
   CDIH     constrained dihedral energy
+  CPUC   - constrained puckering energy
   CIC      internal coordinate constraint energy
   CDRO     quartic droplet potential energy
   NOE      NOE general distance restraints
@@ -159,7 +162,7 @@ description:
   TSM      TMS free energy term.
   QMEL     energy for the quantum mechanical atoms and their
            electrostatic interactions with the MM atoms using the AM1
-           or MNDO semi-empirical approximations 
+           or MNDO semi-empirical approximations
   QMVDW    van der Waals energy between the quantum mechanical and
            molecular mechanical atoms
   ASP      solvation free energy term based on Wesson and Eisenberg
@@ -176,7 +179,7 @@ description:
   CMAP     2D dihedral cross term energy correction map
   EPOL     polarization energy computed from PIPF (see pipf.doc)
   =======  ===================================================================
-  
+
 Examples:
 
 ::
@@ -275,12 +278,12 @@ http://mmtsb.scripps.edu/webservices/gomodel.html
 When the 10-12 potential is turned on, all energy evaluations will be
 carried out using this potential, including minimizations, normal mode
 analysis, etc. Issuing the ETEN command with any keyword other than ON will
-turn off the 10-12 potential, reverting to the 6-12 potential. 
-        
+turn off the 10-12 potential, reverting to the 6-12 potential.
+
 The 10-12 potential energy may be turned off without reverting to the
 6-12 potential using the SKIPE command with the VDW item, since this potential
 replaces the VDW energy.
-        
+
 This option does not support CFF, MMFF, IMAGE, GRAPE, ewald, multi-
 body dynamics, and fast vector. It also does not does not support van der
 Waals shifting, force switching, or switching, as well as soft core van der
@@ -323,8 +326,6 @@ which versions of the energy routines to be used.
 +------+----------------+--------------------+-----------------------------------------------------+
 |      |  SCALar        |    2               | Use fast scalar routine (Error message if cannot)   |
 +------+----------------+--------------------+-----------------------------------------------------+
-|      |  VECTor        |    3               | Use fast vector routine (Error message if cannot)   |
-+------+----------------+--------------------+-----------------------------------------------------+
 
 There exist a general and a fast version of the internal
 energy routines (bond, angle, dihedral, and improper dihedral).  The
@@ -337,7 +338,7 @@ with a positive integer or an appropriate  keyword.  A negative
 integer will disable the fast energy routines.  If the fast routines
 are requested and it is not possible to use the fast routines, a
 warning will be issued, and the general routines will be used in their
-place. 
+place.
 
 The fast routines are more efficient in several ways;
 
@@ -361,9 +362,9 @@ are as follows.
                      [FSWItch]        [VFSWitch]
                      [FSHIft ]
 
-        GROUP [CDIE] [SWITch ]  VGROUP [VSWItch ]     
-              [RDIE] [FSWItch]    
-                    
+        GROUP [CDIE] [SWITch ]  VGROUP [VSWItch ]
+              [RDIE] [FSWItch]
+
 
 .. _energy_needs:
 
@@ -389,7 +390,7 @@ Fourth, provisions must be made for having a hydrogen bond list
 and a non-bonded interaction list. Having non-zero frequencies for
 updating this lists is one way, one can also read these lists in, see
 :ref:`read <io_read>`, or generate them with separate
-commands, see :doc:`HBgen <hbonds>`, or 
+commands, see :doc:`HBgen <hbonds>`, or
 :doc:`NBgen <nbonds>`.
 
 
@@ -478,6 +479,7 @@ Energy term names:
  ?USER     user supplied energy term
  ?HARM     harmonic positional restraint energy
  ?CDIH     dihedral restraint energy
+ ?CPUC     puckering restraint energy
  ?CIC      internal coordinate restraint energy
  ?CDRO     droplet restraint energy (approx const press)
  ?NOE      general distance restraint energy (for NOE)
@@ -498,8 +500,8 @@ Energy term names:
  ?EHAR     Restraint term for Implicit Euler integration
  ?GEO      Mean-Field-Potential energy term
  ?MDIP     Dipole Mean-Field-Potential energy term
- ?PRMS     Replica/Path RMS deviation energy 
- ?PANG     Replica/Path RMS angle deviation energy 
+ ?PRMS     Replica/Path RMS deviation energy
+ ?PANG     Replica/Path RMS angle deviation energy
  ?SSBP     ???????  (undocumented)
  ?BK4D     4-D energy
  ?SHEL     ???????  (undocumented)
@@ -517,42 +519,42 @@ Energy term names:
 Energy Pressure/Virial Terms:
 
 =========  =============================================================
- ?VEXX      External Virial   
- ?VEXY                        
- ?VEXZ                        
- ?VEYX                        
- ?VEYY                        
- ?VEYZ                        
- ?VEZX                        
- ?VEZY                        
- ?VEZZ                        
- ?VIXX      Internal Virial   
- ?VIXY                        
- ?VIXZ                        
- ?VIYX                        
- ?VIYY                        
- ?VIYZ                        
- ?VIZX                        
- ?VIZY                        
- ?VIZZ                        
- ?PEXX      External Pressure 
- ?PEXY                        
- ?PEXZ                        
- ?PEYX                        
- ?PEYY                        
- ?PEYZ                        
- ?PEZX                        
- ?PEZY                        
- ?PEZZ                        
- ?PIXX      Internal Pressure 
- ?PIXY                        
- ?PIXZ                        
- ?PIYX                        
- ?PIYY                        
- ?PIYZ                        
- ?PIZX                        
- ?PIZY                        
- ?PIZZ                        
+ ?VEXX      External Virial
+ ?VEXY
+ ?VEXZ
+ ?VEYX
+ ?VEYY
+ ?VEYZ
+ ?VEZX
+ ?VEZY
+ ?VEZZ
+ ?VIXX      Internal Virial
+ ?VIXY
+ ?VIXZ
+ ?VIYX
+ ?VIYY
+ ?VIYZ
+ ?VIZX
+ ?VIZY
+ ?VIZZ
+ ?PEXX      External Pressure
+ ?PEXY
+ ?PEXZ
+ ?PEYX
+ ?PEYY
+ ?PEYZ
+ ?PEZX
+ ?PEZY
+ ?PEZZ
+ ?PIXX      Internal Pressure
+ ?PIXY
+ ?PIXZ
+ ?PIYX
+ ?PIYY
+ ?PIYZ
+ ?PIZX
+ ?PIZY
+ ?PIZZ
 =========  =============================================================
 
 Examples:
@@ -560,7 +562,7 @@ Examples:
 1. Save the structure with a lower NOE restraint energy.
 
    ::
-   
+
       READ COOR CARD      UNIT 1  ! Read the first structure
       READ COOR CARD COMP UNIT 2  ! Read the second structure
       ENERGY                      ! Compute energy of first structure
@@ -572,7 +574,7 @@ Examples:
 2. Write some energy values when saving coordinates
 
    ::
-   
+
       ....
       COOR ORIE RMS MASS
       ENERGY
@@ -589,40 +591,40 @@ Examples:
 Running Energy Averages (ESTATS)
 --------------------------------
 
-The ESTATS command is a basic statistical facility that allows the 
+The ESTATS command is a basic statistical facility that allows the
 calculation and manipulation of the mean and variance of the potential
 energy and its components over a number of potential energy calculations,
 without the need for writing out trajectories or coordinate files--i.e.
-the calculations are done "on the fly." ESTATS can be used in dynamics runs 
-or in other sampling procedures that result in serial calls to the ENERGY 
-subroutine.  The facility will collect data points at specified sampling 
+the calculations are done "on the fly." ESTATS can be used in dynamics runs
+or in other sampling procedures that result in serial calls to the ENERGY
+subroutine.  The facility will collect data points at specified sampling
 intervals along a collection run for a specified step length and calculate
 the running statistics.  An initial portion of the collection run may be skipped
-(e.g. for eliminating the equilibration period from the statistics during 
+(e.g. for eliminating the equilibration period from the statistics during
 dynamics). Results may be written either to standard output or to a file.
-The facility will, if requested, "variable-ize" the calculated averages, i.e. 
+The facility will, if requested, "variable-ize" the calculated averages, i.e.
 allow assignment of the values to CHARMM script variables.  The facility can
 also write the individual potential energy values to a file.
-     
+
 Syntax:
 
 ::
-     
+
    ESTAts   [LENGTH <integer>] [SKIP <integer>] [IPRF <integer>]
-            [NPRI <integer>] [IUNW <integer>] [NEPR <integer>] 
+            [NPRI <integer>] [IUNW <integer>] [NEPR <integer>]
             [IUPE <integer>]
             [UPLM <real>] [LOLM <real>] [FRPI] [VARI]
 
             [BOND] [ANGLe] [UREY-Bradley] [DIHEdral] [IMPRoper]
-            [VDWaals] [ELECtrostatics] [HBONding] [USER] 
+            [VDWaals] [ELECtrostatics] [HBONding] [USER]
             [SBOUnd]  [ASP]
 
 ========= ==================================================================
 LENGth    length of trajectory (number of total energy calculations)
           from which sampling is to take place  (default 0).
-SKIP      specifies a length of energy data points (calls to ENERGY) 
+SKIP      specifies a length of energy data points (calls to ENERGY)
           after which the data collection is to begin (default 0).
-IPRFreq   specifies the frequency with which data points will be 
+IPRFreq   specifies the frequency with which data points will be
           collected (i.e. every IPRFrequency energy calculations).
           [BOND], [ANGLE], etc.
           the energy term keywords specify which components of the potential
@@ -631,18 +633,18 @@ IPRFreq   specifies the frequency with which data points will be
           SBOUnd is the solvent boundary potential; ASP is the implicit
           solvation energy (e.g. from eef1).  Statistics on the total
           potential energy are always calculated.
-IUNWrite  fortran unit onto which statistics are to be written 
+IUNWrite  fortran unit onto which statistics are to be written
           (default is no printing)
 NPRInt    period for writing the energy statistics to standard output
           (default is no printing)
-IUPE      fortran unit onto which the potential energies are to be 
+IUPE      fortran unit onto which the potential energies are to be
           written (default is no printing)
 NEPRint   period for writing potential energies
-UPLM      limit above which an energy value will be discarded from the 
+UPLM      limit above which an energy value will be discarded from the
           statistics (default 99999999).
 LOLM      limit below which an energy value will be discarded from the
           statistics (default -99999999).
-FPRI      keyword specifying the final statistics are to be written to 
+FPRI      keyword specifying the final statistics are to be written to
           standard output at the end of the collection
 STOP      stops the data collection and prints current statistics
 VARI      keyword specifying that values of averages and variances will
@@ -654,7 +656,7 @@ VARI      keyword specifying that values of averages and variances will
           * ?AURE,?VURE  for Urey-Bradley terms
           * ?ADIH,?VDIH  for dihedral terms
           * ?AIMP,?VIMP  for improper dihedral terms
-          * ?AVDW,?VVDW  for van der Waals 
+          * ?AVDW,?VVDW  for van der Waals
           * ?AELE,?VELE  for electrostatics
           * ?AHBO,?VHBO  for hydrogen bond terms
           * ?AUSE,?VUSE  for user energy
@@ -681,7 +683,7 @@ This specifies that the statistics are to be done on 180,000 data points
 (1,000,000 - 100,000)/5.  Statistics will be done on the specified
 energy terms in addition to the potential energy.  Statistics will be
 written every 10,000 steps to unit 11 and the potential energies
-will be written every 1000 steps to unit 10.  No printing will be 
+will be written every 1000 steps to unit 10.  No printing will be
 done to standard output (NPRINT -1) except for the final statistics
 (FPRInt).
 
@@ -695,195 +697,43 @@ This statistics file is written out according to the following format:
    UREY             10       39.09373234       18.64669506
 
 The first column indicates the energy term. The second column indicates
-the number of data points included in the calculations (number of values 
-over which statistics are taken). The third column gives the average and 
+the number of data points included in the calculations (number of values
+over which statistics are taken). The third column gives the average and
 the fourth column gives the fluctuation (standard deviation).
 
-Differences between ESTATS and statistics calculated in standard 
+Differences between ESTATS and statistics calculated in standard
 dynamics:
 
 1) In ESTATS, the denominator in the standard deviation formula is
-   (N-1)^(1/2), where N is the number of data points.  In dynamics, 
+   (N-1)^(1/2), where N is the number of data points.  In dynamics,
    the denominator is N^(1/2).
-2) In dynamics, the initial energy terms are considered step "0" and 
+2) In dynamics, the initial energy terms are considered step "0" and
    not included in the statistics; hence for a direct comparison, it
    is necessary to specify SKIP 1 in the ESTATS command and increase
-   the LENGTH of the collection by 1. 
+   the LENGTH of the collection by 1.
 
 
-.. index:: energy; spasiba
-.. _energy_spasiba:
+.. _energy_multe:
 
-SPASIBA Force Field
--------------------
+Multiple Energy Evaluations for Related Conformations
+-----------------------------------------------------
 
-The SPASIBA force field is derived from spectroscopic studies.  In the
-current implementation, the van der Waals and electrostatic interactions
-of the CHARMM force field are combined with the Urey-Bradley Shimanouchi terms
-for bond stretching, valence angle bending, torsional and improper torsional
-internal terms derived from spectroscopic data such as vibrational wavenumbers,
-dipole moments, rotation barriers for the SPASIBA force field.
-
-See for a complete description of the SPASIBA (modified UBFF) the
-following publications:
-
-1. P. Derreumaux and G. Vergoten, "A new spectroscopic molecular mechanics
-   force field. Parameters for proteins," J.Chem.Phys. 102(21), 8586-8605
-   (1995).
-
-2. P. Lagant, D. Nolde, R. Stote, G. Vergoten and M. Karplus, "Increasing
-   normal mode analysis accuracy:  The SPASIBA spectroscopic force field
-   and the CHARMM program," in preparation.
-
-.. note::
-   CHARMM must be compiled with the SPAS keyword in the pref.dat file
-   to use the SPASIAB force field.
-
-The parameters for the SPASIBA force field are read in via a modified
-parameter file.  The specific parameters are the K (Urey-Bradley) for bonds,
-H and F/F' terms, the Kappa (internal tensions for a tetrahedral atom),
-L(CH2), trans and gauche force constants between valence angles.
-The SPAS keyword in the parameter file signals the use of the SPASIBA force
-field in the appropriately compiled CHARMM version.
-
-Energy, first and second derivatives are calculated by the SPASIBA
-force field.  The evaluation of the a,b,c,d coefficients (kappa), L and
-Trans-Gauche terms is performed at each energy calculation (as they are
-conformational dependent).
-
-The topology and psf files are unchanged relative to the standard
-CHARMM format.  However, the parameter file differs from the standard format
-in the following way.  The general parameter file spa_all22_prot.inp is
-derived from the CHARMM all22_prot(mod).inp.  We added the F, kappa, LCH2
-and TG terms  
-
-An example for a small molecule (ethanediol) is given below:
+The purpose of the MLTE command is to make repeated energy evaluations
+for related conformations through rapid reading of pre-computed coordinates.
+The MLTE command is invoked from the command line after a valid UPDAte
+command has specified the energy function desired.
 
 ::
 
-             HC  HM   
-             |   |
-          HC CT- C9 -S -HS
-             |   |
-             HC  HM
+  MLTE [ ATNI atom_i ] [ ATNJ atom_j ] [ FILI filename_i ] [ FILJ filename_j ]
+         [ OUTF filename_output ]
+         repeat ( [ETER eterm] )
 
-::
-
-   * - parameter file par.etsh 
-   * Parameters from SPASIBA force field
-   * Test 
-   * To be used with top.etsh topology file
-   *
-
-   BOND
-   CT  HC     320.   1.11                ! K, r0    
-   CT  C9     140.0  1.53                !K in kcal mol-1 Angstroms-2 ,r0 in A
-   C9  S      139.   1.81 
-   C9  HM     302.5  1.11
-   S   HS     278.   1.336 
-
-   THETAS
-   HM  C9  HM     30.6   108.5    10.07    0.        !H, teta0, F
-   HC  CT  HC     29.    107.7    10.5     0.        !H kcalmol-1 rad-2
-   C9  CT  HC     14.9   109.4    67.9     0.        !F kcalmol-1 A-2
-   CT  C9  S      24.0   114.7    14.0     0.        !teta0 (deg)
-   CT  C9  HM     14.1   109.4    69.4     0.
-   S   C9  HM     13.0   108.9    55.0     0.
-   C9  S   HS     53.3    96.0     0.      0.
-
-   PHI
-   HM  CT  S   HS      0.185   1      0.
-   CT  C9  S   HS      0.185   1      0.
-   HM  C9  S   HS      0.185   1      0.   
-   X   CT  C9  X       0.16    1      0. 
-
-   NONBONDED  NBXMOD 5  ATOM CDIEL SHIFT VATOM VDISTANCE VSHIFT -
-        CUTNB 5.5 CTOFNB 4.5 CTONNB 4. EPS 1.0  E14FAC 0.5  WMIN 1.5
-   !
-   HC    0.00    -0.01       0.77       0.00    -0.005      0.77
-   HM    0.00    -0.01       0.77       0.00    -0.005      0.77
-   CT    0.00    -0.06       0.900      0.00    -0.03       0.900
-   C9    0.00    -0.06       0.900      0.00    -0.03       0.900
-   S     0.00    -0.20       1.000      0.      -0.10       1.00
-   HS    0.00    -0.02       0.50       0.      -0.01       0.5 
-
-   KAPPA 
-   CT  C9  HC  HC  HC     -3.6         !internal tension occuring in the set of 6 
-   C9  CT  S   HM  HM     -3.6         !valence angles around a tetrahedral atom
-
-   LCH2                                !  HM         HM
-   C9  X   X   HM  HM      2.877       !       C9 
-                                       !   X         X
-   14TG
-   HC  CT  C9  HM       15.100    -4.0 !   HC-CT-C9-HM 
-   HM  C9  S   HS        0.1      -0.1
-
-   END
-
-
-The input file remains unchanged relative to standard CHARMM input files.
-The Spasiba force field is activated via the SPAS keyword in the parameter file
-
-::
-
-   *  ETHSH  champ de forces   SPASIBA  
-   *
- 
-   ! Open and read topology file
-   OPEN READ UNIT 11 CARD NAME etsh.top
-   READ RTF UNIT 11 CARD
-   CLOSE UNIT 11
-
-
-   ! Open and read parameter file
-   OPEN READ UNIT 12 CARD NAME etsh.par
-   READ PARAMETERS UNIT 12 CARD ! PRINT
-   CLOSE UNIT 12
-
-   OPEN READ UNIT 16 CARD NAME etsh.psf
-   READ PSF CARD UNIT 16
-   CLOSE UNIT 16
-
-   OPEN READ UNIT 14 CARD NAME etsh.crd
-   READ COORDINATES CARD UNIT 14
-   CLOSE UNIT 14 
-
-   ENERGY 
-   !MINIMIZE ABNR INBFRQ 10 NSTEP 50000 STEP 0.02 TOLG 1.0E-04
-   MINIMIZE NRAP NSTEP 1500 STEP 0.02 INBFRQ 10 TOLG 1.0E-06
-
-   !OPEN WRITE UNIT 13 CARD NAME etshabnr.crd
-   OPEN WRITE UNIT 13 CARD NAME etshnrap.crd
-   WRITE COORDINATES CARD UNIT 13
-   * Output coordinates  (CH3-CH2-SH) 
-   *
-
-   VIBRAN NMOD 27 
-   DIAG 
-   PED MODE 1 THRU 27 TEMP 298.0 TOL 0.01
-
-   STOP
-
-
-Bibliography on the SPASIBA Force Field
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-1. Carboxylic acids: (acetic ,pivalic, succinic, adipic ,L-glutamic acids):
-   M. Chhiba, P. Derreumaux and G. Vergoten, J .Mol. Struct., 317, 171-184
-   (1994)
-
-2. Linear alkenes:
-   M. Chhiba and G. Vergoten  J. Mol. Struct., 326, 35-58 (1994)
-
-3. Aliphatic esters: 
-   F. Tristram, V. Durier and G. Vergoten, J. Mol. Struct., 377, 47-56 (1996)
-
-4. Aliphatic alcohols: 
-   F. Tristram, V. Durier and G. Vergoten, J. Mol. Struct., 378, 249-256 (1996)
-
-5. Esters:
-   M. Chhiba, F. Tristram and G. Vergoten, J. Mol. Struct., 405, 113-122 (1997)
-
-6. alpha-D-Glucose: 
-   V. Durier, F. Tristram and G. Vergoten, J. Mol. Struct.(Theochem), 395-396,
-   81-90 (1997)
+Cartesian coordinates for a collection of coordinates for two sets of atoms
+are stored in "write coor dumb" format in files whose names are indicated by
+FILI and FILJ, respectively.  The number of the first atom of group_i is given
+by ATNI and that of group_j is given by ATNJ.  The energy for all
+conformational pairings (each conformation of group_i with each conformation
+of group_j) will be computed and printed in the file indicated by OUTF.  The
+energy terms to be included is indicated with repeated invocations of the
+ETER command, with energy term names listed in the substitution section.

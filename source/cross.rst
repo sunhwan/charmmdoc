@@ -35,8 +35,8 @@ Syntax for the Reactive Molecular Dynamics commands
 
 ::
 
-    RXMD   UPAR integer [ XTIM integer ] [ UNIT integer ] [ FREQ integer ] -
-                        [ BCHK real ] [ BVDW ]
+  RXMD   UPAR integer [ XTIM integer ] [ UNIT integer ] [ FREQ integer ] -
+                      [ BCHK real ] [ BVDW ]
 
 ======= ====== ==================================================================
 UPAR    Int    Unit containing the parameters for the two surfaces.
