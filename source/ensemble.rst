@@ -1,9 +1,12 @@
 .. py:module:: ensemble
 
+=====================================
 ENSEMBLE averaging / replica exchange
--------------------------------------
+=====================================
 
 By Robert Best
+
+0-K String method By Victor Ovchinnikov
 
 The ENSEMBLE module of CHARMM permits one to start a number of
 copies of CHARMM, communicating using MPI, with some small amount
@@ -18,6 +21,8 @@ of applications of this:
 (iii) to do replica exchange between different energy functions.
       (e.g. between different umbrella windows) (4).
 (iv) exponential averaging of different force-fields (5).
+(v) to find a minimum energy path (MEP) between two 
+    conformations of a molecule (0-K String method)
 
 Many other applications can be envisaged. 
 
@@ -33,34 +38,35 @@ closely to the test cases to start with.
   4. R. B. Best & G. Hummer, unpublished.
   5. R. B. Best, Y-G. Chen and G. Hummer, Structure, 13, 1755-1763 (2005).
 
+The zero-temperature string method is described in:
+
+  1. E, W., Ren, W. & Vanden-Eijnden, E. Simplified and improved string method for computing the minimum energy paths in barrier-crossing events. J. Chem. Phys. 126, 164103-164103-8 (2007)
+
+
 .. note::
 
-   NOTES ON BUILDING THE ENSEMBLE CODE: These are both valid (one of LAMMPI or MPICH must be specified)
-   
+   NOTES ON BUILDING THE ENSEMBLE CODE:   
+
+   For gnu compilers:
+
    ::
    
-      $> ./install.com gnu medium g77 E LAMMPI
-      $> ./install.com gnu medium g77 E MPICH 
+      $> ./install.com gnu medium E M
       
-   It should also work with other compilers.
-   I use the following for an ensemble-specific build directory:
-   
-   ::
-   
-      $> ./install.com gnu.ensemble medium g77 E LAMMPI 3
-      
-   '3' selects stopmark 3 so you can build using make in the build
-   directory without any further trafficking with install.com.
-
-.. warning::
-
-   ENSEMBLE IS INCOMPATIBLE WITH PARALLEL
-
-
 .. _ensemble_syntax:
 
-Replica exchange commands:
---------------------------
+Syntax
+------
+
+Initialize ENSEMBLE
+^^^^^^^^^^^^^^^^^^^
+
+::
+
+   ENSEMBLE NENSEM integer
+
+Replica exchange commands
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -69,24 +75,19 @@ Replica exchange commands:
 
    ENSEMBLE [SWON | SWOFF]
 
-   ENSEMBLE WRITE UNIT integer
-
    ENSEMBLE INFO
 
-General commands:
------------------
+General commands
+^^^^^^^^^^^^^^^^
 
 ::
 
-   ENSEMBLE OPEN UNIT integer [READ | WRITE] file-type filename
-           file-type is one of CARD, FILE, etc. as for normal OPEN
-
-   ENSEMBLE CLOSE UNIT integer
+   ENSEMBLE SYNC
 
    ENSEMBLE SEED [ROOT integer]
 
 Force-field averaging (used for "multi-Go", for example)
---------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -95,68 +96,86 @@ Force-field averaging (used for "multi-Go", for example)
 
 
 .. _ensemble_description:
-
+
 General Description
 -------------------
 
-The CHARMM run is started using MPI commands to specify the number of processes
-(replicas) to use, each of which is an identical copy of charmm. This number
-is automatically passed by MPI to each copy of the executable, and it is set to
-the internal CHARMM variable :sub:`nensem`, which can be used in scripts, e.g.
+Ensemble enabled executables run exactly the same as normal parallel
+CHARMM using the normal mpirun/mpiexec or whatever the parallel run
+command is. A charmm script will be processed in the normal parallel
+way until the ensemble initializing command is given. Once ensemble is
+initialized for N replicas, there are N replicas of charmm running
+where the total processors are split evenly among the replicas. (***
+The total number of processors must be evenly divisable by the number
+of replicas. ***)
+
+Once running in ensemble mode, each replica runs independently at
+first, each reading the default input stream. Each replica produces
+its default output to an output file charmm.out.xxx, where xxx is the
+replica number (excepting the 0th replica which still goes to stdout)
+from 1 to N-1.
+
+Each replica can open and close files independently. Take care to not
+open the same file for writing (such as dcd or restart files) on
+different replicas, see example below. 
+
+Each replica can stream a new input file, allowing independent
+simulations to run out of the a large number of processors in the same
+batch run.
+
+Initializing ENSEMBLE
+^^^^^^^^^^^^^^^^^^^^^
+
+The command
 
 ::
 
-   set nrep ?nensem
+   ensemble nensem 4
 
-The other internal variable set automatically via MPI is :sub:`whoiam`, e.g.
-
-::
-
-   set node ?whoiam
-
-These are useful for giving different file names to different nodes.
-
-This implementation differs from other implementations of replica exchange
-(excluding those based on external scripting), for example the closely related
-REPDstr function in CHARMM, or that in GROMACS, in that all processes take
-input from the same file rather than reading different files. Reading from a
-single file requires a few additional commands, but has the advantage that all
-simulation input is contained in one place.
-
-The root node (whoiam = 0) reads the input file and passes it line by line to
-all other nodes. So it is as if each node reads the input file itself, but
-substituting its own internal variables, and each node maintains a completely
-independent copy of all data.  This allows dynamics to be run much as usual,
-with all nodes happily unaware of the others, apart from the communication
-entailed in replica-exchange or force-field averaging. A few points about I/O.
-There are two options for opening and closing files:
-
-(i) the usual 'open ...' and 'close ...'
-(ii) 'ensemble open ...' and 'ensemble close'
-
-Syntax is:
+will break the processors into 4 replicas of the current state of the
+charmm run, giving 1/4 of the processors to each replica. The replicas
+are numbered 0,1,2,3. The output for rep 0 still goes to stdout, while
+the others go to charmm.out.001, charmm.out.002, charmm.out.003. The
+replicas keep reading the input file (though independently) unless
+directed to stream another input file. The identity of the replica can
+be determined from ?whoiam and the total number of replicas can be
+determined from ?nensem.
 
 ::
 
-   ENSEMBLE OPEN UNIT integer [READ | WRITE] file-type filename
-          ! Opens a separate file for each replica. Analogous to normal
-          ! OPEN. File-type is one of CARD, FILE, etc. as for normal OPEN
+        set numrep ?nensem
+        set myrep ?whoiam
 
-   ENSEMBLE CLOSE UNIT integer
-          ! Analogous to normal close, but closes units for all replicas.
-
-The syntax for the ensemble versions is almost exactly the same.
-When a file is opened with 'open'/'close', it will only be read/written
-to by the root node. With 'ensemble open'/'ensemble close', each node
-reads/writes independently. You will probably need to give different
-file names for different nodes, certainly for output, e.g.
+These are useful for giving different file names to different nodes or
+used in conditionals to process the input stream differently for each
+rep, for example:
 
 ::
 
-   set node ?whoiam
-   ensemble open unit 20 write file name 'traj_@NODE.dcd'
+       open unit 20 write form name rest@myrep.rst
+       stream newinput_@myrep.inp
+       if @myrep .eq. 000 then
+            do some stuff
+       endif
+       ensemble sync
 
-Files that must be opened with ensemble:
+This implementation differs from other implementations of replica
+exchange (excluding those based on external scripting), for example
+the closely related REPDstr function in CHARMM, or that in GROMACS, in
+that all processes can take input from the same file rather than
+reading different files. Reading from a single file requires a few
+additional commands, but has the advantage that all simulation input
+is contained in one place. Alternatively one could use separate input
+files as noted above.
+
+Each node reads the input file itself and each node maintains a
+completely independent copy of all data.  This allows dynamics to be
+run much as usual, with all nodes happily unaware of the others, apart
+from the communication entailed in replica-exchange or force-field
+averaging. A few points about I/O.  
+
+Files that really should be opened with unique names for each rep
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * trajectories (coord/velocities/..)
 * restart files
@@ -165,25 +184,12 @@ Files that must be opened with ensemble:
 * coordinate writing
 * experimental data files for HQBM
 
-Files that must not be opened with ensemble:
+Files opened for reading by all reps will be opened by each rep in
+read-only mode, each rep opening the file and reading it
+independently. This may cause io delays for huge numbers of reps.
 
-* iunj,iund, etc. files from HQBM
-* eef1 solvation parameters
-
-Files which can be opened either with ensemble or not depending on purpose:
-
-* Topology and parameter files. If these are opened with ensemble,
-  in principle a different force-field may be read by each executable
-  if different file names are specified.
-* Coordinates for reading -- if opened ensemble, each copy can
-  read different coordinates
-
-DO NOT try to close units with 'CLOSE' that have been opened with
-'ENSEMBLE OPEN' & vice versa. These errors should be caught, but
-best to be safe.
-
-Initialization
---------------
+Some initialization notes
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 For most ensemble averaged restraints, starting all replicas with the same
 coordinates and velocities this is a waste of time (and is one pathological
@@ -318,8 +324,15 @@ The meaning of the various parts of the command:
            to match experimental data
 
 
+.. _ensemble_0_K_string_method:
+
+0-K String method
+-----------------
+
+The O-K (zero-temperature) String method is fully documented elsewhere *note syn: (chmdoc/stringm.doc)
+
 .. _ensemble_test_cases:
-
+
 TESTCASES
 ---------
 

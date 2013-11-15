@@ -41,9 +41,6 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-appengine:
-	cp -pr $(BUILDDIR)/html /Users/sunhwan/work/web/charmmdoc/
-
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
 	@echo

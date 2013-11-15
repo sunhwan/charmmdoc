@@ -76,7 +76,7 @@ Current limitations of DOMDec
   pressure simulations.
 - Minimization (mini -command) does not work with DOMDEC. The best way around this
   is to first do minimization and then turn on DOMDEC for dynamics.
-- DOMDEC cannot be turned OFF within the script where the DOMDEC -command was
+- DOMDEC cannot be turned OFF within the script where the DOMDEC command was
   given. For example you cannot run dynamics with DOMDEC, turn it off, and run
   dynamics without DOMDEC.
 - IMAGe recentering command only operates on molecules that are a single DOMDEC
@@ -127,9 +127,9 @@ Two ways to invoke domdec:
 
    Since DOMDEC needs to have the whole system and energy parameters set,
    this command MUST be given after:
+
    - complete psf is constructed
-   - cutoffs are specified via a previous nbonds, update, energy, or dynamics
-     command
+   - cutoffs are specified via a previous nbonds, update, energy, or dynamics command
    - periodic system is specified with crystal.
    - Shake must not be initialized before domdec
 
@@ -141,13 +141,15 @@ Two ways to invoke domdec:
    The sub-box sizes are limited by the cut-off and the number of
    sub-boxes as follows:
 
-   BOXX    = system box size in X direction
-   NX      = number of sub-boxes in X direction
-   RCUT    = non-bonded cut-off + radius of the largest group
-   BOXX/NX = sub-box size in X direction
+   ::
+
+     BOXX    = system box size in X direction
+     NX      = number of sub-boxes in X direction
+     RCUT    = non-bonded cut-off + radius of the largest group
+     BOXX/NX = sub-box size in X direction
 
    Then, for NX >= 2, the sub-box size in X direction must satisfy:
-   BOXX/NX <= BOXX - 2*RCUT
+   ``BOXX/NX <= BOXX - 2*RCUT``
 
    If your system violates this restriction, you can try reducing NX to 1 or by
    increasing NX.

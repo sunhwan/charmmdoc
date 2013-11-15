@@ -597,6 +597,9 @@ The rest of the keywords are the same as in the original SHAKE command.
 .. index:: cons; noe
 .. _cons_noe:
 
+NOE
+---
+
 ::
 
    NOE
@@ -1638,10 +1641,11 @@ Similar to the PDB Format:
 Helix Restraint Potential (CONS HELIx)
 --------------------------------------
 
-! Questions and comments regarding CONS HELIx should be directed to
-! Wonpil Im (wonpil@ku.edu);  Jinhyuk Lee (mack97hyuk@gmail.com);
-! Taehoon Kim (comboy94@gmail.com);  Sunhwan Jo (sunhwanj@gmail.com)
-! Center for Bioinformatics/Dept. of molecular biosciences, Univ. of Kansas
+.. note::
+   Questions and comments regarding CONS HELIx should be directed to
+   Wonpil Im (wonpil@ku.edu);  Jinhyuk Lee (mack97hyuk@gmail.com);
+   Taehoon Kim (comboy94@gmail.com);  Sunhwan Jo (sunhwanj@gmail.com)
+   Center for Bioinformatics/Dept. of molecular biosciences, Univ. of Kansas
 
 References:
 
