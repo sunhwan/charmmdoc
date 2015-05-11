@@ -58,6 +58,7 @@ Menu:
    GBSW: Generalized Born with a simple SWitching <gbsw>
    Genetic: The genetic algorithm commands <galgor>
    GNN: Genetic Neural Network <gnn>
+   GoPair: The Go pairwise energy module of CHARMM <gopair>
    GPU: Installing and running CHARMM on GPU <gpu>
    Graphx: The graphics subsection for workstations <graphx>
    Grid: A general facility to implment grid-based potentials for docking <grid>
@@ -82,6 +83,7 @@ Menu:
    Molvib: Molecular vibrational analysis facility <molvib>
    Mscale: Multi Scale Command: MSCALE <mscale>
    MTP: Distributed Multipole facility  <mtp>
+   MRMD: Multi-Surface Adiabatic Reactive Molecular Dynamics <mrmd>
    NMR: NMR analysis facility <nmr>
    Non-bonded: Generation of the non-bonded interaction <nbonds>
    OpenMM: OpenMM GPU acceleration interface to CHARMM <openmm>
