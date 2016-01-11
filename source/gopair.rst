@@ -6,73 +6,75 @@ The Go pairwise Energy Module of CHARMM
 
 ::
 
-                     The Go pairwise Energy Module of CHARMM
-
                          By Charles L. Brooks III, 2014
 
 
-   The Go Pair facility in CHARMM was added to complement and extend the
-   functionality of the Karinoclas and Brooks Go model implementation in
-   CHARMM (ETEN) to more easily accomodate the situation where individual
-   protein/nucleic chains are treated as KB-specific Go models and the
-   inter-chain interactions are modeled as either KB-like Go interactions
-   or some generaic form of coarse-grained interaction model, e.g., if
-   one wants to consider the interactions of two proteins of known
-   structure, for which one can build a KB Go model, and have the
-   inter-chain/protein interactions occur with a general Mizawa-Jernigan
-   pairwise Ca-based interaction. In this case, the GoPair facility
-   accounts for the non-generic intra-protein/chain interactions via the
-   pairwise modified MJ KB Go interactions and the generic repulsive
-   terms within the chain are treated via the normal non-bonded routines
-   as are the inter-chain interactions.
+The Go Pair facility in CHARMM was added to complement and extend the
+functionality of the Karinoclas and Brooks Go model implementation in
+CHARMM (ETEN) to more easily accomodate the situation where individual
+protein/nucleic chains are treated as KB-specific Go models and the
+inter-chain interactions are modeled as either KB-like Go interactions
+or some generaic form of coarse-grained interaction model, e.g., if
+one wants to consider the interactions of two proteins of known
+structure, for which one can build a KB Go model, and have the
+inter-chain/protein interactions occur with a general Mizawa-Jernigan
+pairwise Ca-based interaction. In this case, the GoPair facility
+accounts for the non-generic intra-protein/chain interactions via the
+pairwise modified MJ KB Go interactions and the generic repulsive
+terms within the chain are treated via the normal non-bonded routines
+as are the inter-chain interactions.
 
-   Note: In this implementation the intra-chain KB-based Go interactions
+.. note::
+
+   In this implementation the intra-chain KB-based Go interactions
    are not subject to periodic boundary conditions and all pairwise
    interactions are considered, i.e., no cutoffs. Whereas, the
    non-Go/non-specific interactions are treated via periodic boundary
    conditions with cutoffs.
 
-   The ETEN functionality is available and can be turned on or off
-   independently from that govering the non-specific pairwise
-   interactions. Thus one can do "mixed" models where intra-protein
-   interactions are treated with the KB form and inter-chain are treated
-   with standard LJ, or visa-versa (remember, the replusive intra-chain
-   interactions are treated via the normal ETEN ON/OFF model here.
+The ETEN functionality is available and can be turned on or off
+independently from that govering the non-specific pairwise
+interactions. Thus one can do "mixed" models where intra-protein
+interactions are treated with the KB form and inter-chain are treated
+with standard LJ, or visa-versa (remember, the replusive intra-chain
+interactions are treated via the normal ETEN ON/OFF model here.
 
-   How it works
-   ------------
-   The Go Pair functionality reads a list of pairwise interaction
-   parameters, i.e., emin and rmin ananlgous to the NBFIX pairwise
-   parameters, and sets up the list structure to calculate the energy and
-   forces on the specified pairs using the specified functional form
-   (ETEN ON/OFF). These pairwise interactions are put on the non-bonded
-   exclusion list so they are not double counted. In doing so, as noted
-   above, the set of pairwise interactions specified by the GOPAIR
-   commands ARE NOT SUBJECT TO CUTOFFS OR PEREIODIC BOUNDARY CONDITIONS,
-   and hence are only appropriate for single chains or multi-chain
-   systems that are confied by some means other than periodic boundary
-   conditions.
+How it works
+------------
 
-   References:
-   (1) Karanicolas & Brooks, Protein Science, 11, 2351 (2002).
+The Go Pair functionality reads a list of pairwise interaction
+parameters, i.e., emin and rmin ananlgous to the NBFIX pairwise
+parameters, and sets up the list structure to calculate the energy and
+forces on the specified pairs using the specified functional form
+(ETEN ON/OFF). These pairwise interactions are put on the non-bonded
+exclusion list so they are not double counted. In doing so, as noted
+above, the set of pairwise interactions specified by the GOPAIR
+commands ARE NOT SUBJECT TO CUTOFFS OR PEREIODIC BOUNDARY CONDITIONS,
+and hence are only appropriate for single chains or multi-chain
+systems that are confied by some means other than periodic boundary
+conditions.
 
-    
-   * Menu:
+References:
+(1) Karanicolas & Brooks, Protein Science, 11, 2351 (2002).
 
-   * Syntax::              Syntax of the GoPair command
-   * Function::            Purpose of each of the keywords
-   * Example::             Example input setup
+.. _gopair_syntax:
 
-   
-   File: GoPair,  Node: Syntax,  Up: Top,  Previous: Top,  Next: Function
+Syntax
+------
+
+::
 
    [INPUT GoPair command]
 
      GOPAIR [READ UNIT integer] [ON/OFF] [CLEAR] [ETEN ON/OFF]
 
 
-   
-   File: GoPair,  Node: Function,  Previous: Syntax,  Up: Top,  Next: Example
+.. _gopair_function:
+
+Function
+--------
+
+::
 
    READ  : Read the Go-model pairwise interactions from unit <integer>, 
            default is to read from input stream
@@ -87,25 +89,26 @@ The Go pairwise Energy Module of CHARMM
            Default is ETEN OFF.
 
 
-   
-   File: GoPair,  Node: Example,  Up: Top,  Previous: Function, Next: Top
+.. _gopair_example:
 
-   Example usage
-   -------------
+Example usage
+-------------
 
-   Consider a system comprised of two chains (A & B) for which a standard
-   KB Go model has been constructed for each chain A and chain B (Note:
-   in the near future the Go Server will produce an additional file for
-   the GoPair intrachain interactions separately to facilitate usage of
-   the GoPair modeling facility, let's assume it's called
-   model_kb-gopair.param.) and the "generic" intra-chain repulsive
-   interactions, the generic Mizawa-Jernigan or otherwise determined
-   inter-chain non-bonded parameters (specified as NBFIXes for the
-   N_A*(N_B-1)/2 pairs of interacting sites), the "standard" NBFIX KB
-   parameters for intra-chain A-A and B-B, bonded, angle and torsion
-   parameters are contained in the parameter file model_kb-go.param. The
-   topology is described in model_kb-go.top and the initial Ca-only
-   structures are in model_a.pdb and model_b.pdb.
+Consider a system comprised of two chains (A & B) for which a standard
+KB Go model has been constructed for each chain A and chain B (Note:
+in the near future the Go Server will produce an additional file for
+the GoPair intrachain interactions separately to facilitate usage of
+the GoPair modeling facility, let's assume it's called
+model_kb-gopair.param.) and the "generic" intra-chain repulsive
+interactions, the generic Mizawa-Jernigan or otherwise determined
+inter-chain non-bonded parameters (specified as NBFIXes for the
+N_A*(N_B-1)/2 pairs of interacting sites), the "standard" NBFIX KB
+parameters for intra-chain A-A and B-B, bonded, angle and torsion
+parameters are contained in the parameter file model_kb-go.param. The
+topology is described in model_kb-go.top and the initial Ca-only
+structures are in model_a.pdb and model_b.pdb.
+
+::
 
    Files assumed: model_kb-go.top - contains the required topology information
                   model_kb-go.param - contains the associated parameters

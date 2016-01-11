@@ -1,3 +1,4 @@
 build
 check.py
 __pycache__
+*.pyc

@@ -4,9 +4,7 @@
 Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
 =============================================================
 
-::
-
-        Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
+.. note::
 
   by 
   Tibor Nagy           (tibornagy@chem.elte.hu)  [coder]
@@ -14,64 +12,42 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   Markus Meuwly.       (m.meuwly@unibas.ch)
 
   References:
+
   [1] Multi-Surface Adiabatic Reactive Molecular Dynamics 
       Tibor Nagy*, Juvenal Yosa Reyes, Markus Meuwly*
       submitted to JCTC (Oct, 2013).
+
   [2] State-selected ion-molecule reactions with Coulomb-crystallized 
       molecular ions in traps
       Xin Tong, Tibor Nagy, Juvenal Yosa Reyes, Matthias Germann, 
       Markus Meuwly*, Stefan Willitsch*
       Chemical Physics Letters, Volume 547, 21 September 2012, Pages 1–8
        
-  The Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD) method allows 
-  the construction of global reactive potential energy surface from standard 
-  force fields and running molecular dynamics or Monte Carlo simulations on it. 
-  The effective surface is always the lowest energy surface, except for the region
-  where several surfaces have the same low energy, where it switches smoothly 
-  between them by changing their weights. The algorithm is based on an energy 
-  difference-based switching method, which conserves total energy during dynamics.
-  The code can be run also with a single state allowing the easy usage of some 
-  advanced parametrization (Morse potential, MIE potential) also for non-reactive 
-  simulations. The CROSS module of CHARMM is based on the ARMD method, which uses
-  an alternative, time-dependent switching function. The ARMD method has been used
-  successfully for the simulation of reactions in large molecules (see cross.doc 
-  for references). The comparison of MS-ARMD and ARMD methods and their advantages
-  features are discussed in detail in reference [1]. Looking at the example 
-  provided as a test case with CHARMM (mrmd_h2so4.inp with mrmd_h2so4.par MRMD
-  parameter file, see Example Section) can help in understanding this 
-  documentation greatly.
+The Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD) method allows 
+the construction of global reactive potential energy surface from standard 
+force fields and running molecular dynamics or Monte Carlo simulations on it. 
+The effective surface is always the lowest energy surface, except for the region
+where several surfaces have the same low energy, where it switches smoothly 
+between them by changing their weights. The algorithm is based on an energy 
+difference-based switching method, which conserves total energy during dynamics.
+The code can be run also with a single state allowing the easy usage of some 
+advanced parametrization (Morse potential, MIE potential) also for non-reactive 
+simulations. The CROSS module of CHARMM is based on the ARMD method, which uses
+an alternative, time-dependent switching function. The ARMD method has been used
+successfully for the simulation of reactions in large molecules (see cross.doc 
+for references). The comparison of MS-ARMD and ARMD methods and their advantages
+features are discussed in detail in reference [1]. Looking at the example 
+provided as a test case with CHARMM (mrmd_h2so4.inp with mrmd_h2so4.par MRMD
+parameter file, see Example Section) can help in understanding this 
+documentation greatly.
 
-  * Menu:
 
-  * Syntax::                
-                            Syntax of the MRMD command
-  * Description::           
-                            Description on the MRMD command
-  * Parameter file::         
-                            Description of multiple states and their connection 
-  * States::
-                            Declaration of states: leveling and their connection
-  * Nonbonded::
-                            (Re)parametrization of nonbonded interactions for 
-                            each state
-  * Bonded::
-                            (Re)parametrization of bonded interactions for each 
-                            state
-  * Output::                   
-                            Detailed description of output generated during normal 
-                            termination
-  * Example::
-                            Water elimination from vibrationally highly 
-                            excited sulfuric acid molecule                         
-  * Troubleshooting::
-                            Hint for troubleshooting
-  * Code::
-                            Essential code related notes
+.. _mrmd_syntax:
 
-  
-  File: MRMD, Node: Syntax,Previous: Top,Up: Top, Next: Description
+Syntax for the Reactive Molecular Dynamics commands
+---------------------------------------------------
 
-            Syntax for the Reactive Molecular Dynamics commands
+::
 
                       |---------------optional arguments---------------| 
   MRMD   UPAR integer [ UCRG integer ] [ PRDY integer ] [ PRCA integer ]
@@ -91,39 +67,41 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   RSET           Deactivate currently active MRMD parametrization. Should not be
                  used together with other MRMD keywords.
                  
-  
-  File: MRMD, Node: Description, Previous: Syntax, Up: Top, Next: Parameter file
+.. _mrmd_description:
 
-          Description of the Reactive Molecular Dynamics command
+Description of the Reactive Molecular Dynamics command
+------------------------------------------------------
 
-  -----------------------------
-  MRMD command in CHARMM input:
-  -----------------------------
-  MS-ARMD force field is invoked by the MRMD command. On the first call the 
-  content of MRMD parameter file is fully processed. This contains information on 
-  one or more force fields by providing the changes from the PSF/parameter file 
-  by means of modifying/removing/adding FF potential terms. The PSF and parameter 
-  arrays in CHARMM are never modified! MRMD will affect only the total energy 
-  and the forces on individual atoms. The parameter file also contains information
-  on the switching function, that is how the surfaces are connected.
+MRMD command in CHARMM input
+============================
 
-  ----------------------------------------------------------------------------
-  Position of the MRMD command during input relative to other CHARMM commands:
-  ----------------------------------------------------------------------------
-  Before MRMD is called, it is important that the bonded parameter list
-  is up-to-date, therefore it is recommended to execute the UPDAte
-  command before calling MRMD. It requires that the PSF is already
-  built.
+MS-ARMD force field is invoked by the MRMD command. On the first call the 
+content of MRMD parameter file is fully processed. This contains information on 
+one or more force fields by providing the changes from the PSF/parameter file 
+by means of modifying/removing/adding FF potential terms. The PSF and parameter 
+arrays in CHARMM are never modified! MRMD will affect only the total energy 
+and the forces on individual atoms. The parameter file also contains information
+on the switching function, that is how the surfaces are connected.
 
-  Before executing the DYNA command it is important that crossing
-  geometry (UCRG) file is opened.
+Position of the MRMD command during input relative to other CHARMM commands
+===========================================================================
 
-  All commands (MINI, VIBR, DYNA) which are supposed to use the force
-  field parametrization provided by MRMD should be preceded by
-  calling MRMD.
+Before MRMD is called, it is important that the bonded parameter list
+is up-to-date, therefore it is recommended to execute the UPDAte
+command before calling MRMD. It requires that the PSF is already
+built.
 
-  A typical input sequence for an MRMD simulation is as follows:
-  "
+Before executing the DYNA command it is important that crossing
+geometry (UCRG) file is opened.
+
+All commands (MINI, VIBR, DYNA) which are supposed to use the force
+field parametrization provided by MRMD should be preceded by
+calling MRMD.
+
+A typical input sequence for an MRMD simulation is as follows:
+
+::
+
   ...read or generate PSF...
 
   UPDATE
@@ -137,30 +115,38 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   OPEN UNIT 13 WRITe UNFORMatted NAME  mrmd_traj.dcd
 
   DYNA ....
-  "
-  ----------------------------------------------
-  Compatibility with other major CHARMM commands
-  ----------------------------------------------
-  - PSF modifying routines -
+
+
+Compatibility with other major CHARMM commands
+==============================================
+
+* PSF modifying routines 
+
   Calling MRMD assumes that the PSF will not be modified later. If it is
   modified then MRMD has to be called again either with the same or a
   new parameter file (UPAR).
 
-  - VIBRan -
+* VIBRan
+
   MRMD does not provide (analytical) second derivatives, therefore all
   routines which requires second derivatives of the energy can work only
   if they have an option for numerical second derivatives (i.e. VIBR
   with FINITE).
 
-  - IMAGe -
+* IMAGe 
+
   The nonbonded interaction between atoms with modified non-bonded
   parameters and image atoms are not updated. If the atoms with modified
   nonbonded parameters remain far from the edges of the center box then
   this will not cause a problem at all. It is planned to provide this
   functionality in the future.
 
-  - NBONded -
+* NBONded 
+
   compatible with NBONded for the following settings:
+
+  ::
+
       ELEC   : electrostatic interaction
       CDIElec: constant dielectric
       ATOM   : atom-based electrostatic interaction
@@ -171,6 +157,9 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
       NBXMOD : +1,+2,+3,+4,+5 are all supported
 
   not compatible with NBONded for the following settings:
+
+  ::
+
       GROUp   : group-based electrostatic interaction
       SWITch  : switching cut-off method for electrostatic interaction
       FSWItch : force-switching cut-off method for electrostatic interaction
@@ -178,42 +167,50 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
       VSHIft  : shifting cut-off method for van der Waals interaction
       FVSWitch: force-switching cut-off method for van der Waals interaction      
 
-  - SKIP -
+* SKIP 
   ARMD is compatible with SKIPe commands
-  SKIPe BOND : skips bond energy correction defined in BOND HARM
-               skips bond energy correction defined in BOND MORS
-  SKIPe ANGL : skips energy correction defined in angle part of ANGL HARM
-  SKIPe UREY : skips energy correction defined in Urey-Bradley part of ANGL HARM
-  SKIPe DIHE : skips energy correction defined in DIHE FOUR
-  SKIPe IMPR : skips energy correction defined in IMPR HARM
-  SKIPe ELEC : skips energy correction defined in point charge part of NBON ATOM
-  SKIPe VDW  : skips energy correction defined in Lennard-Jones part of NBON ATOM
-               skips energy correction defined in NBON GVDW
 
-  
-  File: MRMD, Node: Parameter file, Previous: Description, Up: Top, Next: States
+  ::
 
-  The user has to provide an additional external parameter file beyond the usual 
-  CHARMM parameter file to describe one or more potential energy surfaces, which 
-  together define a global surface. This (re)parametrization is based on atom 
-  indices instead of atom types, therefore allows specific reparametrization of 
-  any part of the system.
+    SKIPe BOND : skips bond energy correction defined in BOND HARM
+                 skips bond energy correction defined in BOND MORS
+    SKIPe ANGL : skips energy correction defined in angle part of ANGL HARM
+    SKIPe UREY : skips energy correction defined in Urey-Bradley part of ANGL HARM
+    SKIPe DIHE : skips energy correction defined in DIHE FOUR
+    SKIPe IMPR : skips energy correction defined in IMPR HARM
+    SKIPe ELEC : skips energy correction defined in point charge part of NBON ATOM
+    SKIPe VDW  : skips energy correction defined in Lennard-Jones part of NBON ATOM
+                 skips energy correction defined in NBON GVDW
 
-  -------------------------------------------------------
-  Determining effective reactive potential energy surface
-  -------------------------------------------------------
-  First the energy correction to the CHARMM energy for each surface is calculated 
-  based on the (re)parametrization given in this file. Then, the energy shift is 
-  added to each surface. Then a smooth connection of the low-lying energy surfaces
-  is calculated using the energy difference based switching functions. Finally, 
-  the Gaussian*polynomial functions of pairwise energy differences are added 
-  optionally to adjust the shape of the crossing regions between surfaces. 
-  The MRMD module in CHARMM corrects the total energy, and does not modify the
-  individual energy terms (BOND, VDW, etc). MRMD energy correction will be added 
-  only to the total energy.
+.. _mrmd_parameter:
 
-  The parameter file should always have all the following blocks even
-  if the parameters are not changed/used:
+Parameter file
+--------------
+
+The user has to provide an additional external parameter file beyond the usual 
+CHARMM parameter file to describe one or more potential energy surfaces, which 
+together define a global surface. This (re)parametrization is based on atom 
+indices instead of atom types, therefore allows specific reparametrization of 
+any part of the system.
+
+Determining effective reactive potential energy surface
+=======================================================
+
+First the energy correction to the CHARMM energy for each surface is calculated 
+based on the (re)parametrization given in this file. Then, the energy shift is 
+added to each surface. Then a smooth connection of the low-lying energy surfaces
+is calculated using the energy difference based switching functions. Finally, 
+the Gaussian*polynomial functions of pairwise energy differences are added 
+optionally to adjust the shape of the crossing regions between surfaces. 
+The MRMD module in CHARMM corrects the total energy, and does not modify the
+individual energy terms (BOND, VDW, etc). MRMD energy correction will be added 
+only to the total energy.
+
+The parameter file should always have all the following blocks even
+if the parameters are not changed/used:
+
+::
+
   SURF:      defines the number of surfaces and their level shifts
   SWCH:      defines switching function and switching related parameters
   SHAP GAPO: defines shaping functions to crossing regions between surfaces 
@@ -225,18 +222,20 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   DIHE FOUR: (re)parametrization of Fourier dihedral angle potentials  
   IMPR HARM: (re)parametrization of harmonic improper dihedral angle potentials 
 
-  
-  File: MRMD, Node: States, Previous: Parameter file, Up: Top, Next: Nonbonded
+.. _mrmd_states:
 
-  Description of the individual blocks:
-  ================================================================================
-  1. Block SURF
-  ================================================================================
-  ROLE: 
-  Defines the number of surfaces (nsurf) and the energy shifts (VshiftI). At each 
-  call to MRMD, the energy correction of all surfaces are determined, and based 
-  on the energy difference based switching formula, corresponding weights are 
-  determined and the effective correction is calculated.
+Description of the individual blocks
+------------------------------------
+
+Block SURF
+==========
+
+Defines the number of surfaces (nsurf) and the energy shifts (VshiftI). At each 
+call to MRMD, the energy correction of all surfaces are determined, and based 
+on the energy difference based switching formula, corresponding weights are 
+determined and the effective correction is calculated.
+
+::
 
   --------------------------Structure of block SURF-------------------------------
   SURF nsurf
@@ -277,17 +276,19 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   energies), which is necessary to reproduce reaction energetics and predict 
   dividing surfaces between them.
 
-  ================================================================================
-  2. Block SWCH
-  ================================================================================
-  ROLE: 
-  Defines the switching function and switching related parameters.
-  MS-ARMD switching concept:
-  1. Normalized energy difference from the lowest-energy surface is determined.
-  2. Raw weights(wi0) are defined using simple mathematical switching functions.
-  3. Raw weights are renormalized to give mixing weights (wi). 
-  4. The weighted linear combination of surfaces plus the shaping functions
-     with the weights give the MS-ARMD surface.
+Block SWCH
+==========
+
+Defines the switching function and switching related parameters.
+MS-ARMD switching concept:
+
+1. Normalized energy difference from the lowest-energy surface is determined.
+2. Raw weights(wi0) are defined using simple mathematical switching functions.
+3. Raw weights are renormalized to give mixing weights (wi). 
+4. The weighted linear combination of surfaces plus the shaping functions
+   with the weights give the MS-ARMD surface.
+
+::
 
   --------------------------Structure of block SURF-------------------------------
   SWCH
@@ -353,12 +354,13 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   switching as it always provides a smooth (analytical, infinite times 
   differentiable) effective surface.
 
-  ================================================================================
-  3. Block SHAP GAPO
-  ================================================================================
-  ROLE: 
-  Defines the parameters of Gaussian*Polynomial (GAPO) shaping functions to adjust 
-  the crossing region for pairs of surfaces.
+Block SHAP GAPO
+===============
+
+Defines the parameters of Gaussian*Polynomial (GAPO) shaping functions to adjust 
+the crossing region for pairs of surfaces.
+
+::
 
   --------------------------Structure of block SURF-------------------------------
   SHAP GAPO ngapo
@@ -396,15 +398,18 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   aI0,aI1,...,aInI ({real,(kcal/mol)^(1-j) where j=0,1,2,3})
   0-th, 1-st, ..nI-th order polynomial coefficients of the I-th GAPO function.
 
-  
-  File: MRMD, Node: Nonbonded, Previous: States, Up: Top, Next: Bonded
+.. _mrmd_nonbonded:
 
-  ================================================================================
-  4. Block NBON ATOM
-  ================================================================================
-  ROLE: 
-  Reparametrizes LJ interaction and point-charge electrostatic interaction on
-  each surface.
+(Re)parametrization of nonbonded interactions for each state
+------------------------------------------------------------
+
+Block NBON ATOM
+===============
+
+Reparametrizes LJ interaction and point-charge electrostatic interaction on
+each surface.
+
+::
 
   --------------------------Structure of block ATOM-------------------------------
   NBON ATOM natom
@@ -472,16 +477,19 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   active in the case of NBXMOD=+5. If letter x or X is given, then the value 
   copied from rmhIJ.
 
-  ================================================================================
-  5. Block NBON GVDW
-  ================================================================================
-  ROLE: 
-  Adds general-exponent Lennard-Jones potential (equivalent to the Mie-potential)
-  and removes 6-12 Lennard-Jones potential for pair of atoms on each surface.
-  General-exponent Lennard-Jones potential can improve the description of the van 
-  der Waals interaction between atoms in the reaction region and it also better 
-  captures the energetics for the reactant and product complexes and around the 
-  transition state.
+
+Block NBON GVDW
+===============
+
+Adds general-exponent Lennard-Jones potential (equivalent to the Mie-potential)
+and removes 6-12 Lennard-Jones potential for pair of atoms on each surface.
+General-exponent Lennard-Jones potential can improve the description of the van 
+der Waals interaction between atoms in the reaction region and it also better 
+captures the energetics for the reactant and product complexes and around the 
+transition state.
+
+::
+
   --------------------------------------------------------------------------------
   VAN DER WAALS INTERACTION: GENERAL-EXPONENT LENNARD-JONES POTENTIAL (kcal/mol)
 
@@ -528,14 +536,17 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   not used, and the 6-12 Lennard-Jones potential will be used for the 
   corresponding atom pair on surface J.
 
-  
-  File: MRMD, Node: Bonded, Previous: Nonbonded, Up: Top, Next: Output 
+.. _mrmd_bonded:
 
-  ================================================================================
-  6. Block BOND HARM
-  ================================================================================
-  ROLE: 
-  Reparametrizes, adds or removes harmonic bond potentials on surfaces.
+(Re)parametrization of bonded interactions for each state
+---------------------------------------------------------
+
+Block BOND HARM
+===============
+
+Reparametrizes, adds or removes harmonic bond potentials on surfaces.
+
+::
 
   --------------------------Structure of block HARM-------------------------------
   BOND HARM nharm
@@ -612,12 +623,14 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   If letter x or X is given for deIJ, then folowing values of reqIJ and betaIJ are
   not used.
 
-  ================================================================================
-  8. Block ANGL HARM
-  ================================================================================
-  ROLE: 
-  Reparameterizes, adds or removes harmonic angle potentials and Urey-Bradley 
-  potentials on surfaces.
+
+Block ANGL HARM
+===============
+
+Reparameterizes, adds or removes harmonic angle potentials and Urey-Bradley 
+potentials on surfaces.
+
+::
 
   --------------------------Structure of block ANGL-------------------------------
   ANGL HARM nangl
@@ -666,11 +679,13 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   is given for fchIJ, then following values of phieqIJ, ufchIJ, ureqIJ are not 
   used.
 
-  ================================================================================
-  9. Block DIHE FOUR
-  ================================================================================
-  ROLE: 
-  Reparameterizes, adds or removes proper dihedral potentials on surfaces.
+
+Block DIHE FOUR
+===============
+
+Reparameterizes, adds or removes proper dihedral potentials on surfaces.
+
+::
 
   --------------------------Structure of block DIHE-------------------------------
   DIHE FOUR ndihe
@@ -722,11 +737,12 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
    -cos(n*phi_max-phi0) maximal <=> n*phi_max-phi0=(2*k+1)*pi  k is integer
    =>maxima: phi_max=((2*k+1)*pi+phi0)/n                       k is integer   
 
-  ================================================================================
-  10. Block IMPR HARM
-  ================================================================================
-  ROLE: 
-  Reparameterizes, adds or removes improper dihedral potentials on surfaces.
+Block IMPR HARM
+===============
+
+Reparameterizes, adds or removes improper dihedral potentials on surfaces.
+
+::
 
   --------------------------Structure of block IMPR-------------------------------
   IMPR HARM nimpr
@@ -773,48 +789,57 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   Equilibrium angle of quadratic dihedral potential I on surface J. After reading 
   it in, it is immediately converted to radian within the code.  
                   
-  
-  File: MRMD, Node: Output, Previous: Bonded, Up: Top, Next: Example
 
-  Output to standard output:
+.. _mrmd_output:
 
-  ----------------------------------------------
-  1. At the call of MRMD command in CHARMM input
-  ----------------------------------------------
-  Subroutine MRMD_INIT will be executed, which will print:
-  Printed lines start with:
+Output to standard output
+-------------------------
+
+At the call of MRMD command in CHARMM input
+===========================================
+
+Subroutine MRMD_INIT will be executed, which will print:
+Printed lines start with:
+
+::
+
   'MRMD_INIT>...'
 
-  if PRNLEV>=5 the following will be printed:
-  - the arguments with which the MRMD command was called
-  - progress of reading various blocks of MRMD parameter file 
-  - after reading the parameter file, the number of records in each block
+if PRNLEV>=5 the following will be printed:
+- the arguments with which the MRMD command was called
+- progress of reading various blocks of MRMD parameter file 
+- after reading the parameter file, the number of records in each block
 
-  if PRNLEV>=6 the following will be printed:
-  - all the parameters that are read from the MRMD parameter file.
-  - changes in 1-2, 1-3, 1-4, 1-(more than 4) neighbourship lists for each surface
+if PRNLEV>=6 the following will be printed:
+- all the parameters that are read from the MRMD parameter file.
+- changes in 1-2, 1-3, 1-4, 1-(more than 4) neighbourship lists for each surface
 
-  -----------------------------------------------------
-  2. At energy call if certain conditions are fulfilled
-  -----------------------------------------------------
-  Subroutine EMRMD will be executed, which calls several other subroutines.
-  Printed lines start with:
+At energy call if certain conditions are fulfilled
+==================================================
+
+Subroutine EMRMD will be executed, which calls several other subroutines.
+Printed lines start with:
+
+::
+
   'EMRMD>...'
   'MRMD_ENERG>...'
   'MRMD_SURF>...'
 
-  -------------------------------
-  2A.Printing of surface crossing:
-  -------------------------------
-  - PRNLEV>=4: time of crossing and the corresponding two surfaces
+Printing of surface crossing
+****************************
 
-  ---------------------------------------------
-  2B.Printing energetics at various detail level
-  ---------------------------------------------
-  - During dynamics after every integration step defined after PRDY argument.
-  - When dynamics is not active after every PRCA calls.
-  - Initial call of EMRMD routine. 
-  - When surface crossing is detected.
+- PRNLEV>=4: time of crossing and the corresponding two surfaces
+
+Printing energetics at various detail level
+*******************************************
+
+- During dynamics after every integration step defined after PRDY argument.
+- When dynamics is not active after every PRCA calls.
+- Initial call of EMRMD routine. 
+- When surface crossing is detected.
+
+::
 
   PRNLEV>=4 
   MRMD energy correction.
@@ -834,41 +859,51 @@ Multi-Surface Adiabatic Reactive Molecular Dynamics (MS-ARMD)
   PRNLEV>=8
   Each individual nonbonded energy term is also printed.
 
-  -------------------------------------------
-  2C. Printing forces at various detail level
-  -------------------------------------------
+Printing forces at various detail level
+***************************************
+
+::
+
   PRNLEV>=9
   All nonzero MRMD force corrections for each atom are printed.
 
   PRNLEV>=10
   All forces of all potential energy surfaces are printed.
 
-  
-  File: MRMD, Node: Example, Previous: Output, Up: Top, Next: Troubleshooting
+.. _mrmd_example:
 
-  The mrmd_h2so4.inp test case with the mrmd_h2so4.par parameter file are 
-  distributed with the package. This example simulation describes the water 
-  elimination from a vibrationally highly excited sulfuric acid molecule.  
-  Two surfaces are defined: one for sulfuric acid molecule and one for water 
-  and sulfur-trioxid molecules. The initial conditions are prepared so that 
-  water elimination takes place within a few timesteps. All the force field 
-  parameters of the H2SO4 molecule are redefined in the parameter file 
-  (mrmd_h2so4.par) in order to demonstrate most of the features of the 
-  MRMD module.
+Example: Water elimination from vibrationally highly excited sulfuric acid molecule
+-----------------------------------------------------------------------------------
 
-  
-  File: MRMD, Node: Troubleshooting, Previous: Errors, Up: Top, Next: Code
+The mrmd_h2so4.inp test case with the mrmd_h2so4.par parameter file are 
+distributed with the package. This example simulation describes the water 
+elimination from a vibrationally highly excited sulfuric acid molecule.  
+Two surfaces are defined: one for sulfuric acid molecule and one for water 
+and sulfur-trioxid molecules. The initial conditions are prepared so that 
+water elimination takes place within a few timesteps. All the force field 
+parameters of the H2SO4 molecule are redefined in the parameter file 
+(mrmd_h2so4.par) in order to demonstrate most of the features of the 
+MRMD module.
 
-  Before running production calculations, it is highly recommended to check 
-  whether all the expected individual energy terms are cancelled out or/and 
-  added for each surfaces. Increasing the PRNLEV parameter up to 8, a detailed 
-  listings is done, showing also the values of all used parameters and geometric 
-  variables (ie. bond length) used for the calculation of the removed and added 
-  terms. If total energy seems to be wrong, this listing can help in identifing 
-  the energy terms which are responsible for it.
+.. _mrmd_troubleshooting:
 
-  
-  File: MRMD, Node: Code, Previous: Troubleshooting, Up: Top
+Troubleshooting
+---------------
+
+Before running production calculations, it is highly recommended to check 
+whether all the expected individual energy terms are cancelled out or/and 
+added for each surfaces. Increasing the PRNLEV parameter up to 8, a detailed 
+listings is done, showing also the values of all used parameters and geometric 
+variables (ie. bond length) used for the calculation of the removed and added 
+terms. If total energy seems to be wrong, this listing can help in identifing 
+the energy terms which are responsible for it.
+
+.. _mrmd_code:
+
+Essential code related notes
+----------------------------
+
+::
 
   ----------------------------------
   Interfaces, subroutines, functions
